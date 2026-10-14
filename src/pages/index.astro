@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
+---
+<Base>
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="tiny-branch" aria-hidden="true">⑂</span> GIT WORKTREE COLLECTIONS</p>
+        <h1 id="hero-title">Make room for<br>the <em>whole task.</em></h1>
+        <p class="hero-description">Your API. Your frontend. That shared library.<br class="desktop-break"> Bring them into one workspace, without bringing<br class="desktop-break"> every other task along.</p>
+        <div class="hero-actions"><a class="button" href="#get-started">Create your first collection <span aria-hidden="true">↗</span></a><a class="text-link" href="#how-it-works">See how it works <span aria-hidden="true">↓</span></a></div>
+        <p class="hero-note">Built on Git worktrees. Works with your tools.</p>
+      </div>
+      <div class="collection-demo" aria-label="Interactive example of two worktree collections">
+        <div class="demo-toolbar"><span><span class="status-dot" aria-hidden="true"></span> YOUR WORKSPACE</span><span class="demo-label">INTERACTIVE EXAMPLE</span></div>
+        <div class="collection-switcher" role="group" aria-label="Example collection">
+          <button type="button" class="collection-choice active" data-collection="login" aria-pressed="true"><span aria-hidden="true">⑂</span> fix-login</button>
+          <button type="button" class="collection-choice" data-collection="checkout" aria-pressed="false"><span aria-hidden="true">⑂</span> new-checkout</button>
+        </div>
+        <div class="collection-body" aria-live="polite" aria-atomic="true">
+          <div class="folder-row"><span class="folder-icon" aria-hidden="true"></span><strong id="collection-name">fix-login</strong><span class="collection-tag">collection</span></div>
+          <div class="repo-tree">
+            <div class="repo-row"><span class="repo-icon" aria-hidden="true">&#123; &#125;</span><div><strong>api</strong><span id="api-detail">Session & authentication</span></div><span class="repo-port" id="api-port">:4100</span></div>
+            <div class="repo-row"><span class="repo-icon" aria-hidden="true">⌘</span><div><strong>web</strong><span id="web-detail">Sign-in experience</span></div><span class="repo-port" id="web-port">:4101</span></div>
+            <div class="repo-row"><span class="repo-icon" aria-hidden="true">◇</span><div><strong>shared</strong><span id="shared-detail">Types & validation</span></div><span class="repo-kind">library</span></div>
+          </div>
+          <div class="collection-summary"><span><span class="status-dot" aria-hidden="true"></span> 3 repos. One task.</span><span>Isolated worktrees</span></div>
+        </div>
+        <div class="demo-terminal"><span aria-hidden="true">$</span> <code id="demo-command">cd ../fix-login && wtc status</code><span class="terminal-caret" aria-hidden="true"></span></div>
+        <p class="demo-caption"><span aria-hidden="true">↖</span> Switch the task. Keep the context.</p>
+      </div>
+    </section>
+    <div class="principles wrap"><span>A workspace for the task.<br><strong>Not another way to build your app.</strong></span><span>Real Git worktrees</span><span>Your editor or agent</span><span>Your usual dev commands</span></div>
+    <section class="section wrap" id="how-it-works" aria-labelledby="how-title">
+      <div class="section-heading"><div><p class="eyebrow">LESS WORKSPACE WRANGLING</p><h2 id="how-title">One task rarely lives<br>in one repository.</h2></div><p>Stop assembling the same workspace by hand.<br>Give each task a place of its own, then get<br class="desktop-break"> back to the interesting part.</p></div>
+      <div class="feature-grid">
+        <article class="feature"><div class="feature-symbol" aria-hidden="true">⊞</div><span class="feature-number">01 / GATHER</span><h3>Bring the right repos.</h3><p>Put the repositories a task needs in a single folder. Add another when the scope grows. A monorepo is not a prerequisite.</p><code>wtc add-repo shared</code></article>
+        <article class="feature"><div class="feature-symbol" aria-hidden="true">⑂</div><span class="feature-number">02 / SEPARATE</span><h3>A fresh space for every task.</h3><p>Collections get their own worktrees, environment, and port assignments. Start the next task alongside the one already in progress.</p><code>wtc new new-checkout api web</code></article>
+        <article class="feature"><div class="feature-symbol" aria-hidden="true">≋</div><span class="feature-number">03 / KEEP TRACK</span><h3>The whole picture, together.</h3><p>See local changes and pull request status across your collection. When the task is done, retire its workspace with checks for local work.</p><code>wtc status</code></article>
+      </div>
+    </section>
+    <section class="start-section" id="get-started" aria-labelledby="start-title">
+      <div class="wrap start-grid">
+        <div class="start-copy"><p class="eyebrow">SMALL SETUP. MORE MOMENTUM.</p><h2 id="start-title">Your next task<br>starts here.</h2><p>Start with a few repositories. Add a team harness when you need shared configuration.</p><div class="requirements"><span>macOS & Linux</span><span>Git required</span><span>Mise optional</span></div><a class="text-link" href="https://github.com/lcorneliussen/wtc-cli/releases">Browse CLI releases <span aria-hidden="true">↗</span></a></div>
+        <div class="quickstart">
+          <div class="quickstart-options" role="group" aria-label="Quick start environment"><button type="button" data-guide="local" aria-pressed="true" class="active">Local terminal</button><button type="button" data-guide="team" aria-pressed="false">Team harness</button><button type="button" data-guide="openclaw" aria-pressed="false">OpenClaw</button></div>
+          <div class="code-heading"><span id="code-title">01 — CREATE A COLLECTION</span><button type="button" class="copy-button" id="copy-code" hidden>Copy commands <span aria-hidden="true">⧉</span></button></div>
+          <pre tabindex="0" aria-label="Quick start commands"><code id="quickstart-code"># Install a documented release with mise
+mise use -g github:lcorneliussen/wtc-cli@0.1.40
+
+# Start a task in an empty folder
+mkdir fix-login && cd fix-login
+wtc init
+
+# Use your own repo URL and local checkout
+wtc add-repo git@github.com:example-org/api.git
+wtc add-repo ~/code/web
+wtc status</code></pre>
+          <p class="code-note" id="guide-note">Worktrees start detached. Create a branch in each repository before committing. Open the collection in your editor or agent.</p>
+          <a id="guide-link" class="quickstart-link" href={`${base}docs/getting-started/`}>Read the getting-started guide <span aria-hidden="true">↗</span></a>
+          <p class="sr-only" id="copy-status" role="status"></p>
+        </div>
+      </div>
+    </section>
+    <section class="section wrap guides-section" id="guides" aria-labelledby="guides-title">
+      <div class="section-heading"><div><p class="eyebrow">FITS THE WAY YOU WORK</p><h2 id="guides-title">Your tools. A little more together.</h2></div><a class="text-link" href={`${base}docs/getting-started/`}>All documentation <span aria-hidden="true">↗</span></a></div>
+      <div class="guide-grid">
+        <a class="guide-card" href={`${base}docs/commands/`}><span class="guide-category">THE EVERYDAY COMMANDS <span aria-hidden="true">↗</span></span><h3>Find your flow.</h3><p>From the first collection to cleanup, get to know the CLI.</p><span class="guide-bottom">Command reference</span></a>
+        <a class="guide-card" href={`${base}docs/team-harness/`}><span class="guide-category">FOR YOUR TEAM <span aria-hidden="true">↗</span></span><h3>Make it your workspace.</h3><p>Version your repo registry, tool configuration, and project policy.</p><span class="guide-bottom">Meet the harness</span></a>
+        <a class="guide-card" href={`${base}docs/agents/`}><span class="guide-category">WITH YOUR AGENT <span aria-hidden="true">↗</span></span><h3>Share the bigger picture.</h3><p>Give your agent project guidance and a collection to work in.</p><span class="guide-bottom">Agent instructions & skills</span></a>
+      </div>
+      <div class="faq"><h3>A few things worth knowing.</h3><div class="faq-items"><details><summary>Does this replace my build tools?</summary><p>No. WTC manages the workspace around your projects. Keep using your existing build, test, and run commands, inside or outside a collection.</p></details><details><summary>Do I need an agent or a harness?</summary><p>Neither is required. Start an ad-hoc collection in an empty folder and use your usual editor. A harness adds versioned, team-owned configuration when you want it.</p></details><details><summary>What happens when I retire a collection?</summary><p>WTC checks for local work before removing the collection’s worktrees. Remote branches remain available. Read the <a href={`${base}docs/commands/`}>command reference</a> before your first cleanup.</p></details></div></div>
+    </section>
+    <section class="closing wrap"><span class="eyebrow">ONE TASK. ONE WORKSPACE.</span><div><h2>Give your next idea some room.</h2><a class="button" href="#get-started">Get started with wtc <span aria-hidden="true">↗</span></a></div></section>
+  </main>
+</Base>
+<script>
+  import '../scripts/home.js';
+</script>

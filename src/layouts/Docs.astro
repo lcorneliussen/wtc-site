@@ -1,0 +1,22 @@
+---
+import Base from './Base.astro';
+import DocsNav from '../components/DocsNav.astro';
+interface Props {
+  frontmatter: { title: string; description: string; source: string; sourceLabel?: string };
+}
+const { frontmatter } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+<Base title={`${frontmatter.title} — wtc docs`} description={frontmatter.description}>
+  <main class="docs-shell wrap" id="main">
+    <aside class="docs-sidebar">
+      <div class="docs-desktop-nav"><p class="eyebrow">THE WTC HANDBOOK</p><DocsNav /><a class="upstream" href="https://github.com/lcorneliussen/wtc-cli">WTC on GitHub ↗</a></div>
+      <details class="docs-mobile-nav"><summary>Browse the handbook</summary><DocsNav /></details>
+    </aside>
+    <article class="doc-content">
+      <header><p class="eyebrow">DOCUMENTATION / WTC</p><h1>{frontmatter.title}</h1><p class="doc-description">{frontmatter.description}</p></header>
+      <div class="prose"><slot /></div>
+      <div class="doc-footer"><a href={frontmatter.source}>{frontmatter.sourceLabel || 'Read the upstream guide'} ↗</a><a href={`${base}docs/getting-started/`}>Back to getting started →</a></div>
+    </article>
+  </main>
+</Base>

@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL;
+---
+<Base title="Page not found — wtc">
+  <main class="section wrap" id="main">
+    <p class="eyebrow">404 / OUTSIDE THE COLLECTION</p>
+    <h1>That page isn’t here.</h1>
+    <p>Let’s get you back to the handbook.</p>
+    <a class="button" href={`${base}docs/getting-started/`}>Get started with wtc →</a>
+  </main>
+</Base>
