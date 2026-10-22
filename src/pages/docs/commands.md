@@ -31,6 +31,19 @@ Worktrees start detached. Create a branch before committing.
 | `wtc customize` | Read the installed customization guide |
 | `wtc docs` | Explore embedded guidance |
 
+## Services and diagnostics
+
+| Command | Use it to |
+| --- | --- |
+| `wtc svc` | Inspect services, tunnels, and resources |
+| `wtc svc add web --port-env PORT -- npm run dev` | Register and start an existing foreground command that consumes PORT |
+| `wtc svc logs web` | Read logs, including after shutdown |
+| `wtc svc down web` | Stop a service while retaining logs and data |
+| `wtc doctor` | Check configuration and dependencies |
+| `wtc release-notes --since <old-pin>` | Review changes before upgrading |
+
+Read [Services and previews](../services/) for the opt-in runtime prerequisites and [Troubleshooting](../troubleshooting/) for common failures.
+
 ## OpenClaw-managed collections
 
 These commands describe the gateway-integrated build. Use the [OpenClaw guide](../openclaw/) rather than local `init` or `new` instructions.

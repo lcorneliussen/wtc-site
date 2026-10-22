@@ -16,7 +16,7 @@ You need **Git** and a macOS or Linux development environment. Download a binary
 If you use [mise](https://mise.jdx.dev/), install the release used by this guide:
 
 ```sh
-mise use -g github:lcorneliussen/wtc-cli@0.1.40
+mise use -g github:lcorneliussen/wtc-cli@0.1.48
 wtc --version
 ```
 

@@ -30,12 +30,12 @@ const guides = {
     code: `# Scaffold a small, project-owned harness
 wtc harness init agent-harness \\
   --remote git@github.com:example-org/agent-harness.git \\
-  --cli-version 0.1.40
+  --cli-version 0.1.48
 
 # Preview the scaffold without writing files
 wtc harness init another-harness \\
   --remote git@github.com:example-org/another-harness.git \\
-  --cli-version 0.1.40 --dry-run`,
+  --cli-version 0.1.48 --dry-run`,
     note: 'Replace the example remote with your own. This creates configuration files, not a Git repository. Follow the team guide to version and bootstrap your harness.',
     link: 'team-harness', label: 'Set up a team harness',
   },
