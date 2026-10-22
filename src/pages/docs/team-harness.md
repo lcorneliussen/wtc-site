@@ -18,12 +18,12 @@ An ad-hoc collection is a good starting point. A **harness** makes the workspace
 
 ## Scaffold a minimal harness
 
-The minimal scaffold is available from v0.1.39. This example uses the documented v0.1.40 release:
+The minimal scaffold is available from v0.1.39. This example uses the documented v0.1.48 release:
 
 ```sh
 wtc harness init agent-harness \
   --remote git@github.com:example-org/agent-harness.git \
-  --cli-version 0.1.40
+  --cli-version 0.1.48
 ```
 
 Replace the example remote with your team’s repository URL. Add `--dry-run` to preview the files first.

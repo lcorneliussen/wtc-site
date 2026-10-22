@@ -6,6 +6,9 @@ const root = resolve('dist');
 const origin = new URL(config.site).origin;
 const base = `${config.base.replace(/\/$/, '')}/`;
 const errors = [];
+if (origin !== 'https://wtc.sh' || base !== '/') {
+  errors.push('Production must use https://wtc.sh with a root base');
+}
 let checked = 0;
 async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -17,6 +20,13 @@ for (const file of files) {
   const html = await readFile(file, 'utf8');
   const pagePath = relative(root, file).replace(/index\.html$/, '');
   const page = new URL(base + pagePath, origin);
+  const canonical = html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/);
+  if (canonical?.[1] !== page.href) {
+    errors.push(`${pagePath}: incorrect or missing canonical URL`);
+  }
+  if (/\b(?:href|src)="\/wtc-site(?:\/|")/.test(html)) {
+    errors.push(`${pagePath}: obsolete project-site path`);
+  }
   for (const match of html.matchAll(/\b(?:href|src)="([^"]+)"/g)) {
     const url = new URL(match[1].replaceAll('&amp;', '&'), page);
     if (url.origin !== origin || !['http:', 'https:'].includes(url.protocol)) continue;

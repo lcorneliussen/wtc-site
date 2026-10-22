@@ -11,7 +11,7 @@ npm ci --include=dev
 npm run dev
 ```
 
-Open `http://localhost:4321/wtc-site/`. Astro 7 can auto-background the dev server in agent environments. For a foreground process supervisor, use:
+Open `http://localhost:4321/`. Astro 7 can auto-background the dev server in agent environments. For a foreground process supervisor, use:
 
 ```sh
 npm run dev -- --ignore-lock --port 4321
@@ -38,12 +38,12 @@ The link check validates every generated HTML page’s internal links, fragments
 - `src/styles/global.css`: shared responsive design and reduced-motion support.
 - `src/scripts/home.js`: collection example and quick-start controls.
 
-Local-terminal examples follow the upstream CLI getting-started guide and explicitly pin v0.1.40. OpenClaw guidance is separately labeled for the gateway-integrated build; it must not suggest `wtc init` or `wtc new` on a gateway. Reconcile both with their upstream instructions when updating commands.
+Local-terminal examples follow the upstream CLI getting-started guide and explicitly pin v0.1.48. OpenClaw guidance is separately labeled for the gateway-integrated build; it must not suggest `wtc init` or `wtc new` on a gateway. Reconcile both with their upstream instructions when updating commands.
 
 ## GitHub Pages
 
-The configured deployment URL is `https://lcorneliussen.github.io/wtc-site/`. `astro.config.mjs` sets both `site` and the `/wtc-site` base; shared links use `import.meta.env.BASE_URL`.
+Production target: **https://wtc.sh/**. Astro uses that canonical origin and `/` base. Shared links use `import.meta.env.BASE_URL`.
 
-In the repository’s **Settings → Pages**, select **GitHub Actions** as the source. `.github/workflows/pages.yml` checks and builds pull requests without deploying them. Pushes to `main` build and deploy the static `dist/` artifact. A manual run deploys only when run from `main`. No custom domain is assumed.
+PRs check and build without deploying. Pushes to `main` and manual runs on `main` deploy the static artifact. Enable Pages with **GitHub Actions** as its source first.
 
-Configuration follows the [Astro GitHub Pages guide](https://docs.astro.build/en/guides/deploy/github/). Changing to a custom domain requires updating `site`, `base`, and the corresponding Pages configuration before deployment.
+See [the launch checklist](docs/launch.md) for domain verification, DNS, HTTPS, smoke tests, and rollback. An Actions deployment ignores CNAME files: configure the domain in repository Settings → Pages. Local checks do not configure GitHub or DNS.
