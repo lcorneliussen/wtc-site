@@ -2,12 +2,12 @@
 layout: ../../layouts/Docs.astro
 title: Services and previews
 description: Run existing development commands with collection-local ports, logs, and optional tunnels.
-source: https://github.com/lcorneliussen/wtc-cli/blob/main/internal/wtc/defaults/instructions/runtime.md
+source: https://github.com/lcorneliussen/wtc-cli/blob/v0.1.51/internal/wtc/defaults/instructions/runtime.md
 ---
 
 ## Optional, not a new build system
 
-The experimental runtime uses **dekit 0.10.x** to supervise ordinary foreground commands. Available from v0.1.40, it leaves your standalone development workflow intact. These examples target v0.1.48.
+The experimental runtime uses **dekit 0.10.x** to supervise ordinary foreground commands. Available from v0.1.40, it leaves your standalone development workflow intact. These examples target v0.1.51.
 
 For a local harness, merge into its `wtc.toml` without duplicating existing tables:
 

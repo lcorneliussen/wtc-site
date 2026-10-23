@@ -2,7 +2,7 @@
 layout: ../../layouts/Docs.astro
 title: Troubleshooting
 description: Diagnose host, workspace, and runtime issues without discarding work.
-source: https://github.com/lcorneliussen/wtc-cli/blob/main/docs/commands.md
+source: https://github.com/lcorneliussen/wtc-cli/blob/v0.1.51/docs/commands.md
 ---
 
 ## First checks
@@ -18,7 +18,7 @@ Run these in the intended collection. Under OpenClaw, `wtc status <name>` inspec
 
 ## Missing command or different behavior
 
-Check `wtc <command> --help` and the installed version. This site’s quick start targets v0.1.48; a harness may pin another version in `.wtc-cli-version`. Read `wtc release-notes --since <old-pin>` with the target binary before upgrading, then test in a disposable collection.
+Check `wtc <command> --help` and the installed version. This site’s quick start targets v0.1.51; a harness may pin another version in `.wtc-cli-version`. Read `wtc release-notes --since <old-pin>` with the target binary before upgrading, then test in a disposable collection.
 
 Embedded instructions (`wtc docs`) match the installed binary. `wtc docs setup.md` helps choose between local, harness, and OpenClaw setup.
 
