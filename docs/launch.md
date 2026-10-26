@@ -1,12 +1,14 @@
-# Launch wtc.sh on GitHub Pages
+# Launch taba.sh on GitHub Pages
+
+The custom domain is now `taba.sh`. The previous `wtc.sh` domain redirects to it with paths preserved. Keep that redirect in place. The CLI and repository names remain unchanged until their rename releases ship.
 
 ## Owner checklist
 
 These external changes are not performed by this branch.
 
-1. Verify `wtc.sh` in the GitHub account’s Settings → Pages. Add the exact TXT record GitHub provides; retain it after verification.
+1. Verify `taba.sh` in the GitHub account’s Settings → Pages. Add the exact TXT record GitHub provides; retain it after verification.
 2. In [repository Settings → Pages](https://github.com/lcorneliussen/wtc-site/settings/pages), select **GitHub Actions**. Confirm the `github-pages` environment permits `main`.
-3. Save **wtc.sh** as the custom domain **before pointing DNS at GitHub**, avoiding an unclaimed-domain takeover window. Custom Actions deployments ignore CNAME files; the repository setting is required.
+3. Save **taba.sh** as the custom domain **before pointing DNS at GitHub**, avoiding an unclaimed-domain takeover window. Custom Actions deployments ignore CNAME files; the repository setting is required.
 4. Inspect existing DNS records. Preserve mail and verification records; replace only conflicting website records. Set apex `@` A records to all four GitHub Pages addresses:
 
    ```text
@@ -28,7 +30,7 @@ These external changes are not performed by this branch.
    Recommended: `www` CNAME to `lcorneliussen.github.io`; GitHub redirects to the configured apex. Avoid wildcard DNS and remove stale conflicting web records only after checking their purpose.
 5. Publish the branch with the collection card, review the PR checks, and merge. Only `main` deploys; manual workflow runs must select `main`.
 6. Wait for the DNS check and TLS certificate, then enable **Enforce HTTPS**. DNS can take up to 24 hours; inspect conflicting records or restrictive CAA settings if certificate issuance stalls.
-7. Verify live: homepage and direct `/docs/getting-started/`, assets without `/wtc-site/`, HTTP-to-HTTPS and optional www redirects, custom 404 with HTTP 404, desktop/mobile navigation, quick-start tabs, collection switching, clipboard, and `https://wtc.sh/` canonical URLs.
+7. Verify live: homepage and direct `/docs/getting-started/`, assets without `/wtc-site/`, HTTP-to-HTTPS and optional www redirects, custom 404 with HTTP 404, desktop/mobile navigation, quick-start tabs, collection switching, clipboard, and `https://taba.sh/` canonical URLs. Confirm old `wtc.sh` page links still redirect to the matching `taba.sh` path.
 
 ## Baseline checked October 22, 2026
 

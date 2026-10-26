@@ -1,6 +1,6 @@
 # wtc-site
 
-The Astro website and getting-started handbook for [Worktree Collections](https://github.com/lcorneliussen/wtc-cli).
+The Astro website for **taba** (formerly wtc) and the getting-started handbook for [Worktree Collections](https://github.com/lcorneliussen/wtc-cli).
 
 ## Develop
 
@@ -63,7 +63,7 @@ The read-only documentation workflow checks the pinned baseline on PRs and prepa
 
 ## GitHub Pages
 
-Production target: **https://wtc.sh/**. Astro uses that canonical origin and `/` base. Shared links use `import.meta.env.BASE_URL`.
+Production target: **https://taba.sh/**. Astro uses that canonical origin and `/` base. Shared links use `import.meta.env.BASE_URL`. Old `wtc.sh` links redirect with their paths preserved.
 
 PRs check and build without deploying. Pushes to `main` and manual runs on `main` deploy the static artifact. Enable Pages with **GitHub Actions** as its source first.
 

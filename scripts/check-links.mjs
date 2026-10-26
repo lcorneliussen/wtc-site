@@ -6,8 +6,8 @@ const root = resolve('dist');
 const origin = new URL(config.site).origin;
 const base = `${config.base.replace(/\/$/, '')}/`;
 const errors = [];
-if (origin !== 'https://wtc.sh' || base !== '/') {
-  errors.push('Production must use https://wtc.sh with a root base');
+if (origin !== 'https://taba.sh' || base !== '/') {
+  errors.push('Production must use https://taba.sh with a root base');
 }
 let checked = 0;
 async function walk(dir) {
