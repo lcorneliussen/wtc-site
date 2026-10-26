@@ -1,0 +1,36 @@
+name: OpenClaw demo capture
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Read reviewed renderer revision
+        id: source
+        run: node -e "const p=require('./public/media/openclaw/provenance.json'); if(!/^[a-f0-9]{40}$/.test(p.revision)) process.exit(1); console.log('revision='+p.revision)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+        with:
+          repository: lcorneliussen/wtc-cli
+          ref: ${{ steps.source.outputs.revision }}
+          path: upstream
+          persist-credentials: false
+      - run: npm ci --include=dev
+      - run: npx playwright install --with-deps chromium
+      - run: npm run demos:openclaw -- "$GITHUB_WORKSPACE/upstream" "$RUNNER_TEMP/openclaw-demos"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openclaw-demo-review
+          path: ${{ runner.temp }}/openclaw-demos
+          if-no-files-found: error

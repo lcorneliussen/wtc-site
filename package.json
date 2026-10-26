@@ -14,13 +14,15 @@
     "test:links": "node scripts/check-links.mjs",
     "check:coverage": "node scripts/docs-coverage.mjs check",
     "test:coverage": "node --test scripts/docs-coverage.test.mjs",
-    "docs:propose": "node scripts/docs-coverage.mjs propose"
+    "docs:propose": "node scripts/docs-coverage.mjs propose",
+    "demos:openclaw": "node scripts/record-openclaw.mjs"
   },
   "dependencies": {
     "astro": "^7.3.8"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "playwright": "1.64.1",
     "typescript": "^6.0.3"
   }
 }

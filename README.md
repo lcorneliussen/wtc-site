@@ -68,3 +68,19 @@ Production target: **https://taba.sh/**. Astro uses that canonical origin and `/
 PRs check and build without deploying. Pushes to `main` and manual runs on `main` deploy the static artifact. Enable Pages with **GitHub Actions** as its source first.
 
 See [the launch checklist](docs/launch.md) for domain verification, DNS, HTTPS, smoke tests, and rollback. An Actions deployment ignores CNAME files: configure the domain in repository Settings → Pages. Local checks do not configure GitHub or DNS.
+
+## OpenClaw screenshots and recordings
+
+See [the plugin coverage audit and media workflow](docs/openclaw-coverage.md).
+Capture the actual upstream plugin renderer using synthetic data, without a
+running gateway, forge account or server:
+
+```sh
+npm ci --include=dev
+npx playwright install chromium
+npm run demos:openclaw -- /absolute/path/to/wtc-cli
+```
+
+Pass a second argument for a separate output directory. Review the PNGs, WebM,
+and provenance before committing them. The manual **OpenClaw demo capture**
+workflow produces review artifacts only; it never updates or deploys the site.
