@@ -1,0 +1,16 @@
+tasks:
+  web/main:
+    label: Documentation preview
+    cmd:
+      - sh
+      - -c
+      - exec npm run dev -- --ignore-lock --port "${WTC_SITE_PORT:?}"
+    autostart: true
+    ready:
+      cmd:
+        - sh
+        - -c
+        - curl --fail --silent --output /dev/null "http://127.0.0.1:${WTC_SITE_PORT:?}/"
+      timeout: 60s
+    x-wtc:
+      port_env: WTC_SITE_PORT

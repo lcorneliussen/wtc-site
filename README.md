@@ -1,6 +1,6 @@
 # wtc-site
 
-The Astro website and getting-started handbook for [Worktree Collections](https://github.com/lcorneliussen/wtc-cli).
+The Astro website for **taba** (formerly wtc) and the getting-started handbook for [Worktree Collections](https://github.com/lcorneliussen/wtc-cli).
 
 ## Develop
 
@@ -17,7 +17,15 @@ Open `http://localhost:4321/`. Astro 7 can auto-background the dev server in age
 npm run dev -- --ignore-lock --port 4321
 ```
 
-Choose a free, collection-specific port when running multiple workspaces. In a WTC-managed collection, use `wtc svc` from the collection root to supervise the service, with `wtc-site/web` as the service name. Pass the collection’s allocated port to Astro’s `--port` option rather than reusing another collection’s port.
+Choose a free, collection-specific port when running multiple workspaces. In a WTC-managed collection with the dekit runtime enabled, the shared `.harness/dekit.tasks.yaml` defines the documentation preview. After installing dependencies, run from the collection root:
+
+```sh
+wtc svc up wtc-site/web
+wtc svc logs wtc-site/web
+wtc svc down wtc-site/web
+```
+
+The service runs Astro in the foreground on the collection's allocated `WTC_SITE_PORT`, with live reload and an HTTP readiness check. `wtc svc` shows its local URL. Optional tunnels belong in collection-local configuration; add one with `wtc svc tunnel wtc-site/web <provider>`.
 
 ## Verify
 
@@ -55,7 +63,7 @@ The read-only documentation workflow checks the pinned baseline on PRs and prepa
 
 ## GitHub Pages
 
-Production target: **https://wtc.sh/**. Astro uses that canonical origin and `/` base. Shared links use `import.meta.env.BASE_URL`.
+Production target: **https://taba.sh/**. Astro uses that canonical origin and `/` base. Shared links use `import.meta.env.BASE_URL`. Old `wtc.sh` links redirect with their paths preserved.
 
 PRs check and build without deploying. Pushes to `main` and manual runs on `main` deploy the static artifact. Enable Pages with **GitHub Actions** as its source first.
 

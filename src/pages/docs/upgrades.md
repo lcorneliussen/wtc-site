@@ -7,6 +7,8 @@ source: https://github.com/lcorneliussen/wtc-cli/blob/v0.1.51/docs/release-notes
 
 ## Review the target, not just the installed binary
 
+For the rename's planned upgrade sequence and timeline, read [wtc is now taba](../../wtc-is-now-taba/). The CLI transition has not shipped yet; this guide covers released WTC versions.
+
 This handbook's examples target **v0.1.51**. That is a reviewed baseline, not a promise that it is the latest release.
 
 Release notes are embedded, offline documents. Download the target binary before changing a harness pin, then use it to run:

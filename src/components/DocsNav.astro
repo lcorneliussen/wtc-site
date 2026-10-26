@@ -15,4 +15,5 @@ const links = [
 ---
 <nav aria-label="Documentation">
   {links.map(([slug, title]) => <a href={`${base}docs/${slug}/`} aria-current={Astro.url.pathname === `${base}docs/${slug}/` ? 'page' : undefined}>{title}</a>)}
+  <a href={`${base}wtc-is-now-taba/`}>wtc is now taba →</a>
 </nav>

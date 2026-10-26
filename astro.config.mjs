@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://wtc.sh',
+  site: 'https://taba.sh',
   base: '/',
   trailingSlash: 'always',
   output: 'static',
