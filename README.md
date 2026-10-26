@@ -17,7 +17,15 @@ Open `http://localhost:4321/`. Astro 7 can auto-background the dev server in age
 npm run dev -- --ignore-lock --port 4321
 ```
 
-Choose a free, collection-specific port when running multiple workspaces. In a WTC-managed collection, use `wtc svc` from the collection root to supervise the service, with `wtc-site/web` as the service name. Pass the collection’s allocated port to Astro’s `--port` option rather than reusing another collection’s port.
+Choose a free, collection-specific port when running multiple workspaces. In a WTC-managed collection with the dekit runtime enabled, the shared `.harness/dekit.tasks.yaml` defines the documentation preview. After installing dependencies, run from the collection root:
+
+```sh
+wtc svc up wtc-site/web
+wtc svc logs wtc-site/web
+wtc svc down wtc-site/web
+```
+
+The service runs Astro in the foreground on the collection's allocated `WTC_SITE_PORT`, with live reload and an HTTP readiness check. `wtc svc` shows its local URL. Optional tunnels belong in collection-local configuration; add one with `wtc svc tunnel wtc-site/web <provider>`.
 
 ## Verify
 
