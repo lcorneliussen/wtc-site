@@ -8,6 +8,7 @@
 | CLI docs and embedded defaults | Canonical command contracts, configuration and version-matched offline/agent guidance |
 | CLI numbered release notes / GitHub Releases | One historical change record, embedded in the binary and published from the same source |
 | Website | Guided learning, task workflows, conceptual explanations, troubleshooting, and upgrade/release discovery |
+| Product announcements | Dated plans and transition explanations outside the versioned handbook; link to the tracking issues and distinguish planned behavior from published releases |
 | Website README | Development, validation, and content-maintenance instructions |
 
 Do not maintain a second full command manual or rewrite the entire changelog on
