@@ -2,7 +2,7 @@
 layout: ../../layouts/Docs.astro
 title: Getting started
 description: Install wtc, bring two repositories together, and start your first task. No harness or agent required.
-source: https://github.com/lcorneliussen/wtc-cli/blob/main/docs/getting-started.md
+source: https://github.com/lcorneliussen/wtc-cli/blob/v0.1.51/docs/getting-started.md
 ---
 
 A **worktree collection** is a folder containing the repositories you need for one task. Each repository has its own Git worktree. Your build tools and development commands stay the same.
@@ -16,7 +16,7 @@ You need **Git** and a macOS or Linux development environment. Download a binary
 If you use [mise](https://mise.jdx.dev/), install the release used by this guide:
 
 ```sh
-mise use -g github:lcorneliussen/wtc-cli@0.1.48
+mise use -g github:lcorneliussen/wtc-cli@0.1.51
 wtc --version
 ```
 

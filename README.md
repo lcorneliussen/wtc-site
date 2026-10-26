@@ -38,7 +38,20 @@ The link check validates every generated HTML page’s internal links, fragments
 - `src/styles/global.css`: shared responsive design and reduced-motion support.
 - `src/scripts/home.js`: collection example and quick-start controls.
 
-Local-terminal examples follow the upstream CLI getting-started guide and explicitly pin v0.1.48. OpenClaw guidance is separately labeled for the gateway-integrated build; it must not suggest `wtc init` or `wtc new` on a gateway. Reconcile both with their upstream instructions when updating commands.
+Local-terminal examples follow the upstream CLI getting-started guide and explicitly pin v0.1.51. OpenClaw guidance is separately labeled for the gateway-integrated build; it must not suggest `wtc init` or `wtc new` on a gateway. Reconcile both with their upstream instructions when updating commands.
+
+## Documentation coverage and release intake
+
+See [content ownership and the audit](docs/content-strategy.md) and the [coverage inventory](docs/coverage.json).
+
+```sh
+npm run test:coverage
+npm run check:coverage
+npm run check:coverage -- /path/to/reviewed-cli-checkout
+npm run docs:propose -- /path/to/current-cli-checkout main /tmp/docs-review.md
+```
+
+The read-only documentation workflow checks the pinned baseline on PRs and prepares a weekly/manual upstream review report. It does not rewrite pages or deploy. Source digests detect change; semantic review remains required.
 
 ## GitHub Pages
 

@@ -1,0 +1,801 @@
+{
+  "schemaVersion": 1,
+  "release": "v0.1.51",
+  "revision": "18652cbec6899bee283c16fb4f5e946013a65470",
+  "sources": [
+    {
+      "path": "README.md",
+      "sha256": "99005e2287dcc739a340a7751699650c1c77778d98afdf029ac1a1bb7e95268b",
+      "status": "covered",
+      "pages": [
+        "src/pages/index.astro"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "docs/commands.md",
+      "sha256": "b8fa4f4756c662047cb4da271d18a912e3accf900025e713ce65ac16645626d8",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/commands.md",
+        "src/pages/docs/collections.md",
+        "src/pages/docs/troubleshooting.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "docs/demos/README.md",
+      "sha256": "94718d245a57dfa58e9e7ada43ecb796c88eedfc416854c4d517175d943192b2",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "docs/development.md",
+      "sha256": "5c59117fce5d0cf6f24c4c64e40a4631636cd526265defe3b62cb56157a1d7ee",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "docs/getting-started.md",
+      "sha256": "d123e17f46a70857dde9c7528251444cf2162d8ac1da7b24d09e68468abdfea7",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/getting-started.md",
+        "src/pages/docs/team-harness.md",
+        "src/pages/index.astro"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "docs/harness-design.md",
+      "sha256": "f00583315d6902f2ca1ba41e90d55cfa20035e8e6f6c373af48bd0ada9af03ca",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/team-harness.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "docs/openclaw.md",
+      "sha256": "b37e84bff46621125238483b57b0f258765a5fb224e0ff40b4e11f931bf292b4",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/openclaw.md",
+        "src/pages/docs/upgrades.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "docs/release-notes.md",
+      "sha256": "d7d07d878183aaa57dc820a23865f67b1c1fe6b9a8b0b48ea4e582d7c7800199",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/upgrades.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "docs/released-bootstrap.md",
+      "sha256": "60480a00c100348b3c8226b891fe62b72e7fa11e2d9fe0dc3fecaee6bf5875db",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/team-harness.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/bootstrap.md",
+      "sha256": "a101b5168c8c5c38eb5e18ed7ec20ddd91268d3c9f5ddc0179a6df6566f52ab2",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/team-harness.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/collection-AGENTS.md",
+      "sha256": "36509d6301ba354612385d93a37b2edef53c52f3c1f999150aa35795d44c9685",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/collection-SCOPE.md",
+      "sha256": "f0b86182508707b5d32ebdf8a116f5cdc333a98702ecfadbab3bd00a7edd0f87",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/collection-context.md",
+      "sha256": "1d5326a79be85d8a25fe2943d47ab6ba7c2f4af39bf374e05efb2f862a8d4227",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/collections.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/customize.md",
+      "sha256": "bbfb8a0ac036da0c39e3caf11fe064f04dc123d4d1707acc4c8af85fe35524fd",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/configuration.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/development-workflows.md",
+      "sha256": "13a19458639aa3415198eaca8e148b7150f7626c5b6a249eee6c9a1feca0c426",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/herdr.md",
+      "sha256": "db9ede59d26303c8b90b85b1f8be1a855bf376ff0c172c70c55ac09cfe264140",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/hooks-and-env.md",
+      "sha256": "b32b10f77e0f9f682c461b10f9cbe47dc7a376f4df9470a6c843c77590e33ed0",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/configuration.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/jira.md",
+      "sha256": "850ef2fa1024819b1e349b04fdcb4e97f54c58353a5b3648cb4c85d0205746d6",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/mcp.md",
+      "sha256": "a01ed1868ea90d12d1c58a032e55c4ca75638fae31cec3cac52920d618167d00",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/configuration.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/openclaw.md",
+      "sha256": "b448ceeeeb064344bd0b6d0a11434bc9f9212a74dcb7933b9346107f8b2d3a2b",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/openclaw.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/pr-follow-through.md",
+      "sha256": "3c1f2e5987debd782a225c82e26044727bc6dcd93a1fba38a280ee9c62a29c1e",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/publication-guard.md",
+      "sha256": "5b38cefe637654f1f99f05c7b255eeb02781376a69bdb68d25734159b82e01ce",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/publication-privacy.md",
+      "sha256": "e4974dc8c0d240779062be26b1e2af3effdf5dc470ec68c0cb720c37426029cb",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/runtime.md",
+      "sha256": "2de004e7ff8ecebcc0ff5e50f36345118e70c0285584167486919f6cfc873127",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/services.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/secrets.md",
+      "sha256": "9a09bcb02c047560294e8785fee77bd4e660eece7bfa0ebfea107b15a7108bd4",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/configuration.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/skills.md",
+      "sha256": "fcc15354c4c70f9540c92b14a46a5104543515389cb5c60105a11e70533b7478",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/agents.md",
+        "src/pages/docs/configuration.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/instructions/worktree-workspace.md",
+      "sha256": "e29d6401132050f4161cddf1a64ffc5e2027064d9dcf67525eb84ab3568d808b",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/collections.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/openclaw-AGENTS.md",
+      "sha256": "88e1bd12909cbe5b28f5552068dbbccea987ec610af58decf215dbb70ac757a3",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/review/concerns/backwards-compat.md",
+      "sha256": "c1c3577550013c27b527493ac5bea76fc0ce461c15f3915f7f0336bbad575795",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/review/concerns/comments.md",
+      "sha256": "350bc2e4b08f924c2512d3066eae7095abf86d91eca8b290498c4da252865d70",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/review/concerns/correctness.md",
+      "sha256": "293f6fa45b4dd86823cb04ecc1ef76ebe1d69eb586cd792824cf95eb5b8e9903",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/review/concerns/scope-and-hygiene.md",
+      "sha256": "106dae30783f608f0c62d535c74a6112b47aede909ad090371df7ed9cd30f2d8",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/review/concerns/security.md",
+      "sha256": "90b19a926f147cc0c6ec74cbb7a42b6bddab81a8a28607279230055a01abee06",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/review/concerns/tests-and-evidence.md",
+      "sha256": "4d7d787aca33c69869b989c8df97f6edc716c54ef4c0c6d8b33abbee64875f7c",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/review/prompts/concern.md",
+      "sha256": "4b9457316bbcd032b7dc44fedb349dfab7239e98fd1081297a91a0d258413aad",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/review/prompts/lead.md",
+      "sha256": "c529572a62156322978484663097144a0f78a9e26e5e85f968413949dbb2c88a",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/setup.md",
+      "sha256": "5340e6920643687ae9400e7121916bceeae447bc509a37a73f9682501de05951",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/getting-started.md",
+        "src/pages/docs/agents.md"
+      ],
+      "reason": "Handbook summarizes the user workflow; full versioned contract remains upstream."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-add-repo/SKILL.md",
+      "sha256": "2d8be53c6e8b672baf064f3bea094e5c85f3a8b64625641205660abbbe17d66d",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-browse/SKILL.md",
+      "sha256": "706f9da4321bd5963f168dcab218b482eb285dc1afb18a584894077ebf4d0093",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-catch-up/SKILL.md",
+      "sha256": "e2160917ee93cef8f66e9c1290bf17e4dd379e049cb717a566a77952655a9d41",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-customize/SKILL.md",
+      "sha256": "eda4b7d67a65899a41239662fcf84adc7736fa5594a02577062f0db85e9bc15b",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-draft-pr/SKILL.md",
+      "sha256": "03bc1d31fbdafbcb2b1ee2914926fda35248ed6e18ba77917d7b251e15573a0c",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-follow/SKILL.md",
+      "sha256": "b3094efafbb06c32674413886176ace6a70345b5b3d48d17294088fc63e6fcc0",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-harness-backport/SKILL.md",
+      "sha256": "0a482254f445df2e011d2c8bbed13b4fbd74bf5fee7f8d7dba4ab695c5176531",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-harness-upgrade/SKILL.md",
+      "sha256": "1ee1ea6554645b983568d2e7e4930c87c08498f1c198d5ab8fdce4584afa72d0",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-local-review/SKILL.md",
+      "sha256": "d2acc729ea949f2dfcb8fd11502935d08ebcac2db0482c230afb6a897bdea048",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-new/SKILL.md",
+      "sha256": "cde25d7ca54c003758810654c35bab5c4afdb139fdf3821270626f8dcd56a23d",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-open/SKILL.md",
+      "sha256": "9a4f9064969a6b905fd1e3985d418a83b55aee1e1bae47f04328461691ddfd42",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-pr/SKILL.md",
+      "sha256": "dba331247709b4d2c7634fc2417f5d2506a13dc744694827c0018b1bc5166506",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-retire/SKILL.md",
+      "sha256": "57cb868f94f5cd5bd971f5de138884ef646b6dfc23670b5c0811f983164bf3b4",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-start/SKILL.md",
+      "sha256": "b4d1cdb6e52579d0b6aae804734f08401861901b3ea18e9a2c881aa7c900114b",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-status/SKILL.md",
+      "sha256": "80220190359e2e0a9b842e4e7c97c447124b7676c552afe766788c1986508d6f",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/defaults/skills/wtc-svc/SKILL.md",
+      "sha256": "a008cd61ed548b78d07a0d4ddbfd898220e0ed0f3c6d3a349435046ceefc55c8",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Detailed agent, contributor or specialist reference intentionally stays upstream; not duplicated in the handbook."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.0.md",
+      "sha256": "0fe4e86474931cce008aa77199309e42c09de09a5267283734b35d5cf507991f",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.1.md",
+      "sha256": "f19f3736c9af7acd061423334375d54ee2071abb13e530ac715e0ad5619ebaf2",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.10.md",
+      "sha256": "aa5afe18af4a93d028a82a651442a166897c179a59a2092ce42ab214fcb3b108",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.11.md",
+      "sha256": "b836e3b346cc6fc0b3461b6cc49740e7dae5f6d8f11b2e613a488301e9c05946",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.12.md",
+      "sha256": "cf548d1353c79f958606e82febda8a9d08a5f78f6e26f8dfe724cd26a28e3c5c",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.13.md",
+      "sha256": "b35c16b804c840de24f97ee343b4f2989346714a49ff20622edb48e829e5ac50",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.14.md",
+      "sha256": "c0b017e82fe46512bf326fac84309295bbc2a40a1c7a2bf5674b4fdd75c2d46f",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.15.md",
+      "sha256": "2533aed9b4aab7fc1a9d670e9b810a0e76e327d7263713916194a44f42561b1e",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.16.md",
+      "sha256": "72fbd417aa8597a635c09072a2d4e9baa4e5a9ab3ae3674a0eb5389a3be54734",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.17.md",
+      "sha256": "98061ee15eff809af442ba1e77361d22950c30e131d6f427cdafa718a02bb4a8",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.18.md",
+      "sha256": "b981d988837122236939e5e8ac78afc9720d2a49fa2953ba2dfa79641dd53d3f",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.19.md",
+      "sha256": "1bc613165c5bc325c682830ad80d1e36213a76c98d04c2c5e1cdcdac9cc363dd",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.2.md",
+      "sha256": "fccf30ebe3d6d0198edaf1d0cc223bc91f928dbcbff9dee9562875473468e375",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.20.md",
+      "sha256": "5298a15b1bf988004dc0e7c10e3fbfeebcbf5631a29f2e284bcfbc58d5444620",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.21.md",
+      "sha256": "d9f8fa90931aaf7f7183131b8e0889623bb4be1c38e72ac19cdd54b14250a6f3",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.22.md",
+      "sha256": "3ddd90173af487e5be27b758ebd0800b16b8fbc048bde6a26eb021e78cab126a",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.23.md",
+      "sha256": "95c1bf2d30a0397960e580b9b158b6f0c948b63be0111af2261aa257a01ed73a",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.24.md",
+      "sha256": "a56425573b7b9ee4f354f0dc74418e72a740f1d25fadc1a1952bf2749aae72b0",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.25.md",
+      "sha256": "19e07fced76f0357a93331ad1c3ee3576577443ac74ef7a05aa2b7fe44469c53",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.26.md",
+      "sha256": "59288a45a60bb9cf8d70935ebc99bac8c81191e0912f4ba4853be597430e2884",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.27.md",
+      "sha256": "803203bda58ff1814e84f1ba6cdd2872c4de5dbd65a90adfa2987a88ed2d79ca",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.28.md",
+      "sha256": "da688b5ce92963c666f3f90a3625a441875ca60ee09316273671dc81a4d34e44",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.29.md",
+      "sha256": "c4c2235b6f32520a5d0479084fc52a245046acd5192ce6ffb54413933ecd7109",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.3.md",
+      "sha256": "0b9995f28370830d962f2e73901669bd20eea50dfeab4724f29522ef366a9c54",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.30.md",
+      "sha256": "e1c3c88e7a389c534411b03aedf255e1b95758fb970d68c61b9c057bb08e8401",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.31.md",
+      "sha256": "8630e6508621ed95564fc1858a63c7523bf981f329721b1fe11ab0e21088b172",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.32.md",
+      "sha256": "cf75f09ed29462873860d2a1ce85b521efcfdc317a6f1010ea5cf7c8af157f85",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.33.md",
+      "sha256": "ae8e04ec55f1fff5e7671fe12361fb26c52b8f08bf6dc316d808237fdde4c547",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.34.md",
+      "sha256": "25c8493cf3ed86b5b3bb07cc8b63a55d024208d4b0b9d910e11e31d47ebb884d",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.35.md",
+      "sha256": "64955d2bacc50e7de874f8ce41b53df82b956744d5e1ef685fb1f2af85b9526b",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.36.md",
+      "sha256": "1ef453430bc651f710688e2851a5c03c1ea69760e11258ff61dae785e2b1c7a5",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.37.md",
+      "sha256": "a24440b89ecf42376b670026a4bee81d83cc7f2c64b0d5dd3d842f53adbdf06f",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.38.md",
+      "sha256": "b7877a55034c9fa33e2a96393d1f50120c3e6d5226d136fa96f91bb27be63087",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.39.md",
+      "sha256": "14198841e6ce9f2d3fed11aa75fb4f796a7371c27b191aea95372c33a08ce041",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.4.md",
+      "sha256": "e5fb044b8cc43ff4de683528cdcf66a0fe32889e96819e1151d011cafd53b973",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.40.md",
+      "sha256": "9b9b27cc074ef17af684caed97358213f6d4e6149a952b8cb5b0ed7f3eda362f",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.41.md",
+      "sha256": "83b72d3b5f7ce4b343a0cc78358bb2065ebce62d23981899bfda22d96e8ca0c9",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.42.md",
+      "sha256": "4066bb46313c7273d852d873c3fd9f3bfbd8e91a9678ef86bb5dd7dc9886e19b",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.43.md",
+      "sha256": "3aa3bc1466a2a5f9085290b720d5cd72c7ecea81479481eb083173fafd697c30",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.44.md",
+      "sha256": "497fdd7d2435ded3f35890de6dd097be31444d6d52ef4ba29d31fda9a0e0e5df",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.45.md",
+      "sha256": "fdc67e00327a697a8c38f0840618689c06a554668df4cbaf941ac85fc94ceb43",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.46.md",
+      "sha256": "edb4071b5ed7389cba355ba64457d79cfe9ef5f7e975fd2a0dac04fdfe16a99a",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.47.md",
+      "sha256": "b2c07c1b6851f76b87069592aeb55879f06ad7836e893c5fe8f189106a4c4108",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.48.md",
+      "sha256": "42841df10b57fc7f93ef02f7852d12fbeed42ff84042f8d7d783440d98db0ed1",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.49.md",
+      "sha256": "0f04817e2957e5974bd8ce1ca265dc36d5242e3431068264127aa4158eba4e47",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/openclaw.md",
+        "src/pages/docs/upgrades.md"
+      ],
+      "reason": "Recent release themes reconciled into OpenClaw workflow and upgrade guidance; canonical full notes linked."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.5.md",
+      "sha256": "0f213ec1222ed26293dfb991b68db77f21afaca2531e69a37058a43b264662a1",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.50.md",
+      "sha256": "3c9822420d6feb32adfc163c08c829a66091a6f44eb789d0d4014895fab4785d",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/openclaw.md",
+        "src/pages/docs/upgrades.md"
+      ],
+      "reason": "Recent release themes reconciled into OpenClaw workflow and upgrade guidance; canonical full notes linked."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.51.md",
+      "sha256": "1cc7f88d3dfbdafaaa44549d7cb7b7b443dbfa18d667d93e24f7b8f1d5c6039e",
+      "status": "covered",
+      "pages": [
+        "src/pages/docs/openclaw.md",
+        "src/pages/docs/upgrades.md"
+      ],
+      "reason": "Recent release themes reconciled into OpenClaw workflow and upgrade guidance; canonical full notes linked."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.6.md",
+      "sha256": "aca5e889ab29cdd4135cffbbd2b13e0f1c5ea6de2e7ceac7f99391f276be0d13",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.7.md",
+      "sha256": "bd2d2a6791024fbd5da793136d9a58ba457f3677d7d27e015ed792b817f46c17",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.8.md",
+      "sha256": "7f21b07522afa1b7082a00ba76acde4bf989ba7294fa36eb6be1ef322ea75212",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/0.1.9.md",
+      "sha256": "86d63dc81a85fa6472fd768534ae4c0ce76abfb2c40be928e62a3b032c0ecbd6",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Historical archive remains canonical upstream; upgrade guide links the archive and explains range review. This does not claim each old feature has a dedicated site explanation."
+    },
+    {
+      "path": "internal/wtc/release-notes/unreleased/README.md",
+      "sha256": "955b0f1a663ae1d56efe484d7f4044d649312dae4b47d02762a62b8fdc3492cd",
+      "status": "upstream-only",
+      "pages": [],
+      "reason": "Release-authoring format belongs in the CLI contributor reference."
+    }
+  ]
+}
