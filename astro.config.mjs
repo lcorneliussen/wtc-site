@@ -6,4 +6,7 @@ export default defineConfig({
   trailingSlash: 'always',
   output: 'static',
   devToolbar: { enabled: false },
+  vite: {
+    server: { strictPort: true },
+  },
 });
