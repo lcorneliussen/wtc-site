@@ -5,6 +5,17 @@ description: Separate tracked project settings, generated environment, and priva
 source: https://github.com/lcorneliussen/wtc-cli/blob/v0.1.51/internal/wtc/defaults/instructions/customize.md
 ---
 
+## Environment compatibility in v0.1.60
+
+Starting with v0.1.60, WTC accepts the `TABA_` prefix alongside `WTC_` for supported
+product settings. Within one source, the new spelling wins, including an
+explicit empty value; environment settings still take precedence over
+workspace-file defaults. Generated variables, commands and paths keep their
+current names in this increment. See the
+[compatibility guide](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.60/docs/rename-compatibility.md)
+for the supported settings and conflict warnings. The guidance below retains
+its v0.1.51 baseline.
+
 ## Tracked inputs, disposable outputs
 
 For local collections, a harness owns `.harness-repos.yml`, `.wtc-cli-version`, and `wtc.toml`. Ad-hoc collections use `.wtc/config/` for configuration. Generated collection-root files are not the source of truth. These local hooks and mise pins do not run on an OpenClaw gateway.
