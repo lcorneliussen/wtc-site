@@ -88,6 +88,22 @@ The handbook summarizes these surfaces rather than duplicating every flag. Use t
 | `wtc dev install/status/uninstall` | Upstream CLI contributor builds; not an end-user upgrade path |
 | `wtc checkouts` | Structured checkout facts for the OpenClaw collection plugin |
 
+### Review pane (merged, unreleased)
+
+The [review pane](https://github.com/lcorneliussen/wtc-cli/blob/b83de8690bccaf46bad19ee26e4316afb0d4faa4/docs/review-pane.md) is merged on main after v0.1.60. Release status checked on 2026-10-27: the latest published stable release is v0.1.60, which does not support `--add review`. The behavior below applies to builds containing the linked merge.
+
+For local collections using herdr, add a review viewer on demand:
+
+```sh
+wtc open --add review
+```
+
+It opens the pinned commit range from the newest applicable review bundle, or the current PR's exact commit range when no bundle applies. It shows committed changes rather than working-tree edits. The commit objects must already be available locally; opening the viewer never fetches or checks out code. Missing objects and ambiguous candidates produce an error.
+
+The pane uses Hunk when installed, otherwise Git diff in secure less. It requires Hunk or less and installs neither automatically. Review can coexist with browse and shell: in wide layouts it sits in the right column above status; in narrow layouts it sits on the tools tab. Switching layouts preserves live viewers. Default workspaces still have only agent and status, and `--full` still adds browse and shell only.
+
+A running viewer is reused. After it exits, `--add review` restarts it with a freshly resolved range; plain `wtc open` leaves the idle pane at its prompt. `wtc open --trim` closes an unfocused review pane only after the viewer has exited to a shell prompt. Focused and running panes stay open.
+
 ### Review without publishing
 
 `wtc review start <repo>#<n>` creates a local review-only collection for someone else's pull request. Pushes from that worktree are disabled; `review resolve` and `review ready` refuse there. A new `review bundle` refreshes the author's current head but stops rather than discard a local commit.
