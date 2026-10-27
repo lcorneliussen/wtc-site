@@ -88,9 +88,9 @@ The handbook summarizes these surfaces rather than duplicating every flag. Use t
 | `wtc dev install/status/uninstall` | Upstream CLI contributor builds; not an end-user upgrade path |
 | `wtc checkouts` | Structured checkout facts for the OpenClaw collection plugin |
 
-### Review pane (merged, unreleased)
+### Review pane in v0.1.61
 
-The [review pane](https://github.com/lcorneliussen/wtc-cli/blob/b83de8690bccaf46bad19ee26e4316afb0d4faa4/docs/review-pane.md) is merged on main after v0.1.60. Release status checked on 2026-10-27: the latest published stable release is v0.1.60, which does not support `--add review`. The behavior below applies to builds containing the linked merge.
+The [review pane](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.61/docs/review-pane.md) is available in [published v0.1.61](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.61), verified on 2026-10-27. The behavior below applies from v0.1.61; v0.1.60 does not support `--add review`. Other examples on this page retain their labeled baselines.
 
 For local collections using herdr, add a review viewer on demand:
 

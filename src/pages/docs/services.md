@@ -63,13 +63,13 @@ wtc svc tunnel web --stop
 
 Public exposure (`--public`) is a separate choice. Check authentication and exposed application data before sharing. Never put credentials in endpoint URLs or committed task files.
 
-## Remembered tunnel choices (merged, unreleased)
+## Remembered tunnel choices in v0.1.61
 
-[Merged CLI #236](https://github.com/lcorneliussen/wtc-cli/pull/236) adds
-collection-local tunnel intent. This behavior is **not in published v0.1.60**;
-the examples above retain their v0.1.51 baseline. See the
-[pinned runtime contract](https://github.com/lcorneliussen/wtc-cli/blob/aea3e65e38a284e2de72fecdce671dd963691eb1/internal/wtc/defaults/instructions/runtime.md)
-for the merged behavior.
+[Published v0.1.61](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.61)
+includes collection-local tunnel intent, verified on 2026-10-27. This behavior
+applies from v0.1.61; the examples above retain their v0.1.51 baseline. See the
+[v0.1.61 runtime contract](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.61/internal/wtc/defaults/instructions/runtime.md)
+for the released behavior.
 
 After you enable a tunnel with `wtc svc tunnel`, ordinary `wtc svc down web`
 stops it without forgetting your choice. `wtc svc up web` and
