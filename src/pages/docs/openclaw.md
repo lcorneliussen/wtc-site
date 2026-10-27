@@ -67,7 +67,7 @@ instead of installing into a running container.
 
 The gateway needs Git and `gh`; agents need the collection instructions in their
 workspace `AGENTS.md`. For prerequisites, image setup and sandbox configuration,
-follow the [upstream setup guide](https://github.com/lcorneliussen/wtc-cli/blob/1e581d520d8890a92730fbd2829ae11774ff4b4f/docs/openclaw.md#install).
+follow the [upstream setup guide](https://github.com/lcorneliussen/wtc-cli/blob/24b0702c56e820314836e10b53c7df32030e6f4d/docs/openclaw.md#install).
 For personal publishing, connect **Settings → Profile → GitHub connections →
 For me**. The first **↑** prepares a push; **confirm ↑** identifies the account
 and confirms it. The shared account used by an agent's CLI is not your personal
@@ -117,7 +117,7 @@ The card may suggest a project before a collection exists. Unsent drafts are wor
 ### Parallel work: check your installed version
 
 The v0.1.51 baseline described `--worker` collections. In the
-[current reviewed source](https://github.com/lcorneliussen/wtc-cli/blob/1e581d520d8890a92730fbd2829ae11774ff4b4f/docs/openclaw.md#parallel-work-and-sub-sessions),
+[current reviewed source](https://github.com/lcorneliussen/wtc-cli/blob/24b0702c56e820314836e10b53c7df32030e6f4d/docs/openclaw.md#parallel-work-and-sub-sessions),
 that option is deprecated: a separate implementation task belongs in its own
 conversation and collection. Read-only reviewers can use the existing checkout.
 Use `wtc docs instructions/openclaw.md` for your installed release's procedure.
@@ -146,7 +146,7 @@ merge. Do not run `git push` yourself in a GitHub-managed worktree.
 
 ### Upcoming publication feedback
 
-Development builds from the [publication-clarity change](https://github.com/lcorneliussen/wtc-cli/blob/1e581d520d8890a92730fbd2829ae11774ff4b4f/docs/openclaw.md)
+Development builds from the [publication-clarity change](https://github.com/lcorneliussen/wtc-cli/blob/24b0702c56e820314836e10b53c7df32030e6f4d/docs/openclaw.md)
 name whether a push created a draft PR or updated an existing PR. A result that
 only supplies a URL does not claim a new PR was created.
 
