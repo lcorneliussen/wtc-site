@@ -20,6 +20,19 @@ For complete options, use `wtc --help`, a command’s `--help`, or the upstream 
 
 Worktrees start detached. Create a branch before committing.
 
+### Next actions in v0.1.60
+
+Starting with v0.1.60, WTC adds next actions to the status table and live view. Press
+`n` in the live view, select a repository, and press Enter to run a catch-up
+that needs no approval, open a pull request, or ask the collection's idle
+agent for the named skill. When no idle agent is available, the terminal
+shows the instruction to give it. The view rechecks status before acting;
+refreshing alone does not run actions.
+
+See the [upstream command contract](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.60/docs/commands.md)
+for the v0.1.60 behavior. Other examples on this page retain their labeled
+v0.1.51 baseline.
+
 ## Team setup and guidance
 
 | Command | Use it to |

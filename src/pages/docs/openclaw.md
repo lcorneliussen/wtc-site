@@ -149,6 +149,25 @@ background poll is five minutes. These PR notifications currently cover GitHub.
 
 In a sandbox, in-place catch-up requires the gateway’s read-only git service. With it, resolve a conflicted merge and run `wtc catch-up --continue`; without it, catch up from the repository owner outside the sandbox. Never put forge credentials into the sandbox.
 
+### Next actions in v0.1.60
+
+Starting with v0.1.60, WTC adds a **Next actions** section to the collection card and
+panel. It names the next step, its reason, and who needs to approve it. A
+click rechecks status before running catch-up or asking the conversation for
+the appropriate skill. Push keeps the personal-account confirmation flow;
+merge opens the pull request for you to merge.
+
+**Commit changes** asks the conversation to review and commit pending files
+before you publish them. The expanded card shows the latest result in full;
+a refused publication is an error rather than a muted status message.
+
+After a completed GitHub branch returns to the tip, its pull request moves
+into the pull request list. Another publication round still needs a fresh
+managed worktree and owner; returning to the tip does not rebind the old
+owner. See the [v0.1.60 gateway contract](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.60/docs/openclaw.md)
+for details. The handbook baseline remains v0.1.51; newer plugin guidance and
+visuals above are linked to their reviewed source version.
+
 ## Keep a preview with the collection
 
 From a repository in the collection, register its normal foreground development command:
