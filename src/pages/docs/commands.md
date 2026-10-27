@@ -92,6 +92,16 @@ The handbook summarizes these surfaces rather than duplicating every flag. Use t
 
 `wtc review start <repo>#<n>` creates a local review-only collection for someone else's pull request. Pushes from that worktree are disabled; `review resolve` and `review ready` refuse there. A new `review bundle` refreshes the author's current head but stops rather than discard a local commit.
 
-The review family also includes `activity`, `status`, `bundle`, `run`, `post`, `resolve`, and `ready`. Bundles are private by default and can include other repository snapshots. Inspect the exact content before giving it to an external reviewer; `--public` excludes local overlays and other repositories. Posting, resolving threads, or promoting a draft are separate, externally visible actions—not implied by running a review.
+The review family also includes `activity`, `status`, `bundle`, `run`, `post`, `resolve`, and `ready`. Inspect the exact bundle and generated comments before sharing them. Posting, resolving threads, and promoting a draft are separate actions.
+
+#### Review audience defaults (merged, unreleased)
+
+The [review audience change](https://github.com/lcorneliussen/wtc-cli/blob/f746dc90d833773b03a8a5b7961dd04fbddf0ff4/docs/review-audiences.md) is merged on main after v0.1.60 and has not yet been published in a release. The defaults below apply to builds containing that change. In published v0.1.60, bundles default to private mode: explicitly pass `--public` for public or unknown targets.
+
+The merged behavior selects public mode for public or unknown repository visibility, another forge namespace, or an unknown harness namespace. Only a confirmed private target in the harness namespace defaults to private mode.
+
+Public mode takes concerns from the target repository's review base commit, or CLI defaults, and uses embedded prompts. It excludes harness overlays, other repository snapshots, related patches, and private review rounds. `--public` forces isolation; `--private` explicitly includes harness context for local analysis. Progress and verdict comments show the mode, and posting a private bundle requires fresh private visibility. `--force` cannot bypass that check.
+
+Normally the upstream project runs its own gate. A consuming harness should not impose its internal rules on an upstream contribution. Public mode still requires inspection of generated prose. See the [merged audience contract](https://github.com/lcorneliussen/wtc-cli/blob/f746dc90d833773b03a8a5b7961dd04fbddf0ff4/docs/review-audiences.md) for details.
 
 See the [complete upstream command reference](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.51/docs/commands.md) for these advanced workflows.
