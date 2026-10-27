@@ -92,6 +92,14 @@ The handbook summarizes these surfaces rather than duplicating every flag. Use t
 
 `wtc review start <repo>#<n>` creates a local review-only collection for someone else's pull request. Pushes from that worktree are disabled; `review resolve` and `review ready` refuse there. A new `review bundle` refreshes the author's current head but stops rather than discard a local commit.
 
-The review family also includes `activity`, `status`, `bundle`, `run`, `post`, `resolve`, and `ready`. Bundles are private by default and can include other repository snapshots. Inspect the exact content before giving it to an external reviewer; `--public` excludes local overlays and other repositories. Posting, resolving threads, or promoting a draft are separate, externally visible actions—not implied by running a review.
+The review family also includes `activity`, `status`, `bundle`, `run`, `post`, `resolve`, and `ready`. Inspect the exact bundle and generated comments before sharing them. Posting, resolving threads, and promoting a draft are separate actions.
+
+#### Upcoming: review audience defaults
+
+The change tracked in [CLI #221](https://github.com/lcorneliussen/wtc-cli/issues/221) selects public mode for public or unknown repository visibility, another forge namespace, or an unknown harness namespace. Only a confirmed private target in the harness namespace defaults to private mode. This is upcoming behavior; earlier binaries default to private bundles, so use `--public` for public or unknown targets.
+
+Public mode takes concerns from the target repository's review base commit, or CLI defaults, and uses embedded prompts. It excludes harness overlays, other repository snapshots, related patches, and private review rounds. `--public` forces isolation; the upcoming `--private` flag explicitly includes harness context for local analysis. Progress and verdict comments show the mode, and posting a private bundle requires fresh private visibility. `--force` cannot bypass that check.
+
+Normally the upstream project runs its own gate. A consuming harness should not impose its internal rules on an upstream contribution. Public mode still requires inspection of generated prose. See the [upcoming audience contract](https://github.com/lcorneliussen/wtc-cli/blob/221-review-audience-defaults/docs/review-audiences.md) for details.
 
 See the [complete upstream command reference](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.51/docs/commands.md) for these advanced workflows.
