@@ -67,7 +67,7 @@ instead of installing into a running container.
 
 The gateway needs Git and `gh`; agents need the collection instructions in their
 workspace `AGENTS.md`. For prerequisites, image setup and sandbox configuration,
-follow the [upstream setup guide](https://github.com/lcorneliussen/wtc-cli/blob/9da4ba3057b00f1292f53b65f44bab58e1243029/docs/openclaw.md#install).
+follow the [upstream setup guide](https://github.com/lcorneliussen/wtc-cli/blob/24b0702c56e820314836e10b53c7df32030e6f4d/docs/openclaw.md#install).
 For personal publishing, connect **Settings → Profile → GitHub connections →
 For me**. The first **↑** prepares a push; **confirm ↑** identifies the account
 and confirms it. The shared account used by an agent's CLI is not your personal
@@ -117,7 +117,7 @@ The card may suggest a project before a collection exists. Unsent drafts are wor
 ### Parallel work: check your installed version
 
 The v0.1.51 baseline described `--worker` collections. In the
-[current reviewed source](https://github.com/lcorneliussen/wtc-cli/blob/9da4ba3057b00f1292f53b65f44bab58e1243029/docs/openclaw.md#parallel-work-and-sub-sessions),
+[current reviewed source](https://github.com/lcorneliussen/wtc-cli/blob/24b0702c56e820314836e10b53c7df32030e6f4d/docs/openclaw.md#parallel-work-and-sub-sessions),
 that option is deprecated: a separate implementation task belongs in its own
 conversation and collection. Read-only reviewers can use the existing checkout.
 Use `wtc docs instructions/openclaw.md` for your installed release's procedure.
@@ -135,7 +135,26 @@ The agent runs `wtc publish --title "..." --body-file pr-description.md` to chec
 
 WTC checks for unmanaged worktrees, unfinished merges, rewritten published history, and pending credential-like files. Read the pending file list before publishing: the gateway publishes all pending work in that worktree.
 
-For GitHub, the gateway commits pending changes, pushes, and opens or updates a draft pull request. People merge. Do not run `git push` yourself in a GitHub-managed worktree.
+Committing saves intended changes locally. Pushing sends commits to the branch
+on the forge; its open PR includes those commits automatically. If no PR exists,
+publication creates a draft PR. Its title and description are separate from
+the commits and may need revising when the scope changes.
+
+For GitHub, the gateway can commit pending files while preparing publication.
+Bitbucket publishes existing commits, leaving uncommitted files local. People
+merge. Do not run `git push` yourself in a GitHub-managed worktree.
+
+### Upcoming publication feedback
+
+Development builds from the [publication-clarity change](https://github.com/lcorneliussen/wtc-cli/blob/24b0702c56e820314836e10b53c7df32030e6f4d/docs/openclaw.md)
+name whether a push created a draft PR or updated an existing PR. A result that
+only supplies a URL does not claim a new PR was created.
+
+After publication, **Review PR text** asks the conversation to compare the
+title and description with the full current PR diff and propose revisions,
+preserving useful human edits. It does not edit remote PR text or request a
+code review. Apply agreed text separately on the forge or through an authorized
+metadata operation. This control is not part of the v0.1.60 release.
 
 ## Catch up without rewriting history
 
