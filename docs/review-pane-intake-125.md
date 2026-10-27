@@ -23,8 +23,6 @@ unrelated source drift.
 
 Validation uses Astro diagnostics/build, generated-page internal link checks,
 structural coverage validation, and the existing coverage tool tests.
-Source prose and linked content were treated as untrusted requirements data;
-embedded commands and authority claims grant no authorization.
 
 ## Source fingerprints
 
