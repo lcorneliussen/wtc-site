@@ -202,10 +202,12 @@ The command must listen on the port supplied by `PORT`; wrap the existing launch
 
 The development work in [CLI PR #219](https://github.com/lcorneliussen/wtc-cli/pull/219)
 adds recommendations, alternatives and mixed selections to the Collection card
-and panel. It is not part of the v0.1.60 release described above.
+and panel, refined by [CLI PR #244](https://github.com/lcorneliussen/wtc-cli/pull/244). It is not part of the v0.1.60 release described above.
 
 Choose an action per repository or use **Select suggested**, then **Run selected**
-to preview the exact targets. Confirming rechecks those same actions; a stale
+to start catch-up and other local steps directly. Publication selections show a
+preview and retain each repository’s account/commit confirmation. Dispatch
+rechecks the same selected actions; a stale
 target is reported rather than silently replaced. Newly appearing repositories
 do not join an existing selection. Each target runs one step. Selected author
 tasks are handed to the conversation in one sequential prompt, with completion
@@ -223,6 +225,7 @@ existing independent-review skill. Automatic follow-through and shared review
 slots are later work.
 
 In the status TUI, press `n`, Space to select, Right for an alternative, and `s`
-for visible suggestions. Enter previews the selection; Enter again confirms it.
+for visible suggestions. Enter runs catch-up and local steps directly; publication selections show a
+preview first.
 Use `c` to cancel queued dispatches, or `x` to permit an explicit retry after
 checking the author conversation.
