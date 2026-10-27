@@ -135,7 +135,26 @@ The agent runs `wtc publish --title "..." --body-file pr-description.md` to chec
 
 WTC checks for unmanaged worktrees, unfinished merges, rewritten published history, and pending credential-like files. Read the pending file list before publishing: the gateway publishes all pending work in that worktree.
 
-For GitHub, the gateway commits pending changes, pushes, and opens or updates a draft pull request. People merge. Do not run `git push` yourself in a GitHub-managed worktree.
+Committing saves intended changes locally. Pushing sends commits to the branch
+on the forge; its open PR includes those commits automatically. If no PR exists,
+publication creates a draft PR. Its title and description are separate from
+the commits and may need revising when the scope changes.
+
+For GitHub, the gateway can commit pending files while preparing publication.
+Bitbucket publishes existing commits, leaving uncommitted files local. People
+merge. Do not run `git push` yourself in a GitHub-managed worktree.
+
+### Upcoming publication feedback
+
+Development builds from the [publication-clarity change](https://github.com/lcorneliussen/wtc-cli/blob/fbc26ebfb7b6221ae672239f4e8699d786fb707d/docs/openclaw.md)
+name whether a push created a draft PR or updated an existing PR. A result that
+only supplies a URL does not claim a new PR was created.
+
+After publication, **Review PR text** asks the conversation to compare the
+title and description with the full current PR diff and propose revisions,
+preserving useful human edits. It does not edit remote PR text or request a
+code review. Apply agreed text separately on the forge or through an authorized
+metadata operation. This control is not part of the v0.1.60 release.
 
 ## Catch up without rewriting history
 
