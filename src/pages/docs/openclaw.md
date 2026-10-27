@@ -197,3 +197,32 @@ wtc svc
 ```
 
 The command must listen on the port supplied by `PORT`; wrap the existing launch command if it needs a CLI port flag. Service status appears with the collection. Tunnels are a separate opt-in action. See [Services and previews](../services/) for prerequisites, ports, and shutdown.
+
+## Upcoming: select next actions
+
+The development work in [CLI PR #219](https://github.com/lcorneliussen/wtc-cli/pull/219)
+adds recommendations, alternatives and mixed selections to the Collection card
+and panel. It is not part of the v0.1.60 release described above.
+
+Choose an action per repository or use **Select suggested**, then **Run selected**
+to preview the exact targets. Confirming rechecks those same actions; a stale
+target is reported rather than silently replaced. Newly appearing repositories
+do not join an existing selection. Each target runs one step. Selected author
+tasks are handed to the conversation in one sequential prompt, with completion
+still pending; other successful results remain intact when a target fails.
+
+Publication keeps its own per-repository personal confirmation. **Cancel queued**
+stops remaining dispatches and does not undo active work. Unchanged handoffs stay
+disabled in that view until facts change; check the conversation before using
+**Allow retry**. Reloading does not automatically resume a batch.
+
+**Check PR progress** asks the conversation to inspect current reviews and merge
+requirements. Independent gateway review execution is a disabled alternative
+until the shared review adapter is available. Local status can hand off the
+existing independent-review skill. Automatic follow-through and shared review
+slots are later work.
+
+In the status TUI, press `n`, Space to select, Right for an alternative, and `s`
+for visible suggestions. Enter previews the selection; Enter again confirms it.
+Use `c` to cancel queued dispatches, or `x` to permit an explicit retry after
+checking the author conversation.
