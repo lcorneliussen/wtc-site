@@ -1,15 +1,23 @@
 # Review audience topic intake
 
-Reviewed against [CLI #221](https://github.com/lcorneliussen/wtc-cli/issues/221)
-at source revision `0b2bba7ccd64e8c56ac62087ebc75f09f2556011`. This is an upcoming behavior change,
-not a published release. The broad coverage inventory and existing examples
-retain their labeled v0.1.51 baseline.
+Reviewed against [merged CLI #224](https://github.com/lcorneliussen/wtc-cli/pull/224)
+at source revision `f746dc90d833773b03a8a5b7961dd04fbddf0ff4`. Its exact
+[main CI run](https://github.com/lcorneliussen/wtc-cli/actions/runs/40522407662)
+passed on Linux and macOS. Source fingerprints below come from that merge
+commit, rather than a development branch.
+
+Release status checked on 2026-10-27: the latest published stable release is
+v0.1.60, which does not contain this merge. The handbook labels the new behavior
+as merged and unreleased, and preserves explicit `--public` guidance for
+v0.1.60. No release, merge, or deployment is performed by this documentation PR.
+The broad coverage inventory and existing examples retain their labeled
+v0.1.51 baseline.
 
 | Source | Coverage decision |
 | --- | --- |
-| `docs/commands.md`, `docs/review-audiences.md` | The command handbook explains automatic public/private selection, explicit flags, mode visibility, fresh publication checks, and which version needs `--public`. The exact rule-directory, prior-round and Bitbucket contracts remain in the linked upstream reference. |
-| Embedded local-review skill and prompts | The handbook explains the audience boundary and the upstream gate ownership. Agent execution details remain upstream. |
-| Unreleased review audience note | Covered as upcoming behavior, with a source branch link. Reconcile to a numbered release and pinned reference when published. |
+| `docs/commands.md`, `docs/review-audiences.md` | The command handbook explains automatic public/private selection, explicit flags, mode visibility, fresh publication checks, and the older-release need for `--public`. The exact rule-directory, prior-round and Bitbucket contracts remain in the pinned upstream reference. |
+| Embedded local-review skill and prompts | The handbook explains the audience boundary and upstream gate ownership. Agent execution details remain upstream. |
+| Unreleased review audience note | Covered as merged, unreleased behavior, with an immutable source link. Reconcile to a numbered release and pinned release reference when published. |
 
 Site checks cover Astro diagnostics/build, internal links, and structural
 coverage validation plus the coverage tool tests. This focused intake does not

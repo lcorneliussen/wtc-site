@@ -94,12 +94,14 @@ The handbook summarizes these surfaces rather than duplicating every flag. Use t
 
 The review family also includes `activity`, `status`, `bundle`, `run`, `post`, `resolve`, and `ready`. Inspect the exact bundle and generated comments before sharing them. Posting, resolving threads, and promoting a draft are separate actions.
 
-#### Upcoming: review audience defaults
+#### Review audience defaults (merged, unreleased)
 
-The change tracked in [CLI #221](https://github.com/lcorneliussen/wtc-cli/issues/221) selects public mode for public or unknown repository visibility, another forge namespace, or an unknown harness namespace. Only a confirmed private target in the harness namespace defaults to private mode. This is upcoming behavior; earlier binaries default to private bundles, so use `--public` for public or unknown targets.
+The [review audience change](https://github.com/lcorneliussen/wtc-cli/blob/f746dc90d833773b03a8a5b7961dd04fbddf0ff4/docs/review-audiences.md) is merged on main after v0.1.60 and has not yet been published in a release. The defaults below apply to builds containing that change. In published v0.1.60, bundles default to private mode: explicitly pass `--public` for public or unknown targets.
 
-Public mode takes concerns from the target repository's review base commit, or CLI defaults, and uses embedded prompts. It excludes harness overlays, other repository snapshots, related patches, and private review rounds. `--public` forces isolation; the upcoming `--private` flag explicitly includes harness context for local analysis. Progress and verdict comments show the mode, and posting a private bundle requires fresh private visibility. `--force` cannot bypass that check.
+The merged behavior selects public mode for public or unknown repository visibility, another forge namespace, or an unknown harness namespace. Only a confirmed private target in the harness namespace defaults to private mode.
 
-Normally the upstream project runs its own gate. A consuming harness should not impose its internal rules on an upstream contribution. Public mode still requires inspection of generated prose. See the [upcoming audience contract](https://github.com/lcorneliussen/wtc-cli/blob/221-review-audience-defaults/docs/review-audiences.md) for details.
+Public mode takes concerns from the target repository's review base commit, or CLI defaults, and uses embedded prompts. It excludes harness overlays, other repository snapshots, related patches, and private review rounds. `--public` forces isolation; `--private` explicitly includes harness context for local analysis. Progress and verdict comments show the mode, and posting a private bundle requires fresh private visibility. `--force` cannot bypass that check.
+
+Normally the upstream project runs its own gate. A consuming harness should not impose its internal rules on an upstream contribution. Public mode still requires inspection of generated prose. See the [merged audience contract](https://github.com/lcorneliussen/wtc-cli/blob/f746dc90d833773b03a8a5b7961dd04fbddf0ff4/docs/review-audiences.md) for details.
 
 See the [complete upstream command reference](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.51/docs/commands.md) for these advanced workflows.
