@@ -62,3 +62,33 @@ wtc svc tunnel web --stop
 ```
 
 Public exposure (`--public`) is a separate choice. Check authentication and exposed application data before sharing. Never put credentials in endpoint URLs or committed task files.
+
+## Remembered tunnel choices (merged, unreleased)
+
+[Merged CLI #236](https://github.com/lcorneliussen/wtc-cli/pull/236) adds
+collection-local tunnel intent. This behavior is **not in published v0.1.60**;
+the examples above retain their v0.1.51 baseline. See the
+[pinned runtime contract](https://github.com/lcorneliussen/wtc-cli/blob/aea3e65e38a284e2de72fecdce671dd963691eb1/internal/wtc/defaults/instructions/runtime.md)
+for the merged behavior.
+
+After you enable a tunnel with `wtc svc tunnel`, ordinary `wtc svc down web`
+stops it without forgetting your choice. `wtc svc up web` and
+`wtc svc restart web` restore it after provider checks, including a public
+tunnel you previously approved. `restart` still needs a running runner.
+`wtc svc tunnel web --stop` records off and keeps the tunnel off across later
+service starts, overriding its declaration's autostart default. If stopping
+fails, off is still recorded; retry the stop to confirm shutdown.
+
+Choices belong to each collection and service endpoint, so two collections can
+choose differently. With no explicit choice, declaration defaults still apply.
+Untargeted `up` restores tunnels for autostart or already running services;
+untargeted `restart` leaves stopped services off. Startup stops at the first
+failure: inspect the error and status, fix the provider or service, then retry.
+
+Changing the tunnel command, provider, destination or exposure, or removing and
+reusing its task path, requires a fresh tunnel choice and `--public` when
+applicable. Status reports an intended-on tunnel that is not running as a
+lifecycle problem, separately from login, reachability and exposure. Ordinary
+`down` can therefore show that problem until you start the service again or
+explicitly choose tunnel off. JSON keeps `tunnel_intent` and `lifecycle`
+separate from the observed runner `state`.
