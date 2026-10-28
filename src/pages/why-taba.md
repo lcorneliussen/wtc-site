@@ -1,92 +1,25 @@
 ---
 layout: ../layouts/Story.astro
 title: Why taba
-description: I wanted my agent conversations to work across repositories. This is how that grew into Taba.
+description: These were the problems I ran into while working across repositories with agents. You may recognize some of them.
 author: Lars Corneliussen
 updated: '2026-10-28'
-chapters:
-  - id: a-folder-for-the-conversation
-    title: A folder for the conversation
-  - id: copying-the-approach
-    title: Copying the approach
-  - id: a-versioned-cli
-    title: A versioned CLI
-  - id: reviewing-the-work
-    title: Reviewing the work
-  - id: running-the-work
-    title: Running the work
-  - id: opening-it-up-to-more-people
-    title: Opening it up to more people
-  - id: a-name-people-remember
-    title: A name people remember
-  - id: what-i-want-harnesses-to-understand
-    title: What I want harnesses to understand
-milestones:
-  - date: '2026-08-17'
-    label: 17 Aug 2026
-    title: The reference boilerplate
-    sources:
-      - label: Seed of the worktree-collection reference
-        url: https://github.com/lcorneliussen/wtc-boilerplate/commit/5e1ee925506d9c0618aba39b12572ec305a229f8
-  - date: '2026-09-02'
-    label: 2 Sep 2026
-    title: Tests for the shell tools
-    sources:
-      - label: Harness test suite with real worktree fixtures
-        url: https://github.com/lcorneliussen/wtc-boilerplate/commit/97953ece09c317faf3f8acee93a2e8bbb2d79267
-  - date: '2026-09-29'
-    label: 29 Sep 2026
-    title: CLI extraction and local reviews
-    sources:
-      - label: CLI skeleton and first migrated command
-        url: https://github.com/lcorneliussen/wtc-cli/commit/237def7cb6884f8c237f673b8a2c088fec89dd8f
-      - label: Separate review before a draft PR becomes ready
-        url: https://github.com/lcorneliussen/wtc-boilerplate/commit/607b0a94de0b6e9958e1d45a6865ddf7ed226b73
-  - date: '2026-10-06'
-    label: 6 Oct 2026
-    title: A smaller harness and a collection runtime
-    sources:
-      - label: Product and project ownership in the small-harness design
-        url: https://github.com/lcorneliussen/wtc-cli/blob/579b66280f1b4cc391b4731dd0022703cb4ce651/docs/harness-design.md
-      - label: Opt-in runtime, status and resource cleanup
-        url: https://github.com/lcorneliussen/wtc-cli/commit/68e8a66da212ed0351e0f85f141eba3d09d4ea40
-  - date: '2026-10-14'
-    label: 14 Oct 2026
-    title: Services and a collection conversation in OpenClaw
-    sources:
-      - label: The svc commands for services and tunnels
-        url: https://github.com/lcorneliussen/wtc-cli/commit/1a27f2bbfaea2626be6877437b01e2b4ef856878
-      - label: One conversation working across the collection
-        url: https://github.com/lcorneliussen/wtc-cli/commit/b63857c0a84c573387d493c80ff4b9f041106068
-  - date: '2026-10-19'
-    label: 19 Oct 2026
-    title: OpenClaw integration reaches main
-    sources:
-      - label: The merged host-mode integration
-        url: https://github.com/lcorneliussen/wtc-cli/commit/2cb70fe6facb8fb4239ffbad81bec4586b3b22a0
-  - date: '2026-10-26'
-    label: 26 Oct 2026
-    title: The site adopts the taba name
-    sources:
-      - label: Site branding and canonical domain change
-        url: https://github.com/lcorneliussen/wtc-site/commit/41853b3776c287d0f2320434b6c61e689c02df52
 ---
 
-<div class="story-intro">
+<ol class="problem-timeline">
 
-I liked working in Claude Code and Codex. I could keep several conversations going, each with its own Git worktree. But a task that crossed repositories left me with a question: where should the conversation start?
+<li class="problem" id="early" aria-labelledby="early-title">
+<p class="problem-date"><time datetime="2026-08-12">12 Aug 2026</time></p>
+<div class="problem-body">
 
-The harness would manage a worktree for the main repository. I could get an agent to create more worktrees in subfolders, but I had to keep track of them. I also wanted separate projects to stay separate in the UI. Sharing my screen with one team should not put every other project on display.
+<h2 id="early-title">Agents hate multirepo setups</h2>
+<p class="problem-subline">Most agents assume your project is one repo. Mine almost never is.</p>
 
-Taba grew out of those problems. A worktree collection gives a task one folder containing a worktree for each repository it needs.
+<details class="problem-detail" aria-labelledby="early-title">
+<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
+<div class="detail-copy">
 
-</div>
-
-<section class="chapter" data-chapter="a-folder-for-the-conversation" aria-labelledby="a-folder-for-the-conversation">
-
-<p class="chapter-number" aria-hidden="true">01</p>
-
-## A folder for the conversation
+I liked working in Claude Code and Codex, with a conversation and worktree for each task. But a task that crossed repositories left me choosing where the conversation should start. I also wanted to keep unrelated projects out of view during calls.
 
 My first solution was to choose one repository as the starting point for everything. I gave the agent an index of the other repositories and told it to create worktrees before changing them. The index made access explicit. I did not want an agent wandering into unrelated checkouts and editing them.
 
@@ -120,13 +53,29 @@ I moved the repository owners into `.bare/` and made every checkout a worktree, 
 
 That exposed another dependency on ordinary checkouts. The ignored files with credentials and local configuration were missing. I put them in a separate folder per repository and had agents merge the needed configuration into each worktree.
 
-</section>
 
-<section class="chapter" data-chapter="copying-the-approach" aria-labelledby="copying-the-approach">
 
-<p class="chapter-number" aria-hidden="true">02</p>
+<aside class="post-card" aria-label="Post by Lars Corneliussen">
+<div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
+<blockquote>Still using copy&amp;paste, between harness-repos, no central tool or library.</blockquote>
+<div class="post-meta"><time datetime="2026-08-12">12 Aug 2026</time><a href="https://x.com/lcorneliussen/status/2087524799480274987">View post <span aria-hidden="true">↗</span></a></div>
+</aside>
+</div>
+</details>
+</div>
+<div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/early.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
+</li>
 
-## Copying the approach
+<li class="problem" id="copies" aria-labelledby="copies-title">
+<p class="problem-date"><time datetime="2026-08-17">17 Aug 2026</time></p>
+<div class="problem-body">
+
+<h2 id="copies-title">Setup kept repeating</h2>
+<p class="problem-subline">Each new project meant copying the same scripts and adapting them again.</p>
+
+<details class="problem-detail" aria-labelledby="copies-title">
+<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
+<div class="detail-copy">
 
 As a consultant, I began using the approach on more projects. I was hesitant to introduce another tool, so I copied code. The scripts lived in each project and ran there.
 
@@ -134,17 +83,49 @@ The boilerplate gave me a place to share and sync the approach. Each team could 
 
 As more people used it, those differences became harder to track. Generic tools, project settings and custom behavior lived together. A change to a shared script could require another round of comparing and syncing copies.
 
-</section>
 
-<section class="chapter" data-chapter="a-versioned-cli" aria-labelledby="a-versioned-cli">
+<div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-boilerplate/commit/5e1ee925506d9c0618aba39b12572ec305a229f8">17 August. The reference boilerplate</a></li></ul></div>
 
-<p class="chapter-number" aria-hidden="true">03</p>
+</div>
+</details>
+</div>
+<div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/copies.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
+</li>
 
-## A versioned CLI
+<li class="problem" id="testing" aria-labelledby="testing-title">
+<p class="problem-date"><time datetime="2026-09-02">2 Sep 2026</time></p>
+<div class="problem-body">
+
+<h2 id="testing-title">Teams needed stability</h2>
+<p class="problem-subline">More teammates relied on tooling that needed better tests and predictable behavior.</p>
+
+<details class="problem-detail" aria-labelledby="testing-title">
+<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
+<div class="detail-copy">
 
 The tooling became too important to depend on that process alone. More teammates were using it, and I needed better testing and stability.
 
 I first added tests to the boilerplate. Agents copied the tests along with the scripts during a sync. Eventually I moved the common tooling into a versioned CLI.
+
+
+<div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-boilerplate/commit/97953ece09c317faf3f8acee93a2e8bbb2d79267">2 September. A test suite for the harness</a></li></ul></div>
+
+</div>
+</details>
+</div>
+<div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/testing.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
+</li>
+
+<li class="problem" id="variants" aria-labelledby="variants-title">
+<p class="problem-date"><time datetime="2026-09-29">29 Sep 2026</time></p>
+<div class="problem-body">
+
+<h2 id="variants-title">Variants got mixed</h2>
+<p class="problem-subline">Shared code, project settings and custom behavior were hard to tell apart.</p>
+
+<details class="problem-detail" aria-labelledby="variants-title">
+<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
+<div class="detail-copy">
 
 That gave me a clear split between product, configuration and customization. The CLI could own the shared behavior. A harness repository could describe the team's repositories and keep its policies and hooks.
 
@@ -152,13 +133,25 @@ Those differences were necessary. Some projects used Bitbucket, others GitHub. T
 
 Hooks and extension points let those projects keep their behavior while sharing a tested tool. A pinned release also made it possible to say which version of that tool a harness used.
 
-</section>
 
-<section class="chapter" data-chapter="reviewing-the-work" aria-labelledby="reviewing-the-work">
+<div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/237def7cb6884f8c237f673b8a2c088fec89dd8f">29 September. The CLI skeleton</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/blob/579b66280f1b4cc391b4731dd0022703cb4ce651/docs/harness-design.md">6 October. A smaller harness with explicit project ownership</a></li></ul></div>
 
-<p class="chapter-number" aria-hidden="true">04</p>
+</div>
+</details>
+</div>
+<div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/variants.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
+</li>
 
-## Reviewing the work
+<li class="problem" id="reviews" aria-labelledby="reviews-title">
+<p class="problem-date"><time datetime="2026-09-29">29 Sep 2026</time></p>
+<div class="problem-body">
+
+<h2 id="reviews-title">Reviews fell behind</h2>
+<p class="problem-subline">Agents produced PRs faster than the team could review them.</p>
+
+<details class="problem-detail" aria-labelledby="reviews-title">
+<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
+<div class="detail-copy">
 
 I was producing more pull requests, and review became a bottleneck for the team.
 
@@ -168,13 +161,25 @@ Taba was a natural place for that tooling because an effective review often need
 
 Taba ships reusable review concerns. They can be ejected for customization, and a harness or application repository can contribute further concerns. The shared runner handles the review process while the project's concerns say what needs attention.
 
-</section>
 
-<section class="chapter" data-chapter="running-the-work" aria-labelledby="running-the-work">
+<div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-boilerplate/commit/607b0a94de0b6e9958e1d45a6865ddf7ed226b73">29 September. Separate review before a draft PR became ready</a></li></ul></div>
 
-<p class="chapter-number" aria-hidden="true">05</p>
+</div>
+</details>
+</div>
+<div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/reviews.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
+</li>
 
-## Running the work
+<li class="problem" id="services" aria-labelledby="services-title">
+<p class="problem-date"><time datetime="2026-10-06">6 Oct 2026</time></p>
+<div class="problem-body">
+
+<h2 id="services-title">Environments multiplied</h2>
+<p class="problem-subline">Ten conversations meant dependent services, databases, ports and remote tunnels to coordinate.</p>
+
+<details class="problem-detail" aria-labelledby="services-title">
+<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
+<div class="detail-copy">
 
 An enterprise development setup can involve several APIs, web applications and databases. Getting them to talk to each other in one environment takes work. Running those setups in ten parallel conversations across several harnesses adds another problem.
 
@@ -186,13 +191,25 @@ The `svc` module brought service startup, status, logs and tunnels into the coll
 
 I also wanted to show a running result and collect feedback. OpenClaw portals and widgets took work to configure. A tunnel through ngrok, devtunnels or Cloudflare could give me another way to share a demo. Tailnet access and those demo links needed to work with the same collection's services.
 
-</section>
 
-<section class="chapter" data-chapter="opening-it-up-to-more-people" aria-labelledby="opening-it-up-to-more-people">
+<div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/68e8a66da212ed0351e0f85f141eba3d09d4ea40">6 October. Collection runtime and resource cleanup</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/1a27f2bbfaea2626be6877437b01e2b4ef856878">14 October. Services and tunnels through svc</a></li></ul></div>
 
-<p class="chapter-number" aria-hidden="true">06</p>
+</div>
+</details>
+</div>
+<div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/services.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
+</li>
 
-## Opening it up to more people
+<li class="problem" id="support" aria-labelledby="support-title">
+<p class="problem-date"><time datetime="2026-10-14">14 Oct 2026</time></p>
+<div class="problem-body">
+
+<h2 id="support-title">Support needed developers</h2>
+<p class="problem-subline">Support questions reached developers, who copied them straight into agent conversations.</p>
+
+<details class="problem-detail" aria-labelledby="support-title">
+<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
+<div class="detail-copy">
 
 We already had useful support tooling with access to code and configured read access to production. A support question would often reach a developer, who would copy it straight into an agent conversation.
 
@@ -206,13 +223,31 @@ Support was one use case. I also wanted the setup to work for trusted occasional
 
 I want to extend the gateway integration to Jira and Confluence through TWG as well. That is future work.
 
-</section>
 
-<section class="chapter" data-chapter="a-name-people-remember" aria-labelledby="a-name-people-remember">
+<div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/b63857c0a84c573387d493c80ff4b9f041106068">14 October. One conversation across a collection</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/2cb70fe6facb8fb4239ffbad81bec4586b3b22a0">19 October. The host-mode integration reached main</a></li></ul></div>
 
-<p class="chapter-number" aria-hidden="true">07</p>
 
-## A name people remember
+<aside class="post-card" aria-label="Post by Lars Corneliussen">
+<div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
+<blockquote>Creating my first @openclaw plugin to support multi-repository work via wtc.</blockquote>
+<div class="post-meta"><time datetime="2026-10-14">14 Oct 2026</time><a href="https://x.com/lcorneliussen/status/2110439039463751749">View post <span aria-hidden="true">↗</span></a></div>
+</aside>
+</div>
+</details>
+</div>
+<div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/support.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
+</li>
+
+<li class="problem" id="name" aria-labelledby="name-title">
+<p class="problem-date"><time datetime="2026-10-26">26 Oct 2026</time></p>
+<div class="problem-body">
+
+<h2 id="name-title">Nobody remembered wtc</h2>
+<p class="problem-subline">People called everything "the harness". The name wtc never stuck.</p>
+
+<details class="problem-detail" aria-labelledby="name-title">
+<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
+<div class="detail-copy">
 
 I named team repositories with the pattern `*-agent-harness` and called the tooling `wtc`. In conversations, people remembered "the harness". They did not remember `wtc`.
 
@@ -222,16 +257,24 @@ Taba came out of an agent-led brainstorming session. It felt better. The Japanes
 
 I had started the site on `wtc.sh` and changed it to `taba.sh` soon afterward. The website name and the CLI migration have separate timelines. The [rename guide](../wtc-is-now-taba/) tracks the command and configuration transition.
 
-</section>
 
-<section class="chapter" data-chapter="what-i-want-harnesses-to-understand" aria-labelledby="what-i-want-harnesses-to-understand">
+<div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-site/commit/41853b3776c287d0f2320434b6c61e689c02df52">26 October. The site adopted the taba name</a></li></ul></div>
 
-<p class="chapter-number" aria-hidden="true">08</p>
 
-## What I want harnesses to understand
+<aside class="post-card" aria-label="Post by Lars Corneliussen">
+<div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
+<blockquote>Horrible name.</blockquote>
+<div class="post-meta"><time datetime="2026-10-06">6 Oct 2026</time><a href="https://x.com/lcorneliussen/status/2107368417787269264">View post <span aria-hidden="true">↗</span></a></div>
+</aside>
+<aside class="post-card" aria-label="Post by Lars Corneliussen">
+<div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
+<blockquote>Everyone agent deserves monorepos, even the ones that don&#x27;t have them...</blockquote>
+<div class="post-meta"><time datetime="2026-10-26">26 Oct 2026</time><a href="https://x.com/lcorneliussen/status/2114785403844850159">View post <span aria-hidden="true">↗</span></a></div>
+</aside>
+</div>
+</details>
+</div>
+<div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/name.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
+</li>
 
-<p class="story-aim">I would like agent harnesses to work with collections of worktrees as smoothly as they work with a single repository.</p>
-
-When I start a conversation about a change, I want it to have the right checkouts of the repositories involved. I want to run their services together and give reviewers the context needed to judge the change.
-
-</section>
+</ol>

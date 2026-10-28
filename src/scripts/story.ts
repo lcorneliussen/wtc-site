@@ -1,42 +1,18 @@
 const story = document.querySelector<HTMLElement>('[data-story]');
 const progress = document.querySelector<HTMLElement>('[data-story-progress]');
-const contents = document.querySelector<HTMLDetailsElement>('[data-story-nav]');
-const article = document.querySelector<HTMLElement>('.story-content');
+const timeline = document.querySelector<HTMLElement>('.problem-timeline');
 
-if (story && progress && contents && article) {
-  const links = [...contents.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
-  const sections = [...article.querySelectorAll<HTMLElement>('.chapter, #public-record')];
-  const position = contents.querySelector<HTMLElement>('[data-story-position]');
-  const current = contents.querySelector<HTMLElement>('[data-story-current]');
-  const mobile = window.matchMedia('(max-width: 800px)');
-
-  // The content and chapter links work without this reading guide.
-  story.classList.add('story-enhanced');
+if (story && progress && timeline) {
+  const problems = [...timeline.querySelectorAll<HTMLElement>('.problem')];
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   progress.hidden = false;
-  if (position) position.hidden = false;
-  if (current) current.hidden = false;
-
-  const fitContents = () => { contents.open = !mobile.matches; };
-  fitContents();
-  mobile.addEventListener('change', fitContents);
-  for (const link of links) {
-    link.addEventListener('click', () => {
-      if (!mobile.matches) return;
-      contents.open = false;
-      const heading = document.getElementById(link.hash.slice(1));
-      if (heading) {
-        heading.setAttribute('tabindex', '-1');
-        heading.focus({preventScroll: true});
-      }
-    });
-  }
-
   let scheduled = false;
   let lastProgress = -1;
+
   const update = () => {
     scheduled = false;
-    const start = article.getBoundingClientRect().top + window.scrollY;
-    const end = article.getBoundingClientRect().bottom + window.scrollY - window.innerHeight * .6;
+    const start = timeline.getBoundingClientRect().top + window.scrollY;
+    const end = timeline.getBoundingClientRect().bottom + window.scrollY - window.innerHeight * .6;
     const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 5;
     const fraction = atBottom ? 1 : Math.max(0, Math.min(1, (window.scrollY - start) / Math.max(1, end - start)));
     const percent = Math.round(fraction * 100);
@@ -46,23 +22,19 @@ if (story && progress && contents && article) {
       lastProgress = percent;
     }
 
-    let active = sections[0];
-    for (const section of sections) {
-      if (section.getBoundingClientRect().top <= window.innerHeight * .28) active = section;
+    let active = problems[0];
+    for (const problem of problems) {
+      if (problem.getBoundingClientRect().top <= Math.min(300, window.innerHeight * .35)) active = problem;
     }
-    if (atBottom) {
-      active = sections[sections.length - 1];
-    }
-    if (!active) return;
-    const id = active.dataset.chapter || active.id;
-    const index = links.findIndex(link => link.hash === `#${id}`);
-    for (const [i, link] of links.entries()) {
-      if (i === index) link.setAttribute('aria-current', 'location');
-      else link.removeAttribute('aria-current');
-    }
-    if (index >= 0) {
-      if (position) position.textContent = `${String(index + 1).padStart(2, '0')} / ${String(links.length).padStart(2, '0')}`;
-      if (current) current.textContent = links[index].textContent;
+    if (atBottom) active = problems[problems.length - 1];
+    for (const problem of problems) {
+      problem.classList.toggle('is-current', problem === active);
+      const artwork = problem.querySelector<HTMLElement>('.scene-art');
+      if (artwork) {
+        const top = problem.getBoundingClientRect().top;
+        const shift = reducedMotion.matches || window.innerWidth <= 700 ? 0 : Math.max(-14, Math.min(14, (window.innerHeight * .35 - top) * .045));
+        artwork.style.setProperty('--art-shift', `${shift}px`);
+      }
     }
   };
   const schedule = () => {
@@ -71,20 +43,11 @@ if (story && progress && contents && article) {
       window.requestAnimationFrame(update);
     }
   };
+
+  // Disclosures are native HTML. JavaScript only updates the reading guide.
+  for (const details of timeline.querySelectorAll('details')) details.addEventListener('toggle', schedule);
   window.addEventListener('scroll', schedule, {passive: true});
   window.addEventListener('resize', schedule, {passive: true});
   document.fonts.ready.then(schedule);
   schedule();
-
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(entries => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-seen');
-          observer.unobserve(entry.target);
-        }
-      }
-    }, {rootMargin: '0px 0px -10% 0px', threshold: 0});
-    for (const section of sections) observer.observe(section);
-  }
 }
