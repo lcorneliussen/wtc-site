@@ -200,7 +200,7 @@ The command must listen on the port supplied by `PORT`; wrap the existing launch
 
 ## Upcoming: compact next steps
 
-Development builds add the [current compact collection controls](https://github.com/lcorneliussen/wtc-cli/blob/1c6176fa1a8af546f7f35b122fa604c2f9ce7890/docs/openclaw.md#select-next-actions).
+Development builds add the [current compact collection controls](https://github.com/lcorneliussen/wtc-cli/blob/df16007279253e689549e25a18c1269288e30883/docs/openclaw.md#select-next-actions).
 These changes are not part of the v0.1.60 release described above.
 
 The card keeps dense repository rows without visible column headers. At normal
@@ -212,8 +212,12 @@ selections. Catch-up runs locally on the first click. On an observed open PR,
 **Update PR** / **Push** prepares publication with your personal confirmation.
 The local collection CLI already pushes merges to open or draft PR branches.
 
+A baseline row consistently says **at main** (or its configured base). Hover
+text distinguishes an untouched task branch from detached HEAD; it does not
+imply that the checkout owns the main branch.
+
 Each row shows its current PR. Other active PRs are muted number links;
-completed PRs appear as a **History 3** button that opens the full collection PR list
+completed PRs appear as a **3 archived PRs** button that opens the full collection PR list
 in the taba sidebar. The conversation card keeps that full list out of the way.
 During a batch, rows show one phase and the top bar shows progress. A completion
 control such as **Caught up 2** opens the detailed sidebar **Action log**. The log

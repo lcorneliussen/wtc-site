@@ -39,11 +39,11 @@ Reviewed public CLI source `082dfaa0971db5bfdb118708cbb7046f91e28d26` (PR #264).
 
 ## Fixed columns and sidebar activity
 
-Reviewed public CLI source `1c6176fa1a8af546f7f35b122fa604c2f9ce7890` (PR #264). Normal-width repository rows use separate fixed name, branch, changes, PR and action columns with the header action aligned above row actions. Completed PR hints say **History 3**, avoiding a local-change interpretation. Batch rows show one phase, the chooser closes after dispatch, and a named completion control opens the shared sidebar action log. This is browser-session feedback, not durable job history.
+Reviewed public CLI source `df16007279253e689549e25a18c1269288e30883` (PR #264). Normal-width repository rows use separate fixed name, branch, changes, PR and action columns with the header action aligned above row actions. Completed PR hints say **1 archived PR** or **3 archived PRs**, avoiding a local-change interpretation. Baseline rows consistently say **at main**, with hover text distinguishing actual branch from detached HEAD. Batch rows show one phase, informational results restore row actions after dispatch, and explicit retry restores row actions. The chooser closes after dispatch and named completion controls open the shared sidebar action log. This is browser-session feedback, not durable job history.
 
 Source SHA-256:
 
-- `docs/openclaw.md`: `5f9f5fe6e9df313e0e782d296b9e690823a5de280886898f84fdb11c8d24eb37`
-- `docs/next-actions-plan.md`: `307651becf557f65a4cee5aef793b2d2245104e2689944911654026637cbcb69`
-- `openclaw-plugin/dist/control-ui/v1/index.js`: `64a054bb1a5d09ee6075940d5751a9e3051081d0701c745169ad2da60c3274d0`
-- `openclaw-plugin/test/control-ui.test.mjs`: `1fc2e44ef17eef5709d225521d33003c7e6244bfb00b4bd36e34d54d6a88818a`
+- `docs/openclaw.md`: `8e289460b84e3032d4b74301014baad115781f8ad45b53d028440f752f28dbf6`
+- `docs/next-actions-plan.md`: `57e349330ef7852f6ff887e747c9c061abd0e6fdfca4ee8c29e75ddad27b88ec`
+- `openclaw-plugin/dist/control-ui/v1/index.js`: `b689ef22d7a3c93fe3150e71805f8c0c0f906f6dfe88ee0d6a652b7287d4fd22`
+- `openclaw-plugin/test/control-ui.test.mjs`: `cd2cca48cd8dcf91b4bb844b7db9b5c2fde24f859ce7123c48f6e246dca341f0`
