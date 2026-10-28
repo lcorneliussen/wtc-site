@@ -20,6 +20,52 @@ For complete options, use `wtc --help`, a command’s `--help`, or the upstream 
 
 Worktrees start detached. Create a branch before committing.
 
+### Retirement assessment (merged, unreleased)
+
+The [merged retirement contract](https://github.com/lcorneliussen/wtc-cli/blob/41d5ed32237f9e6e78cf9913ef6e2ac2165f88dc/docs/retirement.md)
+describes behavior after [published v0.1.61](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.61).
+It is unreleased and requires a build containing that source. The execution
+example in the table above retains its older baseline.
+
+Status shows a retirement assessment for each selected collection, separating
+known preservation or unfinished-work blockers from unknown evidence. It records
+when facts were observed; older cached snapshots may have no assessment. For
+fresh detail, inspect without retiring anything:
+
+```sh
+wtc status --local --json
+wtc retire --dry-run
+wtc retire example-task --dry-run --json
+```
+
+The dry run defaults to the current collection and freshly reads Git heads,
+source coverage and local metadata, with proposed follow-up work. It does not
+reuse a cached verdict or run a full status refresh. Dirty or locally
+unpreserved work, an unconsumed handoff, and preservation backups can block
+retirement. Git comparisons use cached remote refs without fetching; those
+refs do not prove preservation on the server.
+
+The assessment reports `blocked` for known blockers, otherwise `unknown`.
+It does not report `ready`: archive provenance, current forge/delivery facts
+and live resources still need separate verification. Already observed open
+PRs, pending delivery or active runtime facts can add blockers; missing facts
+cannot clear unknown coverage. A cached assessment is never an execution permit.
+
+Dry-run collection writes no report, cache, registry or source files and runs
+no hooks, branch return, fetch, archive changes, resource stops or deletion.
+Normal status keeps its existing refresh and snapshot behavior. Optional
+`--transcript` input is dry-run-only: the bounded reader accepts explicitly
+supplied Claude JSONL, labels matching assistant text an **untrusted hint**,
+and does not discover or verify provider archives. Raw hints stay out of status
+caches. Output can contain sensitive paths and conversation text; sanitize it
+before sharing. See the pinned contract for input limits and provenance.
+
+Real retirement still requires an explicit collection name and its existing
+fresh preflight. `--force` cannot suppress dry-run blockers. The assessment adds
+no automatic cleanup or confirmation policy and does not strengthen execution
+enforcement. Verify preservation, delivery, resources and archive provenance
+before a separate cleanup decision.
+
 ### Next actions in v0.1.60
 
 Starting with v0.1.60, WTC adds next actions to the status table and live view. Press
@@ -110,6 +156,40 @@ The handbook summarizes these surfaces rather than duplicating every flag. Use t
 | `wtc open`, `wtc browse` | Optional herdr and Neovim interfaces; not required for collections |
 | `wtc dev install/status/uninstall` | Upstream CLI contributor builds; not an end-user upgrade path |
 | `wtc checkouts` | Structured checkout facts for the OpenClaw collection plugin |
+
+### Verified enlisted identities (merged, unreleased)
+
+The [merged repository identity contract](https://github.com/lcorneliussen/wtc-cli/blob/41d5ed32237f9e6e78cf9913ef6e2ac2165f88dc/docs/enlisted-repository-identity.md)
+is unreleased after published v0.1.61 and applies to builds containing that
+source. It aligns PR enlistment, status enrichment and enlisted branch matching.
+
+For a registered `widget`, `ext.widget` is an alias only when its checkout
+origin matches the registry's forge, owner/workspace and repository. SSH and
+HTTPS spellings are equivalent; GitHub owner/repository case is ignored, while
+local names remain case-sensitive. New enlistments use the registry name.
+For an unmanaged `ext.widget`, `widget` is accepted only when a supported forge
+origin has repository basename `widget`; new rows use `ext.widget`.
+
+A prefix alone proves nothing: an unrelated `ext.notes` whose origin names
+`widget` gains no `notes` alias, and prefixes are not stripped repeatedly.
+Inference uses Git roots inside this collection, without borrowing an enclosing
+origin or an outside directory link. Exact-name linked checkouts retain their
+existing association and origin fallback when the registry lacks forge identity.
+
+If a spelling identifies different repositories or multiple worktrees, enlistment
+reports ambiguity and status does not guess a forge or branch association. Use
+distinct directory names to remove collisions. With no forge remote in the
+registry and only `ext.widget` checked out, configure the registry remote before
+using `widget`; the exact `ext.widget` spelling still identifies its checkout.
+Unknown names stay unresolved.
+
+Existing rows need no migration: verified alias updates retain their spelling,
+merge markers and merge metadata, and re-enlisting the same PR adds no alias
+duplicate. Conflicting duplicate rows need reconciliation. Unlisting can remove
+verified alias duplicates; an ambiguous spelling removes only its exact-key rows.
+This is PR bookkeeping, with no worktree rename, registry/catch-up selector
+change, or new landing or branch-deletion policy. Older cached observations use
+exact-name matching without guessing aliases.
 
 ### Review pane in v0.1.61
 
