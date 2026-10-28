@@ -45,7 +45,7 @@ const base = import.meta.env.BASE_URL;
   .prose :global(.problem-body) { min-width: 0; }
   .prose :global(.problem h2) { font: 650 clamp(38px, 4.3vw, 62px)/1.1 var(--display); letter-spacing: -.05em; color: var(--ink); margin: 0 0 24px; }
   .prose :global(.problem-subline) { max-width: 430px; font-size: 18px; line-height: 1.75; margin: 0 0 25px; color: #5d7064; }
-  .prose :global(.scene-art) { position: sticky; top: 100px; align-self: start; margin-top: -18px; transform: translateY(var(--art-shift, 0px)); will-change: transform; }
+  .prose :global(.scene-art) { align-self: start; margin-top: -18px; }
   .prose :global(.scene-art img) { display: block; width: 100%; height: auto; max-width: 440px; margin-inline: auto; }
   .prose :global(.problem-detail) { margin-top: 0; }
   .prose :global(.problem-detail summary) { display: inline-flex; align-items: center; gap: 10px; list-style: none; cursor: pointer; font: 12px/1.8 var(--mono); color: var(--green); text-decoration: underline; text-underline-offset: 5px; }
@@ -79,12 +79,12 @@ const base = import.meta.env.BASE_URL;
   @media (max-width: 700px) {
     .story { padding-top: 35px; }
     .story-header { padding-left: 25px; margin-bottom: 30px; }
-    .prose :global(.problem) { display: grid; grid-template-columns: 25px minmax(0, 1fr); row-gap: 18px; column-gap: 0; padding-block: 30px 70px; min-height: 0; }
+    .prose :global(.problem) { display: grid; grid-template-columns: 25px minmax(0, 1fr); row-gap: 18px; column-gap: 0; padding-block: 35px 45px; min-height: 0; }
     .prose :global(.problem::before) { top: 37px; }
     .prose :global(.problem-date) { grid-column: 2; grid-row: 1; position: static; padding-left: 0; margin: 0; font-size: 10px; }
-    .prose :global(.scene-art) { grid-column: 2; grid-row: 2; position: static; margin: 0; }
-    .prose :global(.scene-art img) { max-width: 300px; }
-    .prose :global(.problem-body) { grid-column: 2; grid-row: 3; }
+    .prose :global(.scene-art) { grid-column: 2; grid-row: 3; position: static; margin: 0; }
+    .prose :global(.scene-art img) { max-width: 270px; }
+    .prose :global(.problem-body) { grid-column: 2; grid-row: 2; }
     .prose :global(.problem h2) { font-size: clamp(36px, 7vw, 48px); max-width: 440px; }
     .prose :global(.problem-subline) { font-size: 16px; margin-bottom: 20px; }
     .prose :global(.problem-timeline::before) { top: 37px; bottom: 100px; }
@@ -94,12 +94,48 @@ const base = import.meta.env.BASE_URL;
     .prose :global(.post-card) { padding: 17px; }
     .story-next > div { align-items: flex-start; flex-direction: column; gap: 20px; }
   }
+  .prose :global(.story-stage) { display: none; }
+  @media (min-width: 901px) {
+    .story { max-width: 1240px; }
+    .story-header { padding-left: 34px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: baseline; gap: 30px; }
+    .story-header h1 { font-size: 64px; margin-bottom: 0; }
+    .story-byline { white-space: nowrap; }
+    .prose.has-story-stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(40px, 6vw, 100px); align-items: start; }
+    .prose.has-story-stage :global(.problem-timeline::before) { left: 3px; top: 112px; bottom: 130px; }
+    .prose.has-story-stage :global(.problem) { grid-template-columns: 34px minmax(0, 1fr); gap: 0; min-height: 74svh; padding-block: 100px 95px; align-content: center; scroll-margin-top: 45px; }
+    .prose.has-story-stage :global(.problem::before) { display: none; }
+    .prose.has-story-stage :global(.problem-date::before) { content: ''; position: absolute; top: 4px; left: -35px; height: 9px; width: 9px; border: 2px solid #99aa80; border-radius: 50%; background: var(--paper); }
+    .prose.has-story-stage :global(.problem.is-current .problem-date::before) { background: #718a49; border-color: #718a49; }
+    .prose.has-story-stage :global(.problem-date) { grid-column: 2; position: relative; padding: 0; margin: 0 0 23px; font-size: 11px; }
+    .prose.has-story-stage :global(.problem-body) { grid-column: 2; }
+    .prose.has-story-stage :global(.problem h2) { font-size: clamp(42px, 4.7vw, 68px); letter-spacing: -.055em; }
+    .prose.has-story-stage :global(.problem-subline) { font-size: 18px; line-height: 1.7; }
+    .prose.has-story-stage :global(.problem > .scene-art) { display: none; }
+    .prose.has-story-stage :global(.story-stage) { display: block; position: sticky; top: max(24px, calc((100svh - 650px) / 2)); height: 70svh; max-height: 650px; min-height: 440px; isolation: isolate; }
+    .prose :global(.stage-canvas) { position: absolute; inset: 6% 0 13%; border-radius: 48% 48% 22px 22px; background: #edf1e6; overflow: hidden; }
+    .prose :global(.stage-canvas::before) { content: ''; position: absolute; inset: 0; background-image: linear-gradient(#cbd5bf55 1px, transparent 1px), linear-gradient(90deg, #cbd5bf55 1px, transparent 1px); background-size: 30px 30px; mask-image: linear-gradient(transparent, #000 55%); }
+    .prose :global(.stage-layer) { position: absolute; inset: 0; opacity: 0; transform: translateX(35px) rotate(3deg) scale(.94); transition: opacity .45s ease, transform .65s cubic-bezier(.2,.75,.2,1); pointer-events: none; }
+    .prose :global(.stage-layer.was-current) { transform: translateX(-35px) rotate(-3deg) scale(.96); }
+    .prose :global(.stage-layer.is-current) { opacity: 1; transform: none; z-index: 1; }
+    .prose :global(.stage-layer img) { position: absolute; inset: 12% 0 auto; width: 100%; height: 67%; object-fit: contain; max-width: none; }
+    .prose :global(.stage-number) { position: absolute; left: 25px; bottom: 8px; font: 650 clamp(90px, 10vw, 155px)/1 var(--display); letter-spacing: -.08em; color: #ccd8b9; }
+    .prose :global(.stage-date) { position: absolute; right: 25px; bottom: 29px; font: 10px var(--mono); color: var(--green); }
+    .prose :global(.stage-nav) { position: absolute; bottom: 3%; left: 0; right: 0; display: flex; justify-content: space-between; gap: 9px; }
+    .prose :global(.stage-nav a) { flex: 1; text-decoration: none; font: 10px var(--mono); color: var(--muted); border-top: 2px solid #d4ddc8; padding-top: 14px; transition: color .25s, border-color .25s; }
+    .prose :global(.stage-nav a[aria-current="step"]) { color: var(--green); border-color: var(--green); }
+    .story-next { margin-left: 34px; }
+  }
   @media (prefers-reduced-motion: reduce) {
+    .prose :global(.stage-layer) { transform: none; transition: none; }
     .prose :global(.scene-art), .prose :global(.problem::before), .prose :global(.problem-detail summary svg) { transform: none !important; transition: none; }
   }
   @media print {
     .story-progress { display: none; }
     .prose :global(.problem) { min-height: 0; padding-block: 30px; break-inside: avoid; }
     .prose :global(.scene-art) { position: static; transform: none; }
+    .prose.has-story-stage { display: block; }
+    .prose.has-story-stage :global(.problem) { min-height: 0; padding-block: 30px; }
+    .prose.has-story-stage :global(.problem > .scene-art) { display: block; }
+    .prose.has-story-stage :global(.story-stage) { display: none; }
   }
 </style>
