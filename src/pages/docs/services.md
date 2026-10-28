@@ -39,12 +39,12 @@ wtc svc add web --port-env PORT -- sh -c 'exec npm run dev -- --port "$PORT"'
 
 Disable self-daemonization: the command must stay in the foreground. Local definitions live in `.wtc/svc/<repo>.yaml` and are not committed. Use `--shared` only to deliberately write the repository’s `.harness/dekit.tasks.yaml`.
 
-## Discovery before first start (merged, unreleased)
+## Discovery before first start in v0.1.62
 
-The [merged service discovery contract](https://github.com/lcorneliussen/wtc-cli/blob/41d5ed32237f9e6e78cf9913ef6e2ac2165f88dc/docs/service-discovery.md)
-describes unreleased behavior after [published v0.1.61](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.61).
-It requires a build containing that source; setup and start examples elsewhere
-on this page retain their labeled release baselines.
+[Published v0.1.62](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.62)
+includes [service declaration discovery](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.62/docs/service-discovery.md),
+verified on 2026-10-28. The behavior below applies from v0.1.62; setup and start
+examples elsewhere on this page retain their labeled release baselines.
 
 `wtc svc`, `wtc svc status` and the initial status inventory include declarations
 before their first render or start. Discovery reads checked-out repositories'
