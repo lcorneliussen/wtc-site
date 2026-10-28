@@ -198,6 +198,8 @@ wtc svc
 
 The command must listen on the port supplied by `PORT`; wrap the existing launch command if it needs a CLI port flag. Service status appears with the collection. Tunnels are a separate opt-in action. See [Services and previews](../services/) for prerequisites, ports, and shutdown.
 
+<div id="upcoming-compact-next-steps"></div>
+
 ## Compact next steps (v0.1.62)
 
 These controls are included in [v0.1.62](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.62).
