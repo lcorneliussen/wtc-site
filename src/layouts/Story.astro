@@ -68,18 +68,6 @@ const base = import.meta.env.BASE_URL;
   .prose :global(.post-author small) { display: block; color: var(--muted); font-size: 10px; }
   .prose :global(.post-card blockquote) { margin: 19px 0; padding: 0; border: 0; background: none; color: var(--ink); font-size: 16px; line-height: 1.7; }
   .prose :global(.post-meta) { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: 10px; color: var(--muted); }
-  .prose :global(.collection-map) { margin: 25px 0; padding: 18px; border: 1px solid #cbd6bd; background: #eff3e7; border-radius: 8px; }
-  .prose :global(.collection-owner) { padding-bottom: 14px; border-bottom: 1px solid #d3ddc7; }
-  .prose :global(.collection-owner > span) { display: block; margin-bottom: 7px; font: 10px/1.6 var(--mono); }
-  .prose :global(.collection-owner code) { display: inline-block; margin-right: 9px; padding: 0; background: none; font-size: 10px; }
-  .prose :global(.collection-tasks) { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
-  .prose :global(.task-example) { min-width: 0; padding: 12px; background: var(--paper); border: 1px solid #d3ddc7; border-radius: 6px; }
-  .prose :global(.task-example > span) { display: block; font: 9px var(--mono); color: var(--muted); }
-  .prose :global(.task-example > strong) { display: block; font: 600 10px var(--mono); margin-top: 10px; }
-  .prose :global(.task-example ul) { list-style: none; margin: 12px 0 0; padding: 0 0 0 10px; border-left: 1px solid #c6d0b9; }
-  .prose :global(.task-example li) { line-height: 1.8; }
-  .prose :global(.task-example code) { background: none; padding: 0; font-size: 10px; }
-  .prose :global(.collection-map figcaption) { margin-top: 15px; font-size: 11px; color: var(--muted); }
   .story-next { margin-left: 130px; border-top: 1px solid var(--line); padding-top: 30px; }
   .story-next > div { display: flex; flex-wrap: wrap; gap: 25px; align-items: center; }
   @media (max-width: 1000px) {
@@ -103,7 +91,6 @@ const base = import.meta.env.BASE_URL;
     .story-next { margin-left: 25px; }
   }
   @media (max-width: 420px) {
-    .prose :global(.collection-tasks) { grid-template-columns: 1fr; }
     .prose :global(.post-card) { padding: 17px; }
     .story-next > div { align-items: flex-start; flex-direction: column; gap: 20px; }
   }
