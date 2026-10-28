@@ -33,6 +33,29 @@ See the [upstream command contract](https://github.com/lcorneliussen/wtc-cli/blo
 for the v0.1.60 behavior. Other examples on this page retain their labeled
 v0.1.51 baseline.
 
+### Running CLI version (merged, unreleased)
+
+This behavior is merged in [CLI #261](https://github.com/lcorneliussen/wtc-cli/pull/261),
+after [published v0.1.61](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.61).
+It is not yet released; it applies to builds containing that merge. The other
+examples on this page retain their labeled release baselines.
+
+The live header keeps `wtc status` together, followed by the collection and
+refresh timing, then the running CLI version as a muted suffix. The suffix is
+available before the first refresh finishes and during refresh failures. Narrow
+terminals may clip it to preserve the primary title and timing. Stable versions
+link to their matching release notes through a native terminal hyperlink
+(modifier-click in supporting terminals). Dev, prerelease and unknown versions
+do not invent release links.
+
+The version identifies the running process, independently of the harness pin or
+a newer installed binary. Local JSON adds the optional `cli_version` field to
+schema 1; Markdown and one-shot tables show the snapshot producer too.
+`--cached` preserves that producer's version, while the live TUI always shows
+its own running version. Older snapshots without the field have an unknown
+producer. See the [merged status-version contract](https://github.com/lcorneliussen/wtc-cli/blob/e330a0739c3f85b75bd61f5c082a5f5d12aec228/docs/status-version.md)
+for the complete behavior and limits.
+
 ## Team setup and guidance
 
 | Command | Use it to |
