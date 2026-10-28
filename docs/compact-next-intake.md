@@ -13,3 +13,14 @@ The OpenClaw handbook covers row-local actions, stable status groups, direct col
 | `cmd/wtc/status_next.go` | `bf65317f21897bf5f3df9e2bcb330f76ad204de90212366f056fecafd8aa2716` |
 | `cmd/wtc/status_tui.go` | `638056aaf8cb3637dcb18f4431b237dd5d31de462f2308b06c893fbed48bfa86` |
 | `internal/wtc/release-notes/unreleased/260-compact-next.md` | `a8fbdb19a178f0555ee1ef0795244bfc9c61fc1c03c9a7c2f71505df5c0cde11` |
+
+## Visible-control follow-up
+
+Reviewed public CLI revision `2e5772d4eff662d55cc99b6c8037b11a0f21ad24` (PR #264). Small outlined actions and collection shortcuts are distinct from status text. Normal-width rows keep repository, branch, status and progress on one line; narrow views fold facts when needed. Service layout and action/publication authority are unchanged. The handbook records this visual refinement without changing release baselines.
+
+| Reviewed source | SHA-256 |
+| --- | --- |
+| `docs/openclaw.md` | `f1eec5b5779f0c2acbe67acd9fc0a8bbda1ed8608e846e8f23c636679e0f93cc` |
+| `docs/next-actions-plan.md` | `3c24b536e10d1e8cc6a98df4490d7682b87d0015b5757f9894f37dc97dbf5240` |
+| `openclaw-plugin/dist/control-ui/v1/index.js` | `42e9e4ed6a4f7be9acd3eb820c9cb67abf43b18c95996d815e121d3b0764821e` |
+| `internal/wtc/release-notes/unreleased/260-visible-actions.md` | `f96d20ed868690faf5ce5404eabe336d490c8d7c0ca5a1e37d786dc94dc54765` |

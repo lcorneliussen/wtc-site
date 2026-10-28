@@ -206,8 +206,10 @@ and panel, refined by [CLI PR #244](https://github.com/lcorneliussen/wtc-cli/pul
 and the compact layout in [CLI PR #262](https://github.com/lcorneliussen/wtc-cli/pull/262).
 These changes are not part of the v0.1.60 release described above.
 
-The next step sits beside its repository, with changes and PR status in stable
-groups. Click that affordance to act on one repository, or use a small shortcut
+The next step is a small outlined control beside its repository, with changes
+and PR status in stable groups. Normal-width views use one line per repository,
+including its branch and progress; narrow views fold facts when needed. Click
+that affordance to act on one repository, or use a small shortcut
 such as **Catch up 2 repos →** to run the current recommendations together.
 Catch-up starts on the first click. **Choose steps…** reveals alternatives and
 mixed selections: choose per repository or use **Select suggested**, then
