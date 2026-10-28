@@ -259,14 +259,18 @@ keep it. See the [v0.1.62 recovery contract](https://github.com/lcorneliussen/wt
 for the exact procedure. Automatic recovery of an unknown created ID and full
 Bitbucket writable-contract certification remain separate work.
 
-#### Review audience defaults (merged, unreleased)
+#### Review audience defaults in v0.1.61
 
-The [review audience change](https://github.com/lcorneliussen/wtc-cli/blob/f746dc90d833773b03a8a5b7961dd04fbddf0ff4/docs/review-audiences.md) is merged on main after v0.1.60 and has not yet been published in a release. The defaults below apply to builds containing that change. In published v0.1.60, bundles default to private mode: explicitly pass `--public` for public or unknown targets.
+The [review audience defaults](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.61/docs/review-audiences.md)
+are available from [published v0.1.61](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.61)
+and are also included in v0.1.62, verified on 2026-10-28. In published v0.1.60,
+bundles default to private mode: explicitly pass `--public` for public or unknown
+targets.
 
-The merged behavior selects public mode for public or unknown repository visibility, another forge namespace, or an unknown harness namespace. Only a confirmed private target in the harness namespace defaults to private mode.
+From v0.1.61, the default is public mode for public or unknown repository visibility, another forge namespace, or an unknown harness namespace. Only a confirmed private target in the harness namespace defaults to private mode.
 
 Public mode takes concerns from the target repository's review base commit, or CLI defaults, and uses embedded prompts. It excludes harness overlays, other repository snapshots, related patches, and private review rounds. `--public` forces isolation; `--private` explicitly includes harness context for local analysis. Progress and verdict comments show the mode, and posting a private bundle requires fresh private visibility. `--force` cannot bypass that check.
 
-Normally the upstream project runs its own gate. A consuming harness should not impose its internal rules on an upstream contribution. Public mode still requires inspection of generated prose. See the [merged audience contract](https://github.com/lcorneliussen/wtc-cli/blob/f746dc90d833773b03a8a5b7961dd04fbddf0ff4/docs/review-audiences.md) for details.
+Normally the upstream project runs its own gate. A consuming harness should not impose its internal rules on an upstream contribution. Public mode still requires inspection of generated prose. See the [v0.1.61 audience contract](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.61/docs/review-audiences.md) for details.
 
 See the [complete upstream command reference](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.51/docs/commands.md) for these advanced workflows.
