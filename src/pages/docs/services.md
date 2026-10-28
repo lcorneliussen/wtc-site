@@ -39,6 +39,45 @@ wtc svc add web --port-env PORT -- sh -c 'exec npm run dev -- --port "$PORT"'
 
 Disable self-daemonization: the command must stay in the foreground. Local definitions live in `.wtc/svc/<repo>.yaml` and are not committed. Use `--shared` only to deliberately write the repository’s `.harness/dekit.tasks.yaml`.
 
+## Discovery before first start (merged, unreleased)
+
+The [merged service discovery contract](https://github.com/lcorneliussen/wtc-cli/blob/41d5ed32237f9e6e78cf9913ef6e2ac2165f88dc/docs/service-discovery.md)
+describes unreleased behavior after [published v0.1.61](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.61).
+It requires a build containing that source; setup and start examples elsewhere
+on this page retain their labeled release baselines.
+
+`wtc svc`, `wtc svc status` and the initial status inventory include declarations
+before their first render or start. Discovery reads checked-out repositories'
+committed `.harness/dekit.tasks.yaml` and collection-local `.wtc/svc/<repo>.yaml`
+additions. A repository must be a Git worktree in the collection. New siblings'
+tasks appear beside existing runtime observations. Workspace-wide status uses
+the same merge even when a collection's manifest is absent or invalid, or its
+trusted runtime binary is unavailable; its trusted-binary rule and diagnostics
+still apply.
+
+A declared task absent from the runtime manifest is `unconfigured`: it has not
+been imported into this collection's runtime configuration. That means neither
+failure nor a running service. Names remain qualified by repository, so two
+repositories can declare the same task name. Existing observations at the same
+path take precedence, preserving failures, live URLs, resource states and tunnel
+choices.
+
+Discovery parses declarations without executing task commands, hooks, resource
+commands, shell environment files or runtime planning. It does not render
+configuration, create runtime state, link secrets, or start, reload or stop a
+runner. Existing runtime status queries and health observations still apply to
+recorded tasks; a new declaration causes no provider login query or address
+probe.
+
+Malformed YAML, invalid task names, duplicate shared/local names or symlinked
+definition files/directories inside a checkout produce an `unknown`
+configuration diagnostic for that repository. Other repositories and recorded
+tasks remain visible; missing task files are normal. Gateway repository links
+are supported, with shared files checked inside the resolved checkout and local
+additions inside the collection. Inventory does not validate runnable
+configuration: environment variables, working directories, runtime options and
+environment-derived URLs still need an explicit render/start operation.
+
 ## Inspect, restart, stop
 
 ```sh
