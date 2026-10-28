@@ -200,26 +200,27 @@ The command must listen on the port supplied by `PORT`; wrap the existing launch
 
 ## Upcoming: compact next steps
 
-The development work in [CLI PR #219](https://github.com/lcorneliussen/wtc-cli/pull/219)
-adds recommendations, alternatives and mixed selections to the Collection card
-and panel, refined by [CLI PR #244](https://github.com/lcorneliussen/wtc-cli/pull/244)
-and the compact layout in [CLI PR #262](https://github.com/lcorneliussen/wtc-cli/pull/262).
+Development builds add the [current compact collection controls](https://github.com/lcorneliussen/wtc-cli/blob/082dfaa0971db5bfdb118708cbb7046f91e28d26/docs/openclaw.md#select-next-actions).
 These changes are not part of the v0.1.60 release described above.
 
-The next step is a small outlined control beside its repository, with changes
-and PR status in stable groups. Normal-width views use one line per repository,
-including its branch and progress; narrow views fold facts when needed. Click
-that affordance to act on one repository, or use a small shortcut
-such as **Catch up 2 repos →** to run the current recommendations together.
-Catch-up starts on the first click. **Choose steps…** reveals alternatives and
-mixed selections: choose per repository or use **Select suggested**, then
-**Run selected**. **Done choosing** restores the compact view, where **Run chosen**
-retains an existing selection. Publication
-selections show a preview and retain each repository's account/commit confirmation.
-Dispatch rechecks the same selected actions; a stale target is reported rather than silently replaced. Newly appearing repositories
-do not join an existing selection. Each target runs one step. Selected author
-tasks are handed to the conversation in one sequential prompt, with completion
-still pending; other successful results remain intact when a target fails.
+The card keeps dense repository rows without visible column headers. Small
+outlined actions have clear hover/focus feedback. The top-bar action remains
+available when collapsed to one line; **⋯** opens alternatives and mixed
+selections. Catch-up runs locally on the first click. On an observed open PR,
+**Update PR** / **Push** prepares publication with your personal confirmation.
+The local collection CLI already pushes merges to open or draft PR branches.
+
+Each row shows its current PR. Other active PRs are muted number links;
+completed PRs appear as a **(+3)** button that opens the full collection PR list
+in the taba sidebar. The conversation card keeps that full list out of the way.
+
+For mixed selections, choose per repository or use **Select suggested**, then
+**Run selected**. **Done choosing** restores the compact view. Publication keeps
+each repository's account/commit confirmation. Dispatch rechecks exact selected
+targets; new repositories do not join a captured selection. Clean catch-up runs
+deterministically. If a fetch reveals merge conflicts, the current resolution
+step is rechecked before handing it to the named catch-up skill. Other author
+tasks are grouped into one handoff; acceptance remains pending completion.
 
 Publication keeps its own per-repository personal confirmation. **Cancel queued**
 stops remaining dispatches and does not undo active work. Unchanged handoffs stay

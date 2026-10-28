@@ -24,3 +24,14 @@ Reviewed public CLI revision `2e5772d4eff662d55cc99b6c8037b11a0f21ad24` (PR #264
 | `docs/next-actions-plan.md` | `3c24b536e10d1e8cc6a98df4490d7682b87d0015b5757f9894f37dc97dbf5240` |
 | `openclaw-plugin/dist/control-ui/v1/index.js` | `42e9e4ed6a4f7be9acd3eb820c9cb67abf43b18c95996d815e121d3b0764821e` |
 | `internal/wtc/release-notes/unreleased/260-visible-actions.md` | `f96d20ed868690faf5ce5404eabe336d490c8d7c0ca5a1e37d786dc94dc54765` |
+
+## Dense header and PR-history refinement
+
+Reviewed public CLI source `082dfaa0971db5bfdb118708cbb7046f91e28d26` (PR #264). The handbook now links the canonical current CLI contract instead of growing an exhaustive PR-history introduction. It covers dense rows without visible column headings, always-available top-bar controls, strong hover/focus feedback, current/other-active/completed PR hints and sidebar history, direct mechanical catch-up with a checked conflict-resolution handoff, and explicit local-merge versus personal-publication semantics. This file is contributor source-review bookkeeping, not a user workflow or an executable plan. Release baselines remain unchanged.
+
+| Reviewed source | SHA-256 |
+| --- | --- |
+| `docs/openclaw.md` | `0ff2ef9a9957d87b3167bdf1ab5663005dfdfc81033df9406e31073cf1465d66` |
+| `docs/next-actions-plan.md` | `39045446687a6b14e272ff2b96b44eeb2986a69b98eead57a131fddfe4a40875` |
+| `openclaw-plugin/dist/control-ui/v1/index.js` | `79749ef4db4f751217815f666ff2858bacebb05fd4f059a6c5c545ff756d00b5` |
+| `internal/wtc/release-notes/unreleased/260-visible-actions.md` | `ed4df9ce3f25b449a8200d2643c610f717bfb73f28b9f2e1b1bc714c5d6346ca` |
