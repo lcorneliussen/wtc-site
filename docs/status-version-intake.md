@@ -4,11 +4,16 @@ Reviewed [CLI #261](https://github.com/lcorneliussen/wtc-cli/pull/261) at merge
 `e330a0739c3f85b75bd61f5c082a5f5d12aec228`, containing final source revision
 `df086a25e8074a695734319e31fbff2a7dfefa52`.
 
-The latest published CLI release was verified as
-[v0.1.61](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.61) on
-2026-10-28 through the official GitHub Releases API. This change is merged on
-main after that release and remains **unreleased**. The command handbook labels
-it accordingly; no install pins or coverage baseline are promoted.
+The initial review verified v0.1.61 as the latest published release and labeled
+this feature merged/unreleased. On 2026-10-28, the official GitHub Releases API
+verified [published v0.1.62](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.62).
+Its tag includes the original merge. The handbook now labels the feature
+available from v0.1.62 and links the
+[tag-pinned contract](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.62/docs/status-version.md).
+The contract's SHA-256 remains
+`069e19cfaaeb81c7ed7dab703a81a240edf3a65c7df0f15506218a40f2938d6b`.
+See the [focused publication intake](release-intake-0.1.62.md) for tag and release
+verification. No install pins or coverage baseline are promoted.
 
 ## Coverage decision
 
@@ -20,8 +25,8 @@ Existing OpenClaw version/mismatch displays are outside this update.
 
 Broader CLI #92 dev-source freshness, replaced-running-binary detection and
 ignored dev-build diagnostics remain deferred. This intake does not claim those
-checks or a published release. When an official release contains this merge,
-verify publication before relabeling the handbook section.
+checks; publication of the version display does not imply those deferred
+diagnostics are implemented.
 
 The existing coverage inventory and install examples retain their labeled
 v0.1.51 baseline. Structural coverage, coverage-tool tests, Astro diagnostics,
@@ -29,7 +34,9 @@ static build and generated-page link checks validate this documentation slice.
 
 ## Source fingerprints
 
-All source bytes below were read from the exact public merge revision above.
+The historical implementation fingerprints below identify the exact original
+public merge revision above. Only the contract fingerprint is asserted unchanged
+at v0.1.62; the publication intake records the released source.
 
 | Source | SHA-256 |
 | --- | --- |
