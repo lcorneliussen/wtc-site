@@ -35,3 +35,15 @@ Reviewed public CLI source `082dfaa0971db5bfdb118708cbb7046f91e28d26` (PR #264).
 | `docs/next-actions-plan.md` | `39045446687a6b14e272ff2b96b44eeb2986a69b98eead57a131fddfe4a40875` |
 | `openclaw-plugin/dist/control-ui/v1/index.js` | `79749ef4db4f751217815f666ff2858bacebb05fd4f059a6c5c545ff756d00b5` |
 | `internal/wtc/release-notes/unreleased/260-visible-actions.md` | `ed4df9ce3f25b449a8200d2643c610f717bfb73f28b9f2e1b1bc714c5d6346ca` |
+
+
+## Fixed columns and sidebar activity
+
+Reviewed public CLI source `1c6176fa1a8af546f7f35b122fa604c2f9ce7890` (PR #264). Normal-width repository rows use separate fixed name, branch, changes, PR and action columns with the header action aligned above row actions. Completed PR hints say **History 3**, avoiding a local-change interpretation. Batch rows show one phase, the chooser closes after dispatch, and a named completion control opens the shared sidebar action log. This is browser-session feedback, not durable job history.
+
+Source SHA-256:
+
+- `docs/openclaw.md`: `5f9f5fe6e9df313e0e782d296b9e690823a5de280886898f84fdb11c8d24eb37`
+- `docs/next-actions-plan.md`: `307651becf557f65a4cee5aef793b2d2245104e2689944911654026637cbcb69`
+- `openclaw-plugin/dist/control-ui/v1/index.js`: `64a054bb1a5d09ee6075940d5751a9e3051081d0701c745169ad2da60c3274d0`
+- `openclaw-plugin/test/control-ui.test.mjs`: `1fc2e44ef17eef5709d225521d33003c7e6244bfb00b4bd36e34d54d6a88818a`

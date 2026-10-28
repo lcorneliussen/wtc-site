@@ -200,10 +200,12 @@ The command must listen on the port supplied by `PORT`; wrap the existing launch
 
 ## Upcoming: compact next steps
 
-Development builds add the [current compact collection controls](https://github.com/lcorneliussen/wtc-cli/blob/082dfaa0971db5bfdb118708cbb7046f91e28d26/docs/openclaw.md#select-next-actions).
+Development builds add the [current compact collection controls](https://github.com/lcorneliussen/wtc-cli/blob/1c6176fa1a8af546f7f35b122fa604c2f9ce7890/docs/openclaw.md#select-next-actions).
 These changes are not part of the v0.1.60 release described above.
 
-The card keeps dense repository rows without visible column headers. Small
+The card keeps dense repository rows without visible column headers. At normal
+widths the name, branch, changes, PR and next action occupy separate fixed
+columns; the top action aligns above the row actions. Small
 outlined actions have clear hover/focus feedback. The top-bar action remains
 available when collapsed to one line; **⋯** opens alternatives and mixed
 selections. Catch-up runs locally on the first click. On an observed open PR,
@@ -211,12 +213,16 @@ selections. Catch-up runs locally on the first click. On an observed open PR,
 The local collection CLI already pushes merges to open or draft PR branches.
 
 Each row shows its current PR. Other active PRs are muted number links;
-completed PRs appear as a **(+3)** button that opens the full collection PR list
+completed PRs appear as a **History 3** button that opens the full collection PR list
 in the taba sidebar. The conversation card keeps that full list out of the way.
+During a batch, rows show one phase and the top bar shows progress. A completion
+control such as **Caught up 2** opens the detailed sidebar **Action log**. The log
+is shared by views of that collection in the current browser session; it does
+not persist across reloads.
 
 For mixed selections, choose per repository or use **Select suggested**, then
-**Run selected**. **Done choosing** restores the compact view. Publication keeps
-each repository's account/commit confirmation. Dispatch rechecks exact selected
+**Run selected**. **Done choosing** restores the compact view; dispatch also
+closes the chooser when it finishes. Dispatch rechecks exact selected
 targets; new repositories do not join a captured selection. Clean catch-up runs
 deterministically. If a fetch reveals merge conflicts, the current resolution
 step is rechecked before handing it to the named catch-up skill. Other author
