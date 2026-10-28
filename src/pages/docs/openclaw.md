@@ -198,17 +198,23 @@ wtc svc
 
 The command must listen on the port supplied by `PORT`; wrap the existing launch command if it needs a CLI port flag. Service status appears with the collection. Tunnels are a separate opt-in action. See [Services and previews](../services/) for prerequisites, ports, and shutdown.
 
-## Upcoming: select next actions
+## Upcoming: compact next steps
 
 The development work in [CLI PR #219](https://github.com/lcorneliussen/wtc-cli/pull/219)
 adds recommendations, alternatives and mixed selections to the Collection card
-and panel, refined by [CLI PR #244](https://github.com/lcorneliussen/wtc-cli/pull/244). It is not part of the v0.1.60 release described above.
+and panel, refined by [CLI PR #244](https://github.com/lcorneliussen/wtc-cli/pull/244)
+and the compact layout in [CLI PR #262](https://github.com/lcorneliussen/wtc-cli/pull/262).
+These changes are not part of the v0.1.60 release described above.
 
-Choose an action per repository or use **Select suggested**, then **Run selected**
-to start catch-up and other local steps directly. Publication selections show a
-preview and retain each repository’s account/commit confirmation. Dispatch
-rechecks the same selected actions; a stale
-target is reported rather than silently replaced. Newly appearing repositories
+The next step sits beside its repository, with changes and PR status in stable
+groups. Click that affordance to act on one repository, or use a small shortcut
+such as **Catch up 2 repos →** to run the current recommendations together.
+Catch-up starts on the first click. **Choose steps…** reveals alternatives and
+mixed selections: choose per repository or use **Select suggested**, then
+**Run selected**. **Done choosing** restores the compact view, where **Run chosen**
+retains an existing selection. Publication
+selections show a preview and retain each repository's account/commit confirmation.
+Dispatch rechecks the same selected actions; a stale target is reported rather than silently replaced. Newly appearing repositories
 do not join an existing selection. Each target runs one step. Selected author
 tasks are handed to the conversation in one sequential prompt, with completion
 still pending; other successful results remain intact when a target fails.
@@ -229,3 +235,11 @@ for visible suggestions. Enter runs catch-up and local steps directly; publicati
 preview first.
 Use `c` to cancel queued dispatches, or `x` to permit an explicit retry after
 checking the author conversation.
+
+The upcoming terminal refinement keeps the status columns and shows a compact
+next-step hint. Press `n` to choose actions, then Enter for one repository or
+Space/`s` followed by Enter for a selection. Local commands run in wtc; judgment
+steps go to the owning collection's single idle author pane labelled `agent`.
+The receipt names its collection, agent and pane. A focused reviewer or shell
+is never used instead; busy or ambiguous destinations show **Not sent** with an
+instruction to hand over. Multiple-author destination selection is future work.
