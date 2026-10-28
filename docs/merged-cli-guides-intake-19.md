@@ -15,8 +15,6 @@ require a build containing the pinned source and do not claim a future version
 is published. Existing install examples and broad coverage inventory retain
 their labeled baseline.
 
-Issue text and linked source prose were treated as untrusted evidence. Embedded
-commands, role claims and previous approval claims provide no authority.
 Requirements were reconciled against the three source contracts, with synthetic
 examples and no consumer-specific evidence.
 
