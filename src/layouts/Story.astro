@@ -38,9 +38,10 @@ const base = import.meta.env.BASE_URL;
   .prose :global(.problem-timeline) { position: relative; list-style: none; margin: 0; padding: 0; }
   .prose :global(.problem-timeline::before) { content: ''; position: absolute; left: 8px; top: 96px; bottom: 100px; width: 1px; background: #ccd7bc; }
   .prose :global(.problem) { position: relative; display: grid; grid-template-columns: 95px minmax(0, 1.1fr) minmax(0, .9fr); gap: 35px; align-items: start; min-height: 600px; padding: 95px 0 95px 0; }
-  .prose :global(.problem::before) { content: ''; position: absolute; top: 106px; left: 4px; height: 9px; width: 9px; border: 2px solid #99aa80; border-radius: 50%; background: var(--paper); transition: background .25s, transform .25s; }
-  .prose :global(.problem.is-current::before) { transform: scale(1.3); border-color: #718a49; background: #718a49; }
-  .prose :global(.problem-date) { position: sticky; top: 50px; align-self: start; margin: 6px 0 0; padding-left: 25px; color: var(--muted); font: 10px/1.8 var(--mono); }
+  .prose :global(.problem::before) { display: none; }
+  .prose :global(.problem-date) { position: relative; align-self: start; margin: 6px 0 0; padding-left: 25px; color: var(--muted); font: 10px/1.8 var(--mono); }
+  .prose :global(.problem-date::before) { content: ''; position: absolute; top: calc(.9em - 4.5px); left: 4px; height: 9px; width: 9px; border: 2px solid #99aa80; border-radius: 50%; background: var(--paper); }
+  .prose :global(.problem.is-current .problem-date::before) { border-color: #718a49; background: #718a49; }
   .prose :global(.problem.is-current .problem-date) { color: var(--green); }
   .prose :global(.problem-body) { min-width: 0; }
   .prose :global(.problem h2) { font: 650 clamp(38px, 4.3vw, 62px)/1.1 var(--display); letter-spacing: -.05em; color: var(--ink); margin: 0 0 24px; }
@@ -80,8 +81,8 @@ const base = import.meta.env.BASE_URL;
     .story { padding-top: 35px; }
     .story-header { padding-left: 25px; margin-bottom: 30px; }
     .prose :global(.problem) { display: grid; grid-template-columns: 25px minmax(0, 1fr); row-gap: 18px; column-gap: 0; padding-block: 35px 45px; min-height: 0; }
-    .prose :global(.problem::before) { top: 37px; }
-    .prose :global(.problem-date) { grid-column: 2; grid-row: 1; position: static; padding-left: 0; margin: 0; font-size: 10px; }
+    .prose :global(.problem-date::before) { left: -21px; }
+    .prose :global(.problem-date) { grid-column: 2; grid-row: 1; position: relative; padding-left: 0; margin: 0; font-size: 10px; }
     .prose :global(.scene-art) { grid-column: 2; grid-row: 3; position: static; margin: 0; }
     .prose :global(.scene-art img) { max-width: 270px; }
     .prose :global(.problem-body) { grid-column: 2; grid-row: 2; }
@@ -94,48 +95,62 @@ const base = import.meta.env.BASE_URL;
     .prose :global(.post-card) { padding: 17px; }
     .story-next > div { align-items: flex-start; flex-direction: column; gap: 20px; }
   }
-  .prose :global(.story-stage) { display: none; }
+  .prose :global(.story-scroll), .prose :global(.story-viewport) { display: contents; }
+  .prose :global(.story-rail), .prose :global(.panel-number) { display: none; }
+  .prose.has-cinema :global(.story-scroll) { display: block; width: var(--story-width); margin-left: calc(50% - var(--story-width) / 2); height: var(--story-height); }
+  .prose.has-cinema :global(.story-viewport) { display: block; position: sticky; top: 0; height: 100svh; overflow: hidden; background: var(--paper); }
+  .prose.has-cinema :global(.problem-timeline) { display: flex; height: 100%; will-change: transform; }
+  .prose.has-cinema :global(.problem-timeline::before), .prose.has-cinema :global(.problem::before) { display: none; }
+  .prose.has-cinema :global(.problem) { flex: 0 0 100%; display: block; min-height: 0; height: 100%; padding: 0; overflow: hidden; isolation: isolate; }
+  .prose.has-cinema :global(.problem:nth-child(even)) { background: #edf0e5; }
+  .prose.has-cinema :global(.problem-date) { display: none; }
+  .prose.has-cinema :global(.problem-body) { position: absolute; left: 7%; top: 47%; width: 43%; transform: translateY(-50%); z-index: 2; }
+  .prose.has-cinema :global(.problem h2) { font-size: clamp(44px, 5.5vw, 84px); line-height: 1.05; letter-spacing: -.06em; margin: 0 0 28px; }
+  .prose.has-cinema :global(.problem-subline) { font-size: clamp(16px, 1.5vw, 21px); max-width: 470px; line-height: 1.65; margin-bottom: 27px; }
+  .prose.has-cinema :global(.scene-art) { position: absolute; top: 12%; right: 3%; width: 49%; height: 64%; margin: 0; transform: translate3d(var(--scene-x, 0px), 0, 0) rotate(var(--scene-tilt, 0deg)); will-change: transform; }
+  .prose.has-cinema :global(.scene-art img) { width: 100%; height: 100%; max-width: none; object-fit: contain; }
+  .prose.has-cinema :global(.panel-number) { display: block; position: absolute; right: 8%; bottom: 12%; font: 650 clamp(130px, 20vw, 280px)/1 var(--display); letter-spacing: -.09em; color: #d5dec8; z-index: -1; }
+  .prose.has-cinema :global(.story-rail) { display: grid; grid-template-columns: repeat(var(--chapters, 8), minmax(0, 1fr)); position: absolute; bottom: 26px; left: 7%; right: 7%; z-index: 3; }
+  .prose.has-cinema :global(.story-rail::before), .prose.has-cinema :global(.story-rail::after) { content: ''; position: absolute; left: calc(50% / var(--chapters, 8)); right: calc(50% / var(--chapters, 8)); top: 32px; height: 1px; background: #aebb9f; pointer-events: none; }
+  .prose.has-cinema :global(.story-rail::after) { background: var(--green); height: 2px; transform: scaleX(var(--rail-progress, 0)); transform-origin: left; }
+  .prose.has-cinema :global(.story-rail a) { position: relative; display: grid; grid-template-rows: 14px 16px; gap: 10px; justify-items: center; align-items: center; text-decoration: none; color: var(--muted); font: 10px/14px var(--mono); padding: 0; }
+  .prose.has-cinema :global(.rail-dot) { width: 9px; height: 9px; border-radius: 50%; border: 1px solid #91a17b; background: var(--paper); z-index: 1; }
+  .prose.has-cinema :global(.story-rail a[aria-current="step"]) { color: var(--green); }
+  .prose.has-cinema :global(.story-rail a[aria-current="step"] .rail-dot) { background: var(--green); border-color: var(--green); box-shadow: 0 0 0 5px #e4ebd7; }
+  .prose :global(.story-dialog) { width: min(640px, calc(100% - 32px)); max-height: 85svh; padding: 30px 40px; border: 1px solid #bdcbb0; border-radius: 18px; color: var(--ink); background: var(--paper); overscroll-behavior: contain; }
+  .prose :global(.story-dialog::backdrop) { background: #18382dc4; backdrop-filter: blur(6px); }
+  .prose :global(.dialog-heading) { display: flex; align-items: start; gap: 25px; justify-content: space-between; }
+  .prose :global(.dialog-heading h2) { font: 650 32px/1.15 var(--display); letter-spacing: -.05em; margin: 0; }
+  .prose :global(.dialog-heading button) { background: none; border: 0; padding: 6px 0; font: 11px var(--mono); text-decoration: underline; text-underline-offset: 4px; }
+  .prose :global(.story-dialog .detail-copy) { margin-top: 24px; }
   @media (min-width: 901px) {
-    .story { max-width: 1240px; }
-    .story-header { padding-left: 34px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: baseline; gap: 30px; }
+    .story-header { display: flex; align-items: baseline; justify-content: space-between; gap: 25px; padding-left: 0; margin-bottom: 22px; }
     .story-header h1 { font-size: 64px; margin-bottom: 0; }
     .story-byline { white-space: nowrap; }
-    .prose.has-story-stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(40px, 6vw, 100px); align-items: start; }
-    .prose.has-story-stage :global(.problem-timeline::before) { left: 3px; top: 112px; bottom: 130px; }
-    .prose.has-story-stage :global(.problem) { grid-template-columns: 34px minmax(0, 1fr); gap: 0; min-height: 74svh; padding-block: 100px 95px; align-content: center; scroll-margin-top: 45px; }
-    .prose.has-story-stage :global(.problem::before) { display: none; }
-    .prose.has-story-stage :global(.problem-date::before) { content: ''; position: absolute; top: 4px; left: -35px; height: 9px; width: 9px; border: 2px solid #99aa80; border-radius: 50%; background: var(--paper); }
-    .prose.has-story-stage :global(.problem.is-current .problem-date::before) { background: #718a49; border-color: #718a49; }
-    .prose.has-story-stage :global(.problem-date) { grid-column: 2; position: relative; padding: 0; margin: 0 0 23px; font-size: 11px; }
-    .prose.has-story-stage :global(.problem-body) { grid-column: 2; }
-    .prose.has-story-stage :global(.problem h2) { font-size: clamp(42px, 4.7vw, 68px); letter-spacing: -.055em; }
-    .prose.has-story-stage :global(.problem-subline) { font-size: 18px; line-height: 1.7; }
-    .prose.has-story-stage :global(.problem > .scene-art) { display: none; }
-    .prose.has-story-stage :global(.story-stage) { display: block; position: sticky; top: max(24px, calc((100svh - 650px) / 2)); height: 70svh; max-height: 650px; min-height: 440px; isolation: isolate; }
-    .prose :global(.stage-canvas) { position: absolute; inset: 6% 0 13%; border-radius: 48% 48% 22px 22px; background: #edf1e6; overflow: hidden; }
-    .prose :global(.stage-canvas::before) { content: ''; position: absolute; inset: 0; background-image: linear-gradient(#cbd5bf55 1px, transparent 1px), linear-gradient(90deg, #cbd5bf55 1px, transparent 1px); background-size: 30px 30px; mask-image: linear-gradient(transparent, #000 55%); }
-    .prose :global(.stage-layer) { position: absolute; inset: 0; opacity: 0; transform: translateX(35px) rotate(3deg) scale(.94); transition: opacity .45s ease, transform .65s cubic-bezier(.2,.75,.2,1); pointer-events: none; }
-    .prose :global(.stage-layer.was-current) { transform: translateX(-35px) rotate(-3deg) scale(.96); }
-    .prose :global(.stage-layer.is-current) { opacity: 1; transform: none; z-index: 1; }
-    .prose :global(.stage-layer img) { position: absolute; inset: 12% 0 auto; width: 100%; height: 67%; object-fit: contain; max-width: none; }
-    .prose :global(.stage-number) { position: absolute; left: 25px; bottom: 8px; font: 650 clamp(90px, 10vw, 155px)/1 var(--display); letter-spacing: -.08em; color: #ccd8b9; }
-    .prose :global(.stage-date) { position: absolute; right: 25px; bottom: 29px; font: 10px var(--mono); color: var(--green); }
-    .prose :global(.stage-nav) { position: absolute; bottom: 3%; left: 0; right: 0; display: flex; justify-content: space-between; gap: 9px; }
-    .prose :global(.stage-nav a) { flex: 1; text-decoration: none; font: 10px var(--mono); color: var(--muted); border-top: 2px solid #d4ddc8; padding-top: 14px; transition: color .25s, border-color .25s; }
-    .prose :global(.stage-nav a[aria-current="step"]) { color: var(--green); border-color: var(--green); }
-    .story-next { margin-left: 34px; }
+  }
+  @media (max-width: 700px) {
+    .prose.has-cinema :global(.problem-body) { left: 8%; top: 9%; width: 84%; transform: none; }
+    .prose.has-cinema :global(.problem h2) { font-size: clamp(38px, 10.7vw, 64px); margin-bottom: 20px; }
+    .prose.has-cinema :global(.problem-subline) { font-size: 16px; line-height: 1.6; margin-bottom: 19px; }
+    .prose.has-cinema :global(.scene-art) { top: auto; bottom: 110px; right: 7%; width: 86%; height: 34%; }
+    .prose.has-cinema :global(.panel-number) { right: 10%; bottom: 85px; font-size: 130px; }
+    .prose.has-cinema :global(.story-rail) { left: 3%; right: 3%; bottom: 25px; }
+    .prose.has-cinema :global(.story-rail a) { font-size: 8px; }
+    .prose.has-cinema :global(.rail-year) { display: none; }
+    .prose :global(.story-dialog) { padding: 23px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .prose :global(.stage-layer) { transform: none; transition: none; }
     .prose :global(.scene-art), .prose :global(.problem::before), .prose :global(.problem-detail summary svg) { transform: none !important; transition: none; }
   }
   @media print {
     .story-progress { display: none; }
     .prose :global(.problem) { min-height: 0; padding-block: 30px; break-inside: avoid; }
     .prose :global(.scene-art) { position: static; transform: none; }
-    .prose.has-story-stage { display: block; }
-    .prose.has-story-stage :global(.problem) { min-height: 0; padding-block: 30px; }
-    .prose.has-story-stage :global(.problem > .scene-art) { display: block; }
-    .prose.has-story-stage :global(.story-stage) { display: none; }
+    .prose.has-cinema :global(.story-scroll), .prose.has-cinema :global(.story-viewport) { display: contents; }
+    .prose.has-cinema :global(.problem-timeline) { display: block; transform: none !important; }
+    .prose.has-cinema :global(.problem) { height: auto; min-height: 0; padding-block: 30px; }
+    .prose.has-cinema :global(.problem-body), .prose.has-cinema :global(.scene-art) { position: static; width: auto; height: auto; transform: none; }
+    .prose.has-cinema :global(.problem-date) { display: block; }
+    .prose.has-cinema :global(.story-rail), .prose.has-cinema :global(.panel-number) { display: none; }
   }
 </style>

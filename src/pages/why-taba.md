@@ -3,13 +3,13 @@ layout: ../layouts/Story.astro
 title: Why taba
 description: One task, several repositories. Scattered worktrees, parallel environments and a growing review queue led to taba.
 author: Lars Corneliussen
-updated: '2026-10-28'
+updated: '2026-10-29'
 ---
 
 <ol class="problem-timeline">
 
 <li class="problem" id="early" aria-labelledby="early-title">
-<p class="problem-date"><time datetime="2026-08-12">12 Aug 2026</time></p>
+<p class="problem-date"><span>Before herdr</span></p>
 <div class="problem-body">
 
 <h2 id="early-title">Agents hate multirepo setups</h2>
@@ -34,6 +34,31 @@ A worktree collection gives the task its own folder, with the repositories it ne
 </details>
 </div>
 <div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/early.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
+</li>
+
+<li class="problem" id="spaces" aria-labelledby="spaces-title">
+<p class="problem-date"><time datetime="2026-08-11">11 Aug 2026</time></p>
+<div class="problem-body">
+
+<h2 id="spaces-title">Folders weren't enough</h2>
+<p class="problem-subline">Repositories had task folders. Conversations and terminals needed a place of their own.</p>
+
+<details class="problem-detail" aria-labelledby="spaces-title">
+<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
+<div class="detail-copy">
+
+Collection folders already held the repositories for each task. Cursor was still part of the workflow before the move to herdr spaces.
+
+Herdr grouped the task's terminals and agent conversations into a workspace. The collection had a place on screen as well as a place on disk.
+
+Later, herdr and the tailnet also let work keep running on the office machine while another device connected to it.
+
+<div class="record-links"><span>Herdr</span><ul><li><a href="https://herdr.dev/">Workspaces and remote agents</a></li></ul></div>
+
+</div>
+</details>
+</div>
+<div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/spaces.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
 </li>
 
 <li class="problem" id="copies" aria-labelledby="copies-title">
