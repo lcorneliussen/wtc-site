@@ -239,7 +239,7 @@ const request = async (method, params) => {
     await writeFile(new URL('capture-timeline.txt',dir),timeline);
     const videoName=id+'.webm';
     execFileSync('ffmpeg',['-v','error','-y','-f','concat','-safe','0','-i',fileURLToPath(new URL('capture-timeline.txt',dir)),'-fps_mode','vfr','-c:v','libvpx-vp9','-threads','2','-crf','24','-b:v','0',fileURLToPath(new URL(videoName,output))]);
-    execFileSync('ffmpeg',['-v','error','-i',fileURLToPath(new URL(videoName,output)),'-f','null','-']);
+    execFileSync('ffmpeg',['-v','error','-i',fileURLToPath(new URL(videoName,output)),'-fps_mode','passthrough','-f','null','-']);
     const encoded=JSON.parse(execFileSync('ffprobe',['-v','error','-select_streams','v:0','-show_frames','-show_entries','frame=best_effort_timestamp_time','-of','json',fileURLToPath(new URL(videoName,output))],{encoding:'utf8'})).frames;
     if(encoded.length!==frames.length+1||frames.some((frame,i)=>Math.abs(Number(encoded[i].best_effort_timestamp_time)-(frame.timestamp-frames[0].timestamp))>.002))throw Error('Encoding dropped capture frames or changed their timestamps');
     const verifier=await browser.newContext();
