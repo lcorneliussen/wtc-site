@@ -198,10 +198,13 @@ wtc svc
 
 The command must listen on the port supplied by `PORT`; wrap the existing launch command if it needs a CLI port flag. Service status appears with the collection. Tunnels are a separate opt-in action. See [Services and previews](../services/) for prerequisites, ports, and shutdown.
 
-## Upcoming: compact next steps
+<div id="upcoming-compact-next-steps"></div>
 
-Development builds add the [current compact collection controls](https://github.com/lcorneliussen/wtc-cli/blob/df16007279253e689549e25a18c1269288e30883/docs/openclaw.md#select-next-actions).
-These changes are not part of the v0.1.60 release described above.
+## Compact next steps (v0.1.62)
+
+These controls are included in [v0.1.62](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.62).
+See the [released compact-controls contract](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.62/docs/openclaw.md#select-next-actions).
+The screenshots above retain their documented historical source.
 
 The card keeps dense repository rows without visible column headers. At normal
 widths the name, branch, changes, PR and next action occupy separate fixed
@@ -222,7 +225,9 @@ in the taba sidebar. The conversation card keeps that full list out of the way.
 During a batch, rows show one phase and the top bar shows progress. A completion
 control such as **Caught up 2** opens the detailed sidebar **Action log**. The log
 is shared by views of that collection in the current browser session; it does
-not persist across reloads.
+not persist across reloads. In the Collection sidebar, action controls have their
+own row below the collection details. Services precede Action log, and both use
+the same section-heading emphasis.
 
 For mixed selections, choose per repository or use **Select suggested**, then
 **Run selected**. **Done choosing** restores the compact view; dispatch also
@@ -249,7 +254,7 @@ preview first.
 Use `c` to cancel queued dispatches, or `x` to permit an explicit retry after
 checking the author conversation.
 
-The upcoming terminal refinement keeps the status columns and shows a compact
+The status TUI keeps the status columns and shows a compact
 next-step hint. Press `n` to choose actions, then Enter for one repository or
 Space/`s` followed by Enter for a selection. Local commands run in wtc; judgment
 steps go to the owning collection's single idle author pane labelled `agent`.

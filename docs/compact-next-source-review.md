@@ -1,5 +1,22 @@
 # Compact next-step topic review
 
+## Published compact-controls contract: v0.1.62
+
+Verified on 2026-10-28 against the official [release API](https://api.github.com/repos/lcorneliussen/wtc-cli/releases/tags/v0.1.62), [latest-stable API](https://api.github.com/repos/lcorneliussen/wtc-cli/releases/latest) and [published release](https://github.com/lcorneliussen/wtc-cli/releases/tag/v0.1.62): v0.1.62 is stable and non-draft, published at `2026-10-28T17:41:14Z`, and was latest stable at this check. Annotated tag `890e02f18ec93e9effc7931162f99c96086ada22` resolves to public commit `e7c6f1177b7f0d513c0f36e9d2d323d76a105a83`. The exact-commit [main CI](https://github.com/lcorneliussen/wtc-cli/actions/runs/40736615747) and [release workflow](https://github.com/lcorneliussen/wtc-cli/actions/runs/40737844406) both succeeded. Publication is established from this evidence, not from a numbered notes file on main.
+
+This focused refresh promotes the handbook's compact/dense browser controls and terminal handoff guidance from development to released v0.1.62. Current contract links use the release tag. The tagged renderer also confirms the sidebar refinement: controls have a separate row below collection context, Services precedes Action log, and section headings share one style. The 9,753-byte tagged release-notes file names these topics. The hashes below describe only this focused publication check, not a replacement for the broad v0.1.51 inventory or other topic intakes.
+
+| Source at v0.1.62 | SHA-256 |
+| --- | --- |
+| [`docs/openclaw.md`](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.62/docs/openclaw.md) | `8e289460b84e3032d4b74301014baad115781f8ad45b53d028440f752f28dbf6` |
+| [`docs/next-actions-plan.md`](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.62/docs/next-actions-plan.md) | `57e349330ef7852f6ff887e747c9c061abd0e6fdfca4ee8c29e75ddad27b88ec` |
+| [`openclaw-plugin/dist/control-ui/v1/index.js`](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.62/openclaw-plugin/dist/control-ui/v1/index.js) | `88e25f2bfcc1f8e40196c670a693d4c7f006529c4418e0b6d8107905a37ffba1` |
+| [`internal/wtc/release-notes/0.1.62.md`](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.62/internal/wtc/release-notes/0.1.62.md) | `cc3bd1eedf40623517a21ecc83920f558fe97eb53d0e024b1466f30be1f9b05e` |
+
+## Historical development reviews
+
+The following source-review sections are retained as historical bookkeeping. Their development-only labels describe the snapshots reviewed then; they are not current publication labels or v0.1.62 fingerprints. The publication evidence above is the current focused contract. Existing historical rows remain unchanged.
+
 Reviewed public CLI revision `9f68b9b` (PR #262) for the compact browser affordances and explicit terminal handoff receipts. This is development behavior, not a published release; broad release baselines remain unchanged.
 
 The OpenClaw handbook covers row-local actions, stable status groups, direct collection recommendations, on-demand alternatives and mixed selection, exact captured targets, cancellation and publication confirmation. Terminal guidance covers `n`/Enter, selections, execution in wtc and the owning collection’s named author pane, explicit unsent fallbacks and pending receipts. Multiple-author destination selection remains planned in the upstream design document; it is not claimed as available.
