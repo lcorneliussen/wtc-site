@@ -32,7 +32,7 @@ if (timeline) {
     const date = document.createElement(sourceDate ? 'time' : 'span');
     date.className = 'rail-date';
     if (sourceDate) date.setAttribute('datetime', sourceDate.dateTime);
-    const text = sourceDate?.textContent ?? 'Earlier';
+    const text = sourceDate?.textContent ?? problem.querySelector<HTMLElement>('.problem-date')?.dataset.railLabel ?? 'Earlier';
     date.append(text.replace(/ \d{4}$/, ''));
     const year = document.createElement('span');
     year.className = 'rail-year';

@@ -8,18 +8,50 @@ updated: '2026-10-29'
 
 <ol class="problem-timeline">
 
-<li class="problem" id="early" aria-labelledby="early-title">
-<p class="problem-date"><span>Before herdr</span></p>
+<li class="problem" id="ide-workflows" aria-labelledby="ide-workflows-title">
+<p class="problem-date" data-rail-label="IDEs"><span>IDE workflows</span></p>
 <div class="problem-body">
 
-<h2 id="early-title">Agents hate multirepo setups</h2>
-<p class="problem-subline">Most agents assume your project is one repo. A frontend and its API already make two.</p>
+<h2 id="ide-workflows-title">Tools worked together</h2>
+<p class="problem-subline">Several repos, several IDEs. Agents could already work across them.</p>
 
 <div class="detail-copy">
 
-On a Rails app, the Codex and Claude desktop apps made parallel features easy. Each conversation had its own worktree.
+Cursor, Claude Code and Codex alongside Rider, WebStorm and DataGrip. IDE terminals worked well, and agents could make changes in other repositories too.
 
-That workflow was harder to carry into projects with several repos and different IDEs. Rider here, WebStorm there. A frontend change still needed its API. Which repository should own the conversation?
+</div>
+</div>
+<div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/ide-workflows.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
+</li>
+
+<li class="problem" id="parallel-features" aria-labelledby="parallel-features-title">
+<p class="problem-date" data-rail-label="Rails"><span>Rails app</span></p>
+<div class="problem-body">
+
+<h2 id="parallel-features-title">Parallel work clicked</h2>
+<p class="problem-subline">One conversation, one worktree, one running Rails app. Several features at once.</p>
+
+<div class="detail-copy">
+
+Then came a Rails app. Claude and Codex managed a worktree and full app for each conversation. Working on several features in parallel became easy to love.
+
+</div>
+</div>
+<div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/parallel-features.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
+</li>
+
+<li class="problem" id="early" aria-labelledby="early-title">
+<p class="problem-date" data-rail-label="Repos"><span>Before herdr</span></p>
+<div class="problem-body">
+
+<h2 id="early-title">Agents hate multirepo setups</h2>
+<p class="problem-subline">That parallel workflow was missing on projects spread across several repositories.</p>
+
+<div class="detail-copy">
+
+Back on larger projects, a frontend still needed its API. Agents could edit both. Giving each conversation its own working setup across those repos took more effort.
+
+Which repository should own the conversation? Where should its worktrees live? That is where the experiments began.
 
 Separate worktrees helped, but keeping track of them was still manual. New tasks could start from the wrong branch. Unrelated projects shared one interface, which was awkward to show during a call.
 
