@@ -27,8 +27,9 @@ you intend to document. A passing recording of newer source does not advance
 the site's reviewed or published baseline.
 
 The default output is the ignored `artifacts/openclaw-interactions/` directory.
-Open `index.html` there to watch the four silent, captioned WebM clips. Each clip
-has a visible cursor indicator, a request/response trace and a final PNG.
+Open `index.html` there to watch the four silent, raw WebM clips. The video
+contains only the product view, without a title card, captions, cursor marker or
+request-trace overlay. Each clip has a separate request trace and final PNG.
 `manifest.json` records the source revision/hash, Playwright/browser versions,
 scenario and assertions. The recorder checks the expected UI outcomes and loads
 each finalized video to verify metadata and initial decoding.
@@ -40,13 +41,35 @@ existing output. To record just one scenario:
 npm run demos:openclaw:interactions -- /absolute/path/to/wtc-cli artifacts/push-take-2 push
 ```
 
-The final argument is optional. Run with `--help` for usage.
+The scenario argument is optional; `all` explicitly selects all four. Run with
+`--help` for usage. Choose a presentation and width:
+
+```sh
+# Raw collection card and composer, with no recording wrapper.
+npm run demos:openclaw:interactions -- /path/to/wtc-cli artifacts/raw all --view card
+
+# Card above a synthetic chat on mobile.
+npm run demos:openclaw:interactions -- /path/to/wtc-cli artifacts/mobile all --view chat --width 390
+
+# Chat/card and sidebar together on desktop.
+npm run demos:openclaw:interactions -- /path/to/wtc-cli artifacts/split all --view split --width 1440
+
+# Sidebar by itself; this also works at mobile widths.
+npm run demos:openclaw:interactions -- /path/to/wtc-cli artifacts/sidebar all --view sidebar --width 390
+```
+
+`card` is the default. Supported widths are 320–2560 pixels; `split` requires
+at least 900. The surrounding chat is synthetic, not a recording of a live
+conversation. The gallery and manifest retain the simulation label outside the
+raw video. Inspect at 320/390, 640/760 and 1120/1440 pixels when changing layout;
+also check a narrow sidebar beside a wide chat. Include running, success,
+failure details, selection, confirmation and collapsed states in design review.
 
 | Scenario | Interaction and expected result |
 | --- | --- |
 | `push` | Bitbucket preparation → personal confirmation → simulated publication → refresh. A draft PR appears and the unpublished count clears. |
 | `stale` | Same push, then a deliberately injected stale count alongside the new PR. The arrow returns; a manual refresh clears it. This models a response, not a verified backend bug. |
-| `individual` | Click three repository behind-count controls quickly. All requests complete; the shared notice is replaced by the latest result. This route does not create sidebar Action log records in the reviewed renderer. |
+| `individual` | Click three repository behind-count controls quickly. All requests complete; inspect their individual progress and results. |
 | `batch` | Click the collection's catch-up shortcut once. Observe sequential processing and open three completion results in the sidebar. |
 
 The scripted delays make progress states visible; they are not performance
@@ -56,8 +79,8 @@ do not weaken an assertion merely to produce a video.
 
 ## Review and export
 
-Watch every clip for accurate captions, readable text, cursor placement,
-clipping and unexpected private content. Review the request trace against the
+Watch every raw clip for readable text, clear state changes, clipping and
+unexpected private content. Review the request trace against the
 visible result. A sent agent handoff is not completed work; a successful RPC is
 not proof that the underlying operation succeeded.
 
@@ -85,7 +108,8 @@ Extend `scripts/record-openclaw-interactions.mjs` with:
 
 1. A scenario ID, a concrete title and generic fixture repositories/accounts.
 2. Only the host responses needed by that scenario, including failure cases.
-3. Real control clicks with visible pauses and captions explaining the outcome.
+3. Real control clicks with pauses that make progress visible. Keep explanation
+   outside the raw video, in its title, trace and review notes.
 4. Assertions on the resulting state and the dispatched requests. Keep network
    blocking and unexpected-request/browser-error failures enabled.
 5. A row in the scenario table above describing what the clip establishes.

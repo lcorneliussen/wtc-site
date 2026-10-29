@@ -85,7 +85,7 @@ Pass a second argument for a separate output directory. Review the PNGs, WebM,
 and provenance before committing them. The manual **OpenClaw demo capture**
 workflow produces review artifacts only; it never updates or deploys the site.
 
-For captioned push/refresh and catch-up interactions, see the
+For raw push/refresh and catch-up recordings, including chat and sidebar views, see the
 [interaction recording guide](docs/recording-openclaw-interactions.md):
 
 ```sh

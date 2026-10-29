@@ -5,19 +5,24 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { resolve, join, sep } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
 
-const usage = 'Usage: npm run demos:openclaw:interactions -- /path/to/wtc-cli [output-directory] [push|stale|individual|batch]';
-if (process.argv.includes('--help')) { console.log(usage); process.exit(0); }
-if (!process.argv[2] || process.argv.length > 5) throw Error(usage);
+const usage = 'Usage: npm run demos:openclaw:interactions -- /path/to/wtc-cli [output-directory] [push|stale|individual|batch|all] [--view card|chat|sidebar|split] [--width 390]';
+const { values, positionals } = parseArgs({ allowPositionals: true, options: { help: { type: 'boolean' }, view: { type: 'string', default: 'card' }, width: { type: 'string', default: '1120' } } });
+if (values.help) { console.log(usage); process.exit(0); }
+if (!positionals[0] || positionals.length > 3) throw Error(usage);
+const view = values.view, width = Number(values.width);
+if (!['card', 'chat', 'sidebar', 'split'].includes(view) || !Number.isInteger(width) || width < 320 || width > 2560) throw Error(usage);
+if (view === 'split' && width < 900) throw Error('Split view requires width >= 900; use chat or sidebar on mobile');
 const siteRoot = new URL('../', import.meta.url);
-const upstream = resolve(process.argv[2]);
+const upstream = resolve(positionals[0]);
 const modulePath = 'openclaw-plugin/dist/control-ui/v1/index.js';
 const revision = execFileSync('git', ['-C', upstream, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 if (execFileSync('git', ['-C', upstream, 'status', '--porcelain', '--', modulePath], { encoding: 'utf8' }).trim()) throw Error('Capture requires an unchanged upstream UI module');
 const renderer = await readFile(join(upstream, modulePath), 'utf8');
 const template = await readFile(new URL('scripts/demos/openclaw.html', siteRoot), 'utf8');
-const output = pathToFileURL(resolve(process.argv[3] ?? fileURLToPath(new URL('artifacts/openclaw-interactions', siteRoot))) + sep);
-const selected = process.argv[4];
+const output = pathToFileURL(resolve(positionals[1] ?? fileURLToPath(new URL('artifacts/openclaw-interactions', siteRoot))) + sep);
+const selected = positionals[2] === 'all' ? undefined : positionals[2];
 const scenarios = [
   ['01-push-create-pr', 'Push, confirmation, PR creation and fresh status', 'push'],
   ['02-push-stale-status', 'Controlled reproduction: stale status after a successful push', 'stale'],
@@ -28,7 +33,7 @@ if (selected && !scenarios.some(s => s[2] === selected)) throw Error(usage);
 await mkdir(output, { recursive: true });
 if ((await readdir(output)).length) throw Error('Output directory must be empty; use a new directory for each take');
 const browser = await chromium.launch({ headless: true });
-const manifest = { created: new Date().toISOString(), kind: 'Actual upstream renderer with synthetic gateway responses; not a live gateway', repository: 'https://github.com/lcorneliussen/wtc-cli', revision, modulePath, playwright: JSON.parse(await readFile(new URL('node_modules/playwright/package.json', siteRoot), 'utf8')).version, browser: browser.version(), rendererSha256: createHash('sha256').update(renderer).digest('hex'), simulation: true, recordings: [] };
+const manifest = { created: new Date().toISOString(), kind: 'Actual upstream renderer with synthetic gateway responses; not a live gateway', repository: 'https://github.com/lcorneliussen/wtc-cli', revision, modulePath, playwright: JSON.parse(await readFile(new URL('node_modules/playwright/package.json', siteRoot), 'utf8')).version, browser: browser.version(), rendererSha256: createHash('sha256').update(renderer).digest('hex'), simulation: true, view, viewport: { width, height: 900 }, recordings: [] };
 try {
   for (const [id, title, mode] of scenarios.filter(s => !selected || s[2] === selected)) {
     const dir = new URL(`${id}/`, output); await mkdir(dir, { recursive: true });
@@ -83,7 +88,11 @@ const request = async (method, params) => {
   return {ok:true,result:{performed:params.actionId==='next',repo:before,code:0,json:{summary:r.repo+': caught up'},message:''}};
  }
 `);
-    const context = await browser.newContext({ locale: 'en-US', timezoneId: 'UTC', deviceScaleFactor: 1, viewport: { width: 1120, height: 760 }, recordVideo: { dir: fileURLToPath(dir), size: { width: 1120, height: 760 } } });
+    html = html.replace("mounts.panel(document.querySelector('#panel'),ctx);", "window.demoPanel?.dispose(); document.querySelector('#panel').replaceChildren(); window.demoPanel=mounts.panel(document.querySelector('#panel'),ctx);");
+    html = html.replace('</style>', `body{padding:16px;background:#101216}#stage{max-width:none}#stage>h1,#stage>p,footer,#rpc,#cursor{display:none!important}#card{margin-top:0}#panel{border-radius:14px}#recording-chat{display:${view === 'card' || view === 'sidebar' ? 'none' : 'grid'};align-content:end;gap:18px;min-height:240px;padding:24px 12px;font-size:14px}.recording-bubble{max-width:80%;padding:12px 16px;border-radius:14px}.recording-user{justify-self:end;background:#183139}.recording-assistant{justify-self:start;color:#d1d5dc}.composer{margin-top:12px;padding:14px 20px}body.split #stage{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:16px}body.split #recording-chat,body.split #card{grid-column:1}body.split #panel{grid-column:2;grid-row:1/4;height:850px;overflow:auto}</style>`);
+    html = html.replace('<div id="card">', '<div id="recording-chat"><div class="recording-bubble recording-user">Please update the collection and its pull request.</div><div class="recording-bubble recording-assistant">I’ll check the repositories and preserve your work.</div></div><div id="card">');
+    if (view === 'split') html = html.replace("document.querySelector('#card').hidden=true;", "document.body.classList.add('split');");
+    const context = await browser.newContext({ locale: 'en-US', timezoneId: 'UTC', deviceScaleFactor: 1, viewport: { width, height: 900 }, recordVideo: { dir: fileURLToPath(dir), size: { width, height: 900 } } });
     const errors=[];
     await context.route('**/*', route => {
       const url=route.request().url();
@@ -93,24 +102,26 @@ const request = async (method, params) => {
     });
     const page = await context.newPage(); page.on('pageerror', e => errors.push(e.message));
     await page.goto('https://demo.invalid/'); await page.locator('#card details').waitFor();
-    if(!await page.locator('#card details').evaluate(n=>n.open))await page.locator('#card summary').press('Enter');
-    const surface=page.locator('#card');
+    if(!await page.locator('#card details').evaluate(n=>n.open))await page.locator('#card summary').click({position:{x:(await page.locator('#card summary').boundingBox()).width-8,y:8}});
+    if (view === 'sidebar' || view === 'split') await page.getByTitle(/^Open the .* Collection panel$/).click();
+    const surface=page.locator(view === 'sidebar' ? '#panel' : '#card');
+    for (const selector of ['#stage > h1', '#caption', '#rpc', '#cursor']) if (await page.locator(selector).isVisible()) throw Error('Recording overlay must stay outside the raw product view: '+selector);
     const caption=async text=>page.evaluate(text=>window.setCaption(text),text);
     const click=async locator=>{const b=await locator.boundingBox();if(!b)throw Error('Missing click target');await page.mouse.move(b.x+b.width/2,b.y+b.height/2,{steps:15});await page.waitForTimeout(300);await locator.click();};
     await page.waitForTimeout(1400);
     if(isPush){
       await caption('Three local commits are ready to push. First click prepares the personal publication confirmation.');
       await click(surface.getByTitle(/^3 commits to push/));
-      await surface.getByText('confirm ↑ 3',{exact:true}).waitFor();await page.waitForTimeout(1500);
+      await surface.getByRole('button',{name:/^Confirm the captured push/}).waitFor();await page.waitForTimeout(1500);
       await caption('Second click confirms publication. The plugin pauses its periodic status refresh while pushing.');
-      await click(surface.getByText('confirm ↑ 3',{exact:true}));
+      await click(surface.getByRole('button',{name:/^Confirm the captured push/}));
       await page.waitForFunction(()=>window.published);await page.waitForTimeout(1400);
       if(mode==='stale'){
         await surface.getByTitle(/^3 commits to push/).waitFor();
         await caption('Controlled stale response: the draft PR appears, but ↑ 3 returns. The renderer trusts the returned unpublished count.');
         await page.screenshot({path:fileURLToPath(new URL('stale-frame.png',dir))});await page.waitForTimeout(3000);
         await caption('Manual refresh receives the current status. The push arrow disappears without another push.');
-        await click(surface.getByTitle(/Updated .* Refresh/));
+        await click(surface.getByTitle(view === 'sidebar' ? 'Refresh' : /Updated .* Refresh/));
         await page.waitForFunction(()=>!document.querySelector('#card')?.textContent.includes('↑ 3'));
       }else{
         if(await surface.getByTitle(/^3 commits to push/).count())throw Error('Fresh status left push available');
@@ -122,7 +133,7 @@ const request = async (method, params) => {
       for(const n of [12,7,3]) await click(surface.getByTitle(new RegExp('^'+n+' new on main\\. Catch up locally')));
       await caption('Three independent requests are in flight. Each completion can replace the shared top-line message.');
       await page.waitForFunction(()=>window.completed.length===3);await page.waitForTimeout(1300);
-      await caption('All three completed in this simulation. The direct count controls did not create sidebar Action log entries.');
+      await caption('All three completed in this simulation. Per-repository results are available in the sidebar Action log.');
       await page.waitForTimeout(3000);
     }else{
       await caption('The collection shortcut captures all three suggested catch-ups in one click.');
@@ -152,6 +163,6 @@ const request = async (method, params) => {
   }
   const escape = text => String(text).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const cards=manifest.recordings.map(r=>`<article><h2>${escape(r.title)}</h2><video controls preload="none" playsinline poster="${r.poster}" src="${r.video}"></video><p><a href="${r.video}">Video</a> · <a href="${r.id}/trace.json">Request trace</a></p></article>`).join('');
-  await writeFile(new URL('index.html',output),`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OpenClaw interaction recordings</title><style>:root{color-scheme:dark}body{max-width:1120px;margin:32px auto;padding:0 24px;font:16px/1.6 system-ui;background:#11161d;color:#e4eaf2}h2{font-size:20px}article{margin:32px 0;border:1px solid #354151;border-radius:12px;padding:16px}video{width:100%;height:auto}a{color:#8edbd5}</style><h1>OpenClaw interaction recordings</h1><p>Actual renderer ${escape(revision)}; synthetic repositories and simulated gateway responses. No live gateway or publication. The stale scenario deliberately injects old status; it does not establish a live gateway defect. Silent clips have visible captions and request traces.</p>${cards}<p><a href="manifest.json">Renderer provenance and results</a></p></html>`);
+  await writeFile(new URL('index.html',output),`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OpenClaw interaction recordings</title><style>:root{color-scheme:dark}body{max-width:1120px;margin:32px auto;padding:0 24px;font:16px/1.6 system-ui;background:#11161d;color:#e4eaf2}h2{font-size:20px}article{margin:32px 0;border:1px solid #354151;border-radius:12px;padding:16px}video{width:100%;height:auto}a{color:#8edbd5}</style><h1>OpenClaw interaction recordings</h1><p>View: ${escape(view)}, ${width}px. Actual renderer ${escape(revision)}; synthetic repositories and simulated gateway responses. No live gateway or publication. The stale scenario deliberately injects old status; it does not establish a live gateway defect. Raw product views have no captions or trace overlay; request traces are separate files.</p>${cards}<p><a href="manifest.json">Renderer provenance and results</a></p></html>`);
   console.log('Gallery: '+fileURLToPath(new URL('index.html',output)));
 } finally { await browser.close(); }
