@@ -13,7 +13,7 @@ A **worktree collection** is a folder containing the repositories you need for o
 
 You need **Git** and a macOS or Linux development environment. Download a binary for your platform from [GitHub Releases](https://github.com/lcorneliussen/wtc-cli/releases), put it on your `PATH`, and verify it with `wtc --version`.
 
-For the published stable version, a copyable mise install command and numbered release notes, use the [homepage installation panel](../../#install). It checks GitHub at site build time and labels a dated verified fallback if the lookup fails. A newer CLI release does not change this handbook’s documented baseline.
+For the published stable release and its installation command, see [Install wtc](../../#install).
 
 To reproduce the **v0.1.51 handbook baseline** with [mise](https://mise.jdx.dev/):
 

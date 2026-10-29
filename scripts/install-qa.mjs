@@ -1,8 +1,9 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
-const browser = await chromium.launch({ headless: true });
 const url = process.argv[2];
-if (!url) throw new Error('Usage: node scripts/install-qa.mjs <preview-url>');
+const fallback = process.argv.includes('--fallback');
+if (!url) throw new Error('Usage: node scripts/install-qa.mjs <preview-url> [--fallback]');
+const browser = await chromium.launch({ headless: true });
 for (const [width, height] of [[1440,900],[1280,720],[390,844],[320,640]]) {
   const context = await browser.newContext({ viewport: {width,height}, permissions: ['clipboard-read','clipboard-write'] });
   const page = await context.newPage();
@@ -14,6 +15,15 @@ for (const [width, height] of [[1440,900],[1280,720],[390,844],[320,640]]) {
   assert.match(version, /^\d+\.\d+\.\d+$/);
   assert.equal(await notes.getAttribute('href'), `https://github.com/lcorneliussen/wtc-cli/releases/tag/v${version}`);
   assert.match(await notes.innerText(), new RegExp(`v${version.replaceAll('.', '\\.')}`));
+  const checked = page.locator('.release-check');
+  const date = await checked.locator('time').getAttribute('datetime');
+  assert.match(date, /^\d{4}-\d{2}-\d{2}$/);
+  assert.equal(await checked.locator('time').innerText(), date);
+  assert.match(await checked.innerText(), /^(Checked|Last verified) \d{4}-\d{2}-\d{2}$/);
+  if (fallback) {
+    assert.match(await notes.innerText(), /^Last verified /);
+    assert.equal(await checked.innerText(), `Last verified ${date}`);
+  }
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   const bounds = await page.locator('.install-command').boundingBox();
   assert(bounds.y + bounds.height <= height, `${width}: install below fold ${JSON.stringify(bounds)}`);

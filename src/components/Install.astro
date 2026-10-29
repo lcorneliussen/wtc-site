@@ -15,7 +15,7 @@ const base = import.meta.env.BASE_URL;
   <p class="install-details">With <a href="https://mise.jdx.dev/">mise</a> · macOS & Linux · Git required<br />
     <a href={release.notes}>Download a binary</a> · <a href={`${base}docs/openclaw/`}>OpenClaw setup</a>
   </p>
-  <p class="release-check">{release.live ? 'Release checked' : 'Release lookup unavailable. Last verified'} <time datetime={release.checked}>{release.checked}</time>. Updates when the site rebuilds.</p>
+  <p class="release-check">{release.live ? 'Checked' : 'Last verified'} <time datetime={release.checked}>{release.checked}</time></p>
   <p class="sr-only" id="install-status" role="status"></p>
 </section>
 <script>
