@@ -115,6 +115,7 @@ const request = async (method, params) => {
         const rect=selector=>{const node=root.querySelector(selector);if(!node)return null;const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
         const grid=root.querySelector('.wtc-repositories>.wtc-table');
         const cells=grid?[...grid.children].slice(Number(grid.getAttribute('data-columns'))).map(node=>{const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};}):[];
+        const history=root.querySelector(".wtc-repo-pr-history-slot");const historySlot=history?{x:history.getBoundingClientRect().x,y:history.getBoundingClientRect().y,width:history.getBoundingClientRect().width,height:history.getBoundingClientRect().height}:null;
         const controls=[...root.querySelectorAll('.wtc-action-toolbar .wtc-toolbar-primary, .wtc-action-toolbar>button, .wtc-bulk-actions button')].map(node=>{const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};});
         const sideRect=selector=>{const node=document.querySelector('#panel '+selector);if(!node)return null;const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
         // Read the first visible glyph and its font ascent without changing
@@ -154,7 +155,7 @@ const request = async (method, params) => {
           }
           for(const all of scope.querySelectorAll('.wtc-bulk-actions'))check('all repositories',[all.querySelector('span'),...all.querySelectorAll('button')]);
         }
-        return {baselines,controls,sideHeader:sideRect('.wtc-collection>header'),sideRepositories:sideRect('.wtc-repositories>.wtc-table'),sideServices:sideRect('.wtc-base-services'),header:rect('.wtc-collection-card>summary, .wtc-collection>header'),repositories:rect('.wtc-repositories>.wtc-table'),services:rect('.wtc-base-services'),composer:rect('.composer'),temporary:rect('.wtc-transient-actions'),cells};
+        return {baselines,controls,sideHeader:sideRect('.wtc-collection>header'),sideRepositories:sideRect('.wtc-repositories>.wtc-table'),sideServices:sideRect('.wtc-base-services'),historySlot,header:rect('.wtc-collection-card>summary, .wtc-collection>header'),repositories:rect('.wtc-repositories>.wtc-table'),services:rect('.wtc-base-services'),composer:rect('.composer'),temporary:rect('.wtc-transient-actions'),cells};
       });
       for(const group of sample.baselines)if(group.spread>.25)throw Error(`Text baselines differ: ${view}/${mode}/${phase}/${group.name}: ${JSON.stringify(group.values)}`);
       positions.push({phase,...sample});
@@ -170,7 +171,7 @@ const request = async (method, params) => {
         sample.controls.forEach((cell,i)=>{for(const axis of ['x','y','width','height'])if(Math.abs(positions[0].controls[i][axis]-cell[axis])>1)throw Error(`Toolbar control moved: ${view}/${mode}/${phase}/${i}/${axis}: ${positions[0].controls[i]?.[axis]} -> ${cell[axis]}`);});
         sample.cells.forEach((cell,i)=>{for(const axis of ['x','y','width','height'])if(Math.abs(positions[0].cells[i][axis]-cell[axis])>1)throw Error(`Repository slot moved: ${view}/${mode}/${phase}/${i}/${axis}`);});
       }
-      if(positions.length>1)for(const key of ['header','repositories','services','composer','sideHeader','sideRepositories','sideServices']){
+      if(positions.length>1)for(const key of ['historySlot','header','repositories','services','composer','sideHeader','sideRepositories','sideServices']){
         const before=positions[0][key],after=sample[key];if(!before||!after)continue;
         for(const axis of ['x','y','width','height'])if(Math.abs(before[axis]-after[axis])>1)throw Error(`Base layout moved: ${view}/${mode}/${phase}/${key}/${axis}: ${before[axis]} -> ${after[axis]}`);
       }
@@ -214,11 +215,11 @@ const request = async (method, params) => {
       }
       await page.waitForTimeout(2800);
     }else if(mode==='individual'){
-      for(const n of [12,7,3]) await click(surface.getByTitle(new RegExp('^'+n+' new on main\\. Catch up locally')));await surface.locator('.wtc-action-toolbar').getByText('Catching up…',{exact:true}).waitFor();await measure('running');
+      for(const n of [12,7,3]) await click(surface.getByTitle(new RegExp('^'+n+' new on main\\. Catch up locally')));await surface.locator('.wtc-action-toolbar').getByText(/Catching up|Running|Syncing|of 3|\/3/).first().waitFor();await measure('running');
       await page.waitForFunction(()=>new Set(window.completed).size===3);await waitForSettledRepositories();await measure('completed');await page.waitForTimeout(1300);
       await page.waitForTimeout(3000);
     }else{
-      await click(surface.locator('.wtc-action-toolbar button').filter({hasText:'Catch up 3'}).first());await surface.locator('.wtc-action-toolbar').getByText('Catching up…',{exact:true}).waitFor();await measure('running');
+      await click(surface.locator('.wtc-action-toolbar button').filter({hasText:'Catch up 3'}).first());await surface.locator('.wtc-action-toolbar').getByText(/Catching up|Running|Syncing|of 3|\/3/).first().waitFor();await measure('running');
       await page.waitForFunction(()=>new Set(window.completed).size===3);await waitForSettledRepositories();
       await measure('completed');await page.waitForTimeout(1600);
       if (view==='sidebar'||view==='split') {
