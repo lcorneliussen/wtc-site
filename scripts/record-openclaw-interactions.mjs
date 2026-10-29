@@ -1,6 +1,6 @@
 // Record actual plugin controls with synthetic responses; never connect to a live gateway.
 import { chromium } from 'playwright';
-import { readFile, mkdir, writeFile, readdir, rename } from 'node:fs/promises';
+import { readFile, mkdir, writeFile, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { resolve, join, sep } from 'node:path';
@@ -40,7 +40,7 @@ const inject = (html, anchor, replacement) => {
   return html.replace(anchor, replacement);
 };
 const browser = await chromium.launch({ headless: true });
-const manifest = { created: new Date().toISOString(), kind: 'Actual upstream renderer with synthetic gateway responses; not a live gateway', repository: 'https://github.com/lcorneliussen/wtc-cli', revision, modulePath, playwright: JSON.parse(await readFile(new URL('node_modules/playwright/package.json', siteRoot), 'utf8')).version, browser: browser.version(), rendererSha256: createHash('sha256').update(renderer).digest('hex'), simulation: true, view, sidebarWidth: view === 'split' ? sidebarWidth : null, viewport: { width, height: 900 }, recordings: [] };
+const manifest = { created: new Date().toISOString(), kind: 'Actual upstream renderer with synthetic gateway responses; not a live gateway', repository: 'https://github.com/lcorneliussen/wtc-cli', revision, modulePath, playwright: JSON.parse(await readFile(new URL('node_modules/playwright/package.json', siteRoot), 'utf8')).version, browser: browser.version(), rendererSha256: createHash('sha256').update(renderer).digest('hex'), simulation: true, capture: 'Chromium screencast PNG frames from initialized idle; original timestamps, untrimmed', view, sidebarWidth: view === 'split' ? sidebarWidth : null, viewport: { width, height: 900 }, recordings: [] };
 try {
   for (const [id, title, mode] of scenarios.filter(s => !selected || s[2] === selected)) {
     const dir = new URL(`${id}/`, output); await mkdir(dir, { recursive: true });
@@ -92,13 +92,7 @@ const request = async (method, params) => {
     html = inject(html, '<div id="card">', '<div id="recording-chat"><div class="recording-bubble recording-user">Please update the collection and its pull request.</div><div class="recording-bubble recording-assistant">I’ll check the repositories and preserve your work.</div></div><div id="card">');
     if (view === 'split') html = inject(html, "document.querySelector('#card').hidden=true;", "document.body.classList.add('split');");
     if (view === 'sidebar' || view === 'split') html = inject(html, "mounts.card(document.querySelector('#card'),ctx);", "mounts.card(document.querySelector('#card'),ctx); host.ui.openPanel();");
-    // Put the deferred module in the head as a render blocker. Its first
-    // in-memory snapshot and expanded state settle before the first paint.
-    const boot=html.match(/<script type="module">[\s\S]*?<\/script>/)?.[0];
-    if(!boot)throw Error('Shared fixture module boundary changed');
-    html=inject(html,boot,'');
-    html=inject(html,'<style>',boot.replace('<script type="module">','<script type="module" blocking="render">')+'<style>');
-    const context = await browser.newContext({ locale: 'en-US', timezoneId: 'UTC', deviceScaleFactor: 1, viewport: { width, height: 900 }, recordVideo: { dir: fileURLToPath(dir), size: { width, height: 900 } } });
+    const context = await browser.newContext({ locale: 'en-US', timezoneId: 'UTC', deviceScaleFactor: 1, viewport: { width, height: 900 } });
     await context.addInitScript(key => localStorage.setItem(key, '1'), openKey);
     const errors=[];
     await context.route('**/*', route => {
@@ -186,6 +180,20 @@ const request = async (method, params) => {
       return root && ![...root.querySelectorAll('.wtc-repositories button, .wtc-step-status')].some(n=>/^\d+ new on main/.test(n.title)||/Working…|Catching up…|Running…|Rechecking…|Queued/.test(n.textContent));
     },view==='sidebar'?'#panel':'#card');
     await page.waitForTimeout(1400);await measure('idle');
+    // Begin at the initialized view. Capture every Chromium screencast frame
+    // with its original timestamp; no navigation frames or trimming pass.
+    const frameDir=new URL('capture-frames/',dir);await mkdir(frameDir);
+    const cdp=await context.newCDPSession(page),frames=[];let frameWrites=Promise.resolve();
+    cdp.on('Page.screencastFrame',event=>{
+      const name=String(frames.length+1).padStart(6,'0')+'.png';
+      frames.push({name,timestamp:event.metadata.timestamp});
+      frameWrites=frameWrites.then(()=>writeFile(new URL(name,frameDir),Buffer.from(event.data,'base64')));
+      void cdp.send('Page.screencastFrameAck',{sessionId:event.sessionId}).catch(()=>{});
+    });
+    await cdp.send('Page.startScreencast',{format:'png',maxWidth:width,maxHeight:900,everyNthFrame:1});
+    const firstDeadline=Date.now()+5000;
+    while(!frames.length){if(Date.now()>firstDeadline)throw Error('No initial screencast frame');await page.waitForTimeout(20);}
+    await page.waitForTimeout(1400);
     if(isPush){
       await click(surface.getByTitle(/^3 commits to push/));
       await surface.locator('.wtc-action-toolbar').getByText('Preparing…',{exact:true}).waitFor();await measure('preparing');
@@ -222,9 +230,15 @@ const request = async (method, params) => {
     if(errors.length)throw Error(errors.join('\n'));
     await page.screenshot({path:fileURLToPath(new URL('final.png',dir))});
     const trace=await page.evaluate(()=>window.calls);await writeFile(new URL('trace.json',dir),JSON.stringify(trace,null,2));
-    const video=page.video();await context.close();
+    const stoppedAt=await page.evaluate(()=>Date.now()/1000);
+    await cdp.send('Page.stopScreencast');await frameWrites;await context.close();
+    if(!frames.length||frames.some((f,i)=>!Number.isFinite(f.timestamp)||(i&&f.timestamp<frames[i-1].timestamp)))throw Error('Invalid capture timestamps');
+    await writeFile(new URL('capture-frames.json',dir),JSON.stringify(frames,null,2));
+    const timeline=frames.map((f,i)=>"file 'capture-frames/"+f.name+"'\nduration "+Math.max(.001,(frames[i+1]?.timestamp??stoppedAt)-f.timestamp).toFixed(6)).join('\n')+"\nfile 'capture-frames/"+frames.at(-1).name+"'\n";
+    await writeFile(new URL('capture-timeline.txt',dir),timeline);
     const videoName=id+'.webm';
-    await rename(await video.path(),new URL(videoName,output));
+    execFileSync('ffmpeg',['-v','error','-y','-f','concat','-safe','0','-i',fileURLToPath(new URL('capture-timeline.txt',dir)),'-fps_mode','vfr','-c:v','libvpx-vp9','-threads','2','-crf','24','-b:v','0',fileURLToPath(new URL(videoName,output))]);
+    execFileSync('ffmpeg',['-v','error','-i',fileURLToPath(new URL(videoName,output)),'-f','null','-']);
     const verifier=await browser.newContext();
     let firstFrame;
     try {

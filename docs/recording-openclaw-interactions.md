@@ -14,6 +14,9 @@ For the existing card/panel screenshot tour, use
 
 From the site checkout:
 
+Install FFmpeg (`ffmpeg` on PATH) before recording. Chromium screencast is used
+for capture, and FFmpeg encodes the timestamped frames as WebM.
+
 ```sh
 npm ci --include=dev
 npx playwright install chromium
@@ -81,7 +84,11 @@ failure details, selection, confirmation and collapsed states in design review.
 | `batch` | Click the collection's catch-up shortcut once. Observe sequential processing and three completion results. The sidebar and split views show the log without changing views. |
 
 The fixture starts with its initial collection data and expanded state ready.
-Its deferred module blocks first paint until the initialized view mounts. The
+Capture starts after the initialized idle view is measured. Chromium screencast
+supplies lossless PNG frames and their original timestamps; FFmpeg encodes them
+without a trimming pass. Navigation before capture is excluded, so this demonstrates
+interactions rather than page-load performance. Per-take capture frames, timestamps
+and the encoding timeline remain available for inspection. The
 decoded first frame must retain at least 70% of the idle reference text pixels
 in each base region, allowing a 48-level channel difference for lossy encoding;
 a missing card, repository list or composer fails the take. The manifest records
