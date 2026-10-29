@@ -32,6 +32,10 @@ const scenarios = [
 if (selected && !scenarios.some(s => s[2] === selected)) throw Error(usage);
 await mkdir(output, { recursive: true });
 if ((await readdir(output)).length) throw Error('Output directory must be empty; use a new directory for each take');
+const inject = (html, anchor, replacement) => {
+  if (!html.includes(anchor)) throw Error('Shared fixture injection boundary changed: ' + anchor);
+  return html.replace(anchor, replacement);
+};
 const browser = await chromium.launch({ headless: true });
 const manifest = { created: new Date().toISOString(), kind: 'Actual upstream renderer with synthetic gateway responses; not a live gateway', repository: 'https://github.com/lcorneliussen/wtc-cli', revision, modulePath, playwright: JSON.parse(await readFile(new URL('node_modules/playwright/package.json', siteRoot), 'utf8')).version, browser: browser.version(), rendererSha256: createHash('sha256').update(renderer).digest('hex'), simulation: true, view, viewport: { width, height: 900 }, recordings: [] };
 try {
@@ -46,20 +50,11 @@ try {
       });
     if (!/ repos:\[.*\],\n services:\[.*\]/.test(template) || !template.includes('const request = async (method, params) => {')) throw Error('Shared fixture changed; update interaction fixture injection');
     let html = template.replace(/ repos:\[.*\],\n services:\[.*\]/, ` repos:${JSON.stringify(rows)},\n services:[]`);
-    html = html.replace('<h1>One task. Every repository.</h1>', `<h1>${title}</h1>`)
-      .replace('wtc for OpenClaw · real plugin renderer, synthetic demo data', `Renderer ${revision.slice(0, 7)} · simulated gateway · no real publication`)
-      .replace('Expand the collection card to see changes, pull requests and previews.', 'Ready. All controls below belong to the unchanged upstream renderer.')
-      .replace('</footer>', '</footer><div id="rpc"><strong>Recording harness — request / response trace</strong><div id="events"></div></div><div id="cursor"></div>');
-    html = html.replace('</style>', `h1{font-size:23px}#stage>p{font-size:14px}#card{margin-top:70px}#caption{font-size:15px;min-height:52px;margin-top:26px;color:#e4eaf2}#rpc{font:12px/1.55 ui-monospace,monospace;margin-top:22px;padding:12px 16px;border:1px solid #354151;border-radius:10px;color:#aab7c9}#rpc strong{font:600 12px system-ui;color:#8edbd5}#events{margin-top:6px;min-height:92px}#cursor{position:fixed;left:0;top:0;width:18px;height:18px;margin:-9px;border:2px solid #ffd06a;border-radius:50%;pointer-events:none;z-index:99999;box-shadow:0 0 0 3px #ffd06a22}#cursor.click{background:#ffd06a77}footer{margin-top:12px;font-size:11px}</style>`);
-    html = html.replace('const request = async (method, params) => {', `
+    html = inject(html, 'const request = async (method, params) => {', `
 const mode = ${JSON.stringify(mode)};
 const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
 window.calls=[]; window.completed=[]; window.published=false; let staleLeft=0;
-const trace = text => {window.calls.push({at:Date.now(),text});const e=document.querySelector('#events');e.replaceChildren(...window.calls.slice(-5).map(c=>Object.assign(document.createElement('div'),{textContent:c.text})));};
-window.setCaption = text => document.querySelector('#caption').textContent=text;
-document.addEventListener('mousemove',e=>{const c=document.querySelector('#cursor');c.style.left=e.clientX+'px';c.style.top=e.clientY+'px';});
-document.addEventListener('mousedown',()=>document.querySelector('#cursor').classList.add('click'));
-document.addEventListener('mouseup',()=>setTimeout(()=>document.querySelector('#cursor').classList.remove('click'),160));
+const trace = text => window.calls.push({at:Date.now(),text});
 const request = async (method, params) => {
  if(method==='plugins.sessionAction'&&params.actionId==='collection') {
   trace('→ collection status requested');await delay(700);
@@ -88,10 +83,10 @@ const request = async (method, params) => {
   return {ok:true,result:{performed:params.actionId==='next',repo:before,code:0,json:{summary:r.repo+': caught up'},message:''}};
  }
 `);
-    html = html.replace("mounts.panel(document.querySelector('#panel'),ctx);", "window.demoPanel?.dispose(); document.querySelector('#panel').replaceChildren(); window.demoPanel=mounts.panel(document.querySelector('#panel'),ctx);");
-    html = html.replace('</style>', `body{padding:16px;background:#101216}#stage{max-width:none}#stage>h1,#stage>p,footer,#rpc,#cursor{display:none!important}#card{margin-top:0}#panel{border-radius:14px}#recording-chat{display:${view === 'card' || view === 'sidebar' ? 'none' : 'grid'};align-content:end;gap:18px;min-height:240px;padding:24px 12px;font-size:14px}.recording-bubble{max-width:80%;padding:12px 16px;border-radius:14px}.recording-user{justify-self:end;background:#183139}.recording-assistant{justify-self:start;color:#d1d5dc}.composer{margin-top:12px;padding:14px 20px}body.split #stage{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:16px}body.split #recording-chat,body.split #card{grid-column:1}body.split #panel{grid-column:2;grid-row:1/4;height:850px;overflow:auto}</style>`);
-    html = html.replace('<div id="card">', '<div id="recording-chat"><div class="recording-bubble recording-user">Please update the collection and its pull request.</div><div class="recording-bubble recording-assistant">I’ll check the repositories and preserve your work.</div></div><div id="card">');
-    if (view === 'split') html = html.replace("document.querySelector('#card').hidden=true;", "document.body.classList.add('split');");
+    html = inject(html, "mounts.panel(document.querySelector('#panel'),ctx);", "window.demoPanel?.dispose(); document.querySelector('#panel').replaceChildren(); window.demoPanel=mounts.panel(document.querySelector('#panel'),ctx);");
+    html = inject(html, '</style>', `body{padding:16px;background:#101216}#stage{max-width:none}#stage>h1,#stage>p,footer,#rpc,#cursor{display:none!important}#card{margin-top:0}#panel{border-radius:14px}#recording-chat{display:${view === 'card' || view === 'sidebar' ? 'none' : 'grid'};align-content:end;gap:18px;min-height:240px;padding:24px 12px;font-size:14px}.recording-bubble{max-width:80%;padding:12px 16px;border-radius:14px}.recording-user{justify-self:end;background:#183139}.recording-assistant{justify-self:start;color:#d1d5dc}.composer{margin-top:12px;padding:14px 20px}body.split #stage{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:16px}body.split #recording-chat,body.split #card{grid-column:1}body.split #panel{grid-column:2;grid-row:1/4;height:850px;overflow:auto}</style>`);
+    html = inject(html, '<div id="card">', '<div id="recording-chat"><div class="recording-bubble recording-user">Please update the collection and its pull request.</div><div class="recording-bubble recording-assistant">I’ll check the repositories and preserve your work.</div></div><div id="card">');
+    if (view === 'split') html = inject(html, "document.querySelector('#card').hidden=true;", "document.body.classList.add('split');");
     const context = await browser.newContext({ locale: 'en-US', timezoneId: 'UTC', deviceScaleFactor: 1, viewport: { width, height: 900 }, recordVideo: { dir: fileURLToPath(dir), size: { width, height: 900 } } });
     const errors=[];
     await context.route('**/*', route => {
@@ -103,44 +98,33 @@ const request = async (method, params) => {
     const page = await context.newPage(); page.on('pageerror', e => errors.push(e.message));
     await page.goto('https://demo.invalid/'); await page.locator('#card details').waitFor();
     if(!await page.locator('#card details').evaluate(n=>n.open))await page.locator('#card summary').click({position:{x:(await page.locator('#card summary').boundingBox()).width-8,y:8}});
-    if (view === 'sidebar' || view === 'split') await page.getByTitle(/^Open the .* Collection panel$/).click();
+    if (view === 'sidebar' || view === 'split') await page.getByTitle(/^Open the (wtc|taba) Collection panel$/).click();
     const surface=page.locator(view === 'sidebar' ? '#panel' : '#card');
     for (const selector of ['#stage > h1', '#caption', '#rpc', '#cursor']) if (await page.locator(selector).isVisible()) throw Error('Recording overlay must stay outside the raw product view: '+selector);
-    const caption=async text=>page.evaluate(text=>window.setCaption(text),text);
     const click=async locator=>{const b=await locator.boundingBox();if(!b)throw Error('Missing click target');await page.mouse.move(b.x+b.width/2,b.y+b.height/2,{steps:15});await page.waitForTimeout(300);await locator.click();};
     await page.waitForTimeout(1400);
     if(isPush){
-      await caption('Three local commits are ready to push. First click prepares the personal publication confirmation.');
       await click(surface.getByTitle(/^3 commits to push/));
       await surface.getByRole('button',{name:/^Confirm the captured push/}).waitFor();await page.waitForTimeout(1500);
-      await caption('Second click confirms publication. The plugin pauses its periodic status refresh while pushing.');
       await click(surface.getByRole('button',{name:/^Confirm the captured push/}));
       await page.waitForFunction(()=>window.published);await page.waitForTimeout(1400);
       if(mode==='stale'){
         await surface.getByTitle(/^3 commits to push/).waitFor();
-        await caption('Controlled stale response: the draft PR appears, but ↑ 3 returns. The renderer trusts the returned unpublished count.');
         await page.screenshot({path:fileURLToPath(new URL('stale-frame.png',dir))});await page.waitForTimeout(3000);
-        await caption('Manual refresh receives the current status. The push arrow disappears without another push.');
         await click(surface.getByTitle(view === 'sidebar' ? 'Refresh' : /Updated .* Refresh/));
-        await page.waitForFunction(()=>!document.querySelector('#card')?.textContent.includes('↑ 3'));
+        await surface.getByTitle(/^3 commits to push/).waitFor({state:'detached'});
       }else{
         if(await surface.getByTitle(/^3 commits to push/).count())throw Error('Fresh status left push available');
-        await caption('Fresh status: draft PR #8 is visible, and the push arrow stays gone. This recording did not contact a forge.');
       }
+      await surface.locator('a[href="https://example.invalid/web/pull-requests/8"]').first().waitFor({state:'visible'});
       await page.waitForTimeout(2800);
     }else if(mode==='individual'){
-      await caption('Click each behind-count in quick succession. These controls use the older direct catch-up route.');
       for(const n of [12,7,3]) await click(surface.getByTitle(new RegExp('^'+n+' new on main\\. Catch up locally')));
-      await caption('Three independent requests are in flight. Each completion can replace the shared top-line message.');
-      await page.waitForFunction(()=>window.completed.length===3);await page.waitForTimeout(1300);
-      await caption('All three completed in this simulation. Per-repository results are available in the sidebar Action log.');
+      await page.waitForFunction(()=>new Set(window.completed).size===3);await page.waitForTimeout(1300);
       await page.waitForTimeout(3000);
     }else{
-      await caption('The collection shortcut captures all three suggested catch-ups in one click.');
       await click(surface.locator('.wtc-action-toolbar button').filter({hasText:'Catch up 3'}).first());
-      await caption('Current batch behavior: queued repositories are processed sequentially, with a shared 0/3 → 3/3 result.');
-      await page.waitForFunction(()=>window.completed.length===3);await page.waitForTimeout(1600);
-      await caption('The batch completed. Its result opens the Action log in the sidebar.');
+      await page.waitForFunction(()=>new Set(window.completed).size===3);await page.waitForTimeout(1600);
       await click(surface.getByText('✓ Caught up 3',{exact:true}));
       await page.locator('#panel .wtc-activity-log').waitFor();await page.waitForTimeout(2400);
       if(await page.locator('#panel .wtc-activity-log').getByText('Completed',{exact:true}).count()!==3)throw Error('Missing completion records');
