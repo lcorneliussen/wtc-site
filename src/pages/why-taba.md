@@ -15,8 +15,6 @@ updated: '2026-10-29'
 <h2 id="early-title">Agents hate multirepo setups</h2>
 <p class="problem-subline">Most agents assume your project is one repo. A frontend and its API already make two.</p>
 
-<details class="problem-detail" aria-labelledby="early-title">
-<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
 <div class="detail-copy">
 
 A frontend change needs its API. A site change needs the CLI it documents. Which repository should own that conversation? Starting in one makes every other repository an exception to manage.
@@ -35,7 +33,6 @@ A worktree collection gives the task its own folder, with the repositories it ne
 
 <div class="record-links"><span>Public record</span><ul><li><a href="https://x.com/lcorneliussen/status/2105924161562423589">2 October. Working only in worktrees</a></li></ul></div>
 </div>
-</details>
 </div>
 <div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/early.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
 </li>
@@ -47,15 +44,15 @@ A worktree collection gives the task its own folder, with the repositories it ne
 <h2 id="spaces-title">Folders weren't enough</h2>
 <p class="problem-subline">Repositories had task folders. Conversations and terminals needed a place of their own.</p>
 
-<details class="problem-detail" aria-labelledby="spaces-title">
-<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
 <div class="detail-copy">
 
 Collection folders came first. Herdr was installed on 11 August. On [17 August](https://x.com/lcorneliussen/status/2089256065393127485), hitting a plan limit prompted one project's move away from the Codex app.
 
 By 1 September, herdr was helping coordinate parallel work across projects. Each collection had its own terminals and conversations, whatever agent was running.
 
-By [4 September](https://x.com/lcorneliussen/status/2095853356983943262), remote herdr sessions were already running from Omarchy. The office machine could keep working while another device connected to it.
+By [4 September](https://x.com/lcorneliussen/status/2095853356983943262), remote herdr sessions were already running from Omarchy.
+
+As work spread across more computers, the SER8 became the daily driver. The MacBook Pro kept work running at the office.
 
 <div class="x-post" data-x-post="2094789074930250013" data-x-media="hidden">
 <aside class="post-card" aria-label="Post by Lars Corneliussen">
@@ -65,10 +62,9 @@ By [4 September](https://x.com/lcorneliussen/status/2095853356983943262), remote
 </aside>
 </div>
 
-<div class="record-links"><span>Herdr</span><ul><li><a href="https://herdr.dev/">Workspaces and remote agents</a></li></ul></div>
+<div class="record-links"><span>Herdr</span><ul><li><a href="https://x.com/lcorneliussen/status/2089338151445708881">17 August. Side-by-side computers and input handoff</a></li><li><a href="https://herdr.dev/">Workspaces and remote agents</a></li></ul></div>
 
 </div>
-</details>
 </div>
 <div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/spaces.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
 </li>
@@ -80,18 +76,17 @@ By [4 September](https://x.com/lcorneliussen/status/2095853356983943262), remote
 <h2 id="copies-title">Setup kept repeating</h2>
 <p class="problem-subline">Each new project meant copying the same scripts and adapting them again.</p>
 
-<details class="problem-detail" aria-labelledby="copies-title">
-<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
 <div class="detail-copy">
 
 Copying a few scripts into the next project was easier than introducing another tool. A shared boilerplate made it possible to pass improvements between projects while keeping the scripts local.
 
+On 16 August, I suggested worktree collections to Tommy Vedvik as an idea for Unpeel. A storefront, design system and marketing site illustrated the problem. The outline and reference implementation were public the next day.
+
 Then every improvement needed another sync. Teams had adapted their copies, so an agent had to reconcile the differences. Sharing the approach was easy. Keeping the copies in step became work of its own.
 
-<div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-boilerplate/commit/5e1ee925506d9c0618aba39b12572ec305a229f8">17 August. The reference boilerplate</a></li></ul></div>
+<div class="record-links"><span>Public record</span><ul><li><a href="https://x.com/lcorneliussen/status/2088213391663935920">14 August. Building another tool</a></li><li><a href="https://x.com/lcorneliussen/status/2089249901792092434">17 August. One project, three repositories</a></li><li><a href="https://x.com/lcorneliussen/status/2089310051223638106">17 August. The public reference implementation</a></li></ul></div>
 
 </div>
-</details>
 </div>
 <div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/copies.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
 </li>
@@ -103,8 +98,6 @@ Then every improvement needed another sync. Teams had adapted their copies, so a
 <h2 id="testing-title">Scripts needed tests</h2>
 <p class="problem-subline">Local scripts had become team infrastructure. People needed to trust them.</p>
 
-<details class="problem-detail" aria-labelledby="testing-title">
-<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
 <div class="detail-copy">
 
 A script used by one developer can depend on that developer knowing its quirks. Teammates need behavior they can rely on.
@@ -114,7 +107,6 @@ Tests first travelled with the boilerplate, copied alongside the scripts during 
 <div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-boilerplate/commit/97953ece09c317faf3f8acee93a2e8bbb2d79267">2 September. A test suite for the harness</a></li></ul></div>
 
 </div>
-</details>
 </div>
 <div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/testing.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
 </li>
@@ -126,8 +118,6 @@ Tests first travelled with the boilerplate, copied alongside the scripts during 
 <h2 id="variants-title">Customizations got mixed in</h2>
 <p class="problem-subline">Shared code, project settings and custom behavior were hard to tell apart.</p>
 
-<details class="problem-detail" aria-labelledby="variants-title">
-<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
 <div class="detail-copy">
 
 One team uses GitHub, another Bitbucket. One application needs a database and assigned ports when a worktree opens. Another needs no initialization at all.
@@ -147,7 +137,6 @@ The versioned CLI separated the two. Teams could pin the shared tooling and keep
 <div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/237def7cb6884f8c237f673b8a2c088fec89dd8f">29 September. The CLI skeleton</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/blob/579b66280f1b4cc391b4731dd0022703cb4ce651/docs/harness-design.md">6 October. A smaller harness with explicit project ownership</a></li></ul></div>
 
 </div>
-</details>
 </div>
 <div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/variants.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
 </li>
@@ -159,8 +148,6 @@ The versioned CLI separated the two. Teams could pin the shared tooling and keep
 <h2 id="reviews-title">Reviews fell behind</h2>
 <p class="problem-subline">Agents produced PRs faster than the team could review them.</p>
 
-<details class="problem-detail" aria-labelledby="reviews-title">
-<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
 <div class="detail-copy">
 
 <div class="x-post" data-x-post="2025228278160637970" data-x-media="hidden">
@@ -182,7 +169,6 @@ Taba's review tooling runs inside the worktree collection. Its built-in review c
 <div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-boilerplate/commit/607b0a94de0b6e9958e1d45a6865ddf7ed226b73">29 September. Separate review before a draft PR became ready</a></li></ul></div>
 
 </div>
-</details>
 </div>
 <div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/reviews.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
 </li>
@@ -194,8 +180,6 @@ Taba's review tooling runs inside the worktree collection. Its built-in review c
 <h2 id="services-title">Environments multiplied</h2>
 <p class="problem-subline">One development environment was enough work. Ten parallel conversations needed ten working setups.</p>
 
-<details class="problem-detail" aria-labelledby="services-title">
-<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
 <div class="detail-copy">
 
 An API, a web application and a database have to talk to each other. Run several tasks in parallel and each needs the right ports and service connections. Move the work to a remote machine and tunnels become part of the setup too.
@@ -217,7 +201,6 @@ The `svc` module brings startup, status, logs and tunnels into the collection, u
 <div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/68e8a66da212ed0351e0f85f141eba3d09d4ea40">6 October. Collection runtime and resource cleanup</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/1a27f2bbfaea2626be6877437b01e2b4ef856878">14 October. Services and tunnels through svc</a></li></ul></div>
 
 </div>
-</details>
 </div>
 <div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/services.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
 </li>
@@ -229,8 +212,6 @@ The `svc` module brings startup, status, logs and tunnels into the collection, u
 <h2 id="support-title">Support needed developers</h2>
 <p class="problem-subline">Support questions reached developers, who copied them straight into agent conversations.</p>
 
-<details class="problem-detail" aria-labelledby="support-title">
-<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
 <div class="detail-copy">
 
 The agent already had the code and configured read access it needed to investigate support questions.
@@ -249,7 +230,6 @@ A preconfigured OpenClaw setup let support ask directly, with read-only access f
 </aside>
 </div>
 </div>
-</details>
 </div>
 <div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/support.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
 </li>
@@ -261,8 +241,6 @@ A preconfigured OpenClaw setup let support ask directly, with read-only access f
 <h2 id="name-title">Nobody remembered wtc</h2>
 <p class="problem-subline">People called everything "the harness". The name wtc never stuck.</p>
 
-<details class="problem-detail" aria-labelledby="name-title">
-<summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
 <div class="detail-copy">
 
 The repositories were called agent harnesses. The tooling was called wtc. In conversation, everything became "the harness".
@@ -286,7 +264,6 @@ The [rename guide](../wtc-is-now-taba/) covers the command and configuration tra
 </aside>
 </div>
 </div>
-</details>
 </div>
 <div class="scene-art" aria-hidden="true"><img src="../illustrations/why-taba/name.svg" alt="" width="420" height="340" loading="lazy" decoding="async"></div>
 </li>

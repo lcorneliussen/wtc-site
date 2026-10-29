@@ -100,23 +100,20 @@ if (timeline) {
     rail.classList.toggle('is-reduced', reducedMotion.matches);
     schedule();
   };
-  for (const details of timeline.querySelectorAll('details')) details.addEventListener('toggle', schedule);
   window.addEventListener('scroll', schedule, {passive: true});
   window.addEventListener('resize', layout, {passive: true});
   reducedMotion.addEventListener('change', layout);
-  const openHashTarget = () => {
+  const scrollToHashTarget = () => {
     const index = problems.findIndex(problem => `#${problem.id}` === location.hash);
     if (index < 0) return;
-    const details = problems[index].querySelector('details');
-    if (details) details.open = true;
     const top = headings[index].getBoundingClientRect().top + window.scrollY - rail.offsetHeight - 40;
     window.scrollTo({top, behavior: 'instant'});
   };
-  window.addEventListener('hashchange', openHashTarget);
-  window.addEventListener('load', () => window.requestAnimationFrame(openHashTarget), {once: true});
+  window.addEventListener('hashchange', scrollToHashTarget);
+  window.addEventListener('load', () => window.requestAnimationFrame(scrollToHashTarget), {once: true});
   document.fonts.ready.then(layout);
   new ResizeObserver(schedule).observe(timeline);
   setupStoryPosts(schedule);
   layout();
-  openHashTarget();
+  scrollToHashTarget();
 }
