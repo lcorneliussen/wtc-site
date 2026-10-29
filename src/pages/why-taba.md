@@ -163,7 +163,17 @@ The versioned CLI separated the two. Teams could pin the shared tooling and keep
 <summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
 <div class="detail-copy">
 
+<div class="x-post" data-x-post="2025228278160637970" data-x-media="hidden">
+<aside class="post-card" aria-label="Post by Lars Corneliussen">
+<div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
+<blockquote>Now running claudes new /security-review before i have OC post it to a public repo.</blockquote>
+<div class="post-meta"><time datetime="2026-02-21">21 Feb 2026</time><a href="https://x.com/lcorneliussen/status/2025228278160637970">View post <span aria-hidden="true">↗</span></a></div>
+</aside>
+</div>
+
 Faster coding filled the review queue. More agent-written PRs left teammates with more code to review.
+
+Agent reviews were already being used in February. The September tooling made independent rounds part of preparing a PR.
 
 Local adversarial reviews added rounds of criticism and fixes before human review. Those reviews needed the same cross-repository context as the work itself. A frontend reviewer needs to see the API it calls.
 
@@ -231,7 +241,6 @@ A preconfigured OpenClaw setup let support ask directly, with read-only access f
 
 <div class="record-links"><span>Public record</span><ul><li><a href="https://x.com/lcorneliussen/status/2110439039463751749">14 October. The collection plugin announcement</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/b63857c0a84c573387d493c80ff4b9f041106068">14 October. One conversation across a collection</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/2cb70fe6facb8fb4239ffbad81bec4586b3b22a0">19 October. The host-mode integration reached main</a></li></ul></div>
 
-
 <div class="x-post" data-x-post="2110439731540775194" data-x-media="hidden">
 <aside class="post-card" aria-label="Post by Lars Corneliussen">
 <div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
@@ -263,7 +272,6 @@ A useful command still needs a name people remember. Taba gave it one, with comm
 The [rename guide](../wtc-is-now-taba/) covers the command and configuration transition.
 
 <div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-site/commit/41853b3776c287d0f2320434b6c61e689c02df52">26 October. The site adopted the taba name</a></li></ul></div>
-
 
 <aside class="post-card" aria-label="Post by Lars Corneliussen">
 <div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>

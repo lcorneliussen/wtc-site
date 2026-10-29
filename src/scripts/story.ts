@@ -104,12 +104,19 @@ if (timeline) {
   window.addEventListener('scroll', schedule, {passive: true});
   window.addEventListener('resize', layout, {passive: true});
   reducedMotion.addEventListener('change', layout);
-  document.fonts.ready.then(() => {
-    layout();
+  const openHashTarget = () => {
     const index = problems.findIndex(problem => `#${problem.id}` === location.hash);
-    if (index >= 0) goTo(index, false);
-  });
+    if (index < 0) return;
+    const details = problems[index].querySelector('details');
+    if (details) details.open = true;
+    const top = headings[index].getBoundingClientRect().top + window.scrollY - rail.offsetHeight - 40;
+    window.scrollTo({top, behavior: 'instant'});
+  };
+  window.addEventListener('hashchange', openHashTarget);
+  window.addEventListener('load', () => window.requestAnimationFrame(openHashTarget), {once: true});
+  document.fonts.ready.then(layout);
   new ResizeObserver(schedule).observe(timeline);
   setupStoryPosts(schedule);
   layout();
+  openHashTarget();
 }
