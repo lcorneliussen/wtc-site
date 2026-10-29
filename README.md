@@ -84,3 +84,13 @@ npm run demos:openclaw -- /absolute/path/to/wtc-cli
 Pass a second argument for a separate output directory. Review the PNGs, WebM,
 and provenance before committing them. The manual **OpenClaw demo capture**
 workflow produces review artifacts only; it never updates or deploys the site.
+
+For captioned push/refresh and catch-up interactions, see the
+[interaction recording guide](docs/recording-openclaw-interactions.md):
+
+```sh
+npm run demos:openclaw:interactions -- /absolute/path/to/wtc-cli
+```
+
+Open `artifacts/openclaw-interactions/index.html` to watch the clips. These use
+the actual renderer with simulated gateway responses, not a live account.

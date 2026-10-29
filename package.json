@@ -15,7 +15,8 @@
     "check:coverage": "node scripts/docs-coverage.mjs check",
     "test:coverage": "node --test scripts/docs-coverage.test.mjs",
     "docs:propose": "node scripts/docs-coverage.mjs propose",
-    "demos:openclaw": "node scripts/record-openclaw.mjs"
+    "demos:openclaw": "node scripts/record-openclaw.mjs",
+    "demos:openclaw:interactions": "node scripts/record-openclaw-interactions.mjs"
   },
   "dependencies": {
     "astro": "^7.3.8"

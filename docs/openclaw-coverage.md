@@ -95,6 +95,11 @@ agent follow-up; service start → preview. Keep each independently reproducible
 
 ## Existing CLI demos
 
+For captioned push/refresh and individual/batch catch-up clips, see the separate
+[interaction recording guide](recording-openclaw-interactions.md). Those clips
+extend renderer demonstrations with scripted responses and assertions; they do
+not turn the historical captures above into end-to-end gateway evidence.
+
 Upstream `docs/demos/record.py` already records real terminal commands in fresh
 synthetic repositories to asciicast and transcripts; optional `agg` makes GIFs.
 `record_runtime.py` adds runtime/cleanup scenarios and needs dekit. They are
