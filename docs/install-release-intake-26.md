@@ -33,3 +33,19 @@ npm run check:coverage
 Visual and interaction QA covers desktop and narrow screens, keyboard copy,
 clipboard rejection/manual selection, release/download links, no JavaScript,
 and failed-release lookup rendering. The existing dependency set is sufficient.
+
+Completed QA: the install command stays in the first viewport at 1440×900,
+1280×720, 390×844 and 320×640, without horizontal overflow. Desktop/mobile
+screenshots were visually inspected. Keyboard Enter copies the exact displayed
+command; rejected clipboard access selects it and announces manual copying.
+With JavaScript disabled the command and numbered notes remain available and
+the copy button stays hidden. Reproduce interactions against a running preview:
+
+```sh
+node scripts/install-qa.mjs <preview-url>
+```
+
+A static build with the release fetch forced to reject was also rendered: the
+“Last verified” version, outage/date text, install command and numbered notes
+remain consistent. The normal network-enabled build was restored afterward.
+Coverage was verified against the exact v0.1.51 source revision as well as offline.
