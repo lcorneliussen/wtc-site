@@ -1,7 +1,7 @@
 ---
 layout: ../layouts/Story.astro
 title: Why taba
-description: One task, several repositories. Scattered worktrees, parallel environments and a growing review queue led to taba.
+description: One task, several repositories. Parallel work needs more than separate worktrees. Taba helps keep the repos, environments and reviews together.
 author: Lars Corneliussen
 updated: '2026-10-29'
 ---
@@ -12,12 +12,12 @@ updated: '2026-10-29'
 <p class="problem-date" data-rail-label="IDEs"><span>IDE workflows</span></p>
 <div class="problem-body">
 
-<h2 id="ide-workflows-title">Tools worked together</h2>
-<p class="problem-subline">Several repos, several IDEs. Agents could already work across them.</p>
+<h2 id="ide-workflows-title">Tools work together</h2>
+<p class="problem-subline">Several repos, several IDEs. Agents can work across them.</p>
 
 <div class="detail-copy">
 
-Cursor, Claude Code and Codex alongside Rider, WebStorm and DataGrip. IDE terminals worked well, and agents could make changes in other repositories too.
+Cursor, Claude Code and Codex work alongside Rider, WebStorm and DataGrip. IDE terminals work well, and agents can make changes in other repositories too.
 
 </div>
 </div>
@@ -28,12 +28,12 @@ Cursor, Claude Code and Codex alongside Rider, WebStorm and DataGrip. IDE termin
 <p class="problem-date" data-rail-label="Rails"><span>Rails app</span></p>
 <div class="problem-body">
 
-<h2 id="parallel-features-title">Parallel work clicked</h2>
+<h2 id="parallel-features-title">Parallel work clicks</h2>
 <p class="problem-subline">One conversation, one worktree, one running Rails app. Several features at once.</p>
 
 <div class="detail-copy">
 
-Then came a Rails app. Claude and Codex managed a worktree and full app for each conversation. Working on several features in parallel became easy to love.
+With a Rails app, Claude and Codex manage a worktree and full app for each conversation. Several features can move forward at once.
 
 </div>
 </div>
@@ -45,15 +45,15 @@ Then came a Rails app. Claude and Codex managed a worktree and full app for each
 <div class="problem-body">
 
 <h2 id="early-title">Agents hate multirepo setups</h2>
-<p class="problem-subline">That parallel workflow was missing on projects spread across several repositories.</p>
+<p class="problem-subline">That parallel workflow is harder to get on projects spread across several repositories.</p>
 
 <div class="detail-copy">
 
-Back on larger projects, a frontend still needed its API. Agents could edit both. Giving each conversation its own working setup across those repos took more effort.
+On larger projects, a frontend still needs its API. Agents can edit both. Giving each conversation its own working setup across those repos takes more effort.
 
-Which repository should own the conversation? Where should its worktrees live? That is where the experiments began.
+Which repository should own the conversation? Where should its worktrees live?
 
-Separate worktrees helped, but keeping track of them was still manual. New tasks could start from the wrong branch. Unrelated projects shared one interface, which was awkward to show during a call.
+Separate worktrees help, but keeping track of them is still manual. A new task can start from the wrong branch. Unrelated projects share one interface, which is awkward to show during a call.
 
 A worktree collection gives the task its own folder, with the repositories it needs side by side. Bare repository owners hold the shared history. Every working checkout is a worktree, with an explicit starting point.
 
@@ -75,14 +75,16 @@ A worktree collection gives the task its own folder, with the repositories it ne
 <p class="problem-date"><time datetime="2026-08-11">11 Aug 2026</time></p>
 <div class="problem-body">
 
-<h2 id="spaces-title">Folders weren't enough</h2>
-<p class="problem-subline">Repositories had task folders. Conversations and terminals needed a place of their own.</p>
+<h2 id="spaces-title">Folders aren't enough</h2>
+<p class="problem-subline">Repositories have task folders. Conversations and terminals need a place of their own.</p>
 
 <div class="detail-copy">
 
+Herdr gives each collection its own terminals and conversations, whatever agent is running. Work can keep running at the office while another computer connects.
+
 Collection folders came first. Herdr was installed on 11 August. On [17 August](https://x.com/lcorneliussen/status/2089256065393127485), hitting a plan limit prompted one project's move away from the Codex app.
 
-By 1 September, herdr was helping coordinate parallel work across projects. Each collection had its own terminals and conversations, whatever agent was running.
+By 1 September, herdr was helping coordinate parallel work across projects.
 
 By [4 September](https://x.com/lcorneliussen/status/2095853356983943262), remote herdr sessions were already running from Omarchy.
 
@@ -107,18 +109,18 @@ As work spread across more computers, the SER8 became the daily driver. The MacB
 <p class="problem-date"><time datetime="2026-08-17">17 Aug 2026</time></p>
 <div class="problem-body">
 
-<h2 id="copies-title">Setup kept repeating</h2>
-<p class="problem-subline">Each new project meant copying the same scripts and adapting them again.</p>
+<h2 id="copies-title">Setup keeps repeating</h2>
+<p class="problem-subline">Each new project means copying the same scripts and adapting them again.</p>
 
 <div class="detail-copy">
 
-Copying a few scripts into the next project was easier than introducing another tool. A shared boilerplate made it possible to pass improvements between projects while keeping the scripts local.
+Copying a few scripts into the next project is easier than introducing another tool. A shared boilerplate lets teams pass improvements between projects while keeping the scripts local.
 
 Adding a site and gallery took [weeks.app](https://weeks.app/) beyond one repository too. The boilerplate gave those repositories the same way of working.
 
 On 16 August, I suggested worktree collections to Tommy Vedvik as an idea for Unpeel. A storefront, design system and marketing site illustrated the problem. The outline and reference implementation were public the next day.
 
-Then every improvement needed another sync. Teams had adapted their copies, so an agent had to reconcile the differences. Sharing the approach was easy. Keeping the copies in step became work of its own.
+Every improvement needs another sync. Teams adapt their copies, so an agent has to reconcile the differences. Sharing the approach is easy. Keeping the copies in step is work of its own.
 
 <div class="record-links"><span>Public record</span><ul><li><a href="https://x.com/lcorneliussen/status/2088213391663935920">14 August. Building another tool</a></li><li><a href="https://x.com/lcorneliussen/status/2089249901792092434">17 August. One project, three repositories</a></li><li><a href="https://x.com/lcorneliussen/status/2089310051223638106">17 August. The public reference implementation</a></li></ul></div>
 
@@ -131,8 +133,8 @@ Then every improvement needed another sync. Teams had adapted their copies, so a
 <p class="problem-date"><time datetime="2026-09-02">2 Sep 2026</time></p>
 <div class="problem-body">
 
-<h2 id="testing-title">Scripts needed tests</h2>
-<p class="problem-subline">Local scripts had become team infrastructure. People needed to trust them.</p>
+<h2 id="testing-title">Scripts need tests</h2>
+<p class="problem-subline">Local scripts become team infrastructure. People need to trust them.</p>
 
 <div class="detail-copy">
 
@@ -151,16 +153,16 @@ Tests first travelled with the boilerplate, copied alongside the scripts during 
 <p class="problem-date"><time datetime="2026-09-29">29 Sep 2026</time></p>
 <div class="problem-body">
 
-<h2 id="variants-title">Customizations got mixed in</h2>
-<p class="problem-subline">Shared code, project settings and custom behavior were hard to tell apart.</p>
+<h2 id="variants-title">Customizations get mixed in</h2>
+<p class="problem-subline">Shared code, project settings and custom behavior are hard to tell apart.</p>
 
 <div class="detail-copy">
 
 One team uses GitHub, another Bitbucket. One application needs a database and assigned ports when a worktree opens. Another needs no initialization at all.
 
-Those differences belong in project configuration. Mixing them into shared scripts made upgrades harder. A local change could be essential customization or an old copy of common code.
+Those differences belong in project configuration. Mixing them into shared scripts makes upgrades harder. A local change can be essential customization or an old copy of common code.
 
-The versioned CLI separated the two. Teams could pin the shared tooling and keep their own configuration and hooks.
+The versioned CLI separates the two. Teams can pin the shared tooling and keep their own configuration and hooks.
 
 <div class="x-post" data-x-post="2107369079929545065" data-x-media="hidden">
 <aside class="post-card" aria-label="Post by Lars Corneliussen">
@@ -181,8 +183,8 @@ The versioned CLI separated the two. Teams could pin the shared tooling and keep
 <p class="problem-date"><time datetime="2026-09-29">29 Sep 2026</time></p>
 <div class="problem-body">
 
-<h2 id="reviews-title">Reviews fell behind</h2>
-<p class="problem-subline">Agents produced PRs faster than the team could review them.</p>
+<h2 id="reviews-title">Reviews fall behind</h2>
+<p class="problem-subline">Agents produce PRs faster than the team can review them.</p>
 
 <div class="detail-copy">
 
@@ -194,11 +196,11 @@ The versioned CLI separated the two. Teams could pin the shared tooling and keep
 </aside>
 </div>
 
-Faster coding filled the review queue. More agent-written PRs left teammates with more code to review.
+Faster coding fills the review queue. More agent-written PRs leave teammates with more code to review.
 
 Agent reviews were already being used in February. The September tooling made independent rounds part of preparing a PR.
 
-Local adversarial reviews added rounds of criticism and fixes before human review. Those reviews needed the same cross-repository context as the work itself. A frontend reviewer needs to see the API it calls.
+Local adversarial reviews add rounds of criticism and fixes before human review. Those reviews need the same cross-repository context as the work itself. A frontend reviewer needs to see the API it calls.
 
 Taba's review tooling runs inside the worktree collection. Its built-in review concerns can be copied out for customization, and an agent harness or application repository can add its own.
 
@@ -213,14 +215,14 @@ Taba's review tooling runs inside the worktree collection. Its built-in review c
 <p class="problem-date"><time datetime="2026-10-10">10 Oct 2026</time></p>
 <div class="problem-body">
 
-<h2 id="services-title">Environments multiplied</h2>
-<p class="problem-subline">One development environment was enough work. Ten parallel conversations needed ten working setups.</p>
+<h2 id="services-title">Environments multiply</h2>
+<p class="problem-subline">One development environment is enough work. Ten parallel conversations need ten working setups.</p>
 
 <div class="detail-copy">
 
 An API, a web application and a database have to talk to each other. Run several tasks in parallel and each needs the right ports and service connections. Move the work to a remote machine and tunnels become part of the setup too.
 
-Parallel application stacks also consumed memory. By [10 October](https://x.com/lcorneliussen/status/2108966803879948716), even a 64 GB MacBook Pro could run out. Four days later, the 24 GB SER8 was struggling too, largely with browser profiles and web apps. Most harnesses were already running elsewhere.
+Parallel application stacks also consume memory. By [10 October](https://x.com/lcorneliussen/status/2108966803879948716), even a 64 GB MacBook Pro could run out. Four days later, the 24 GB SER8 was struggling too, largely with browser profiles and web apps. Most harnesses were already running elsewhere.
 
 A demo link should reach the services for the task being shown. An agent needs to know which processes are running and where to find their logs.
 
@@ -245,16 +247,16 @@ The `svc` module brings startup, status, logs and tunnels into the collection, u
 <p class="problem-date"><time datetime="2026-10-14">14 Oct 2026</time></p>
 <div class="problem-body">
 
-<h2 id="support-title">Support needed developers</h2>
-<p class="problem-subline">Support questions reached developers, who copied them straight into agent conversations.</p>
+<h2 id="support-title">Support needs developers</h2>
+<p class="problem-subline">Support questions reach developers, who copy them straight into agent conversations.</p>
 
 <div class="detail-copy">
 
-The agent already had the code and configured read access it needed to investigate support questions.
+The agent already has the code and configured read access it needs to investigate support questions.
 
-Giving support a development environment didn't fix the handoff. The terminal and the repositories were work they weren't comfortable managing.
+Giving support a development environment doesn't fix the handoff. The terminal and the repositories are work they aren't comfortable managing.
 
-A preconfigured OpenClaw setup let support ask directly, with read-only access first. OpenClaw was already in use by [February](https://x.com/lcorneliussen/status/2024521439244599733). The October plugin added multi-repository work for teams, with commits and pull requests handled through the gateway for the user who requested them. The same session could also be escalated to a developer.
+A preconfigured OpenClaw setup lets support ask directly, with read-only access first. OpenClaw was already in use by [February](https://x.com/lcorneliussen/status/2024521439244599733). The October plugin added multi-repository work for teams, with commits and pull requests handled through the gateway for the user who requested them. The same session can also be escalated to a developer.
 
 <div class="record-links"><span>Public record</span><ul><li><a href="https://x.com/lcorneliussen/status/2110439039463751749">14 October. The collection plugin announcement</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/b63857c0a84c573387d493c80ff4b9f041106068">14 October. One conversation across a collection</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/2cb70fe6facb8fb4239ffbad81bec4586b3b22a0">19 October. The host-mode integration reached main</a></li></ul></div>
 
@@ -274,14 +276,14 @@ A preconfigured OpenClaw setup let support ask directly, with read-only access f
 <p class="problem-date"><time datetime="2026-10-26">26 Oct 2026</time></p>
 <div class="problem-body">
 
-<h2 id="name-title">Nobody remembered wtc</h2>
-<p class="problem-subline">People called everything "the harness". The name wtc never stuck.</p>
+<h2 id="name-title">Nobody remembers wtc</h2>
+<p class="problem-subline">People call everything "the harness". The name wtc is hard to remember.</p>
 
 <div class="detail-copy">
 
-The repositories were called agent harnesses. The tooling was called wtc. In conversation, everything became "the harness".
+The repositories are called agent harnesses. In conversation, everything is "the harness". The tooling needs a name of its own.
 
-A useful command still needs a name people remember. Taba gave it one, with commands like `taba open` and `taba status`. The site moved from `wtc.sh` to `taba.sh` soon afterward.
+A useful command still needs a name people remember. Taba gives it one, with commands like `taba open` and `taba status`. The site moved from `wtc.sh` to `taba.sh` soon afterward.
 
 The [rename guide](../wtc-is-now-taba/) covers the command and configuration transition.
 
