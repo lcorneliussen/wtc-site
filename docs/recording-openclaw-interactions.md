@@ -33,7 +33,11 @@ request-trace overlay. Each clip has a separate request trace, named phase captu
 `manifest.json` records the source revision/hash, Playwright/browser versions,
 scenario, assertions and measured base-layout coordinates. Takes fail if the
 header, repository grid, Services or composer shifts by more than one CSS pixel
-during preparation, progress, completion or refresh. The recorder checks the expected UI outcomes and loads
+during preparation, progress, completion or refresh. It also measures text baselines
+in the header, repository and service rows, including monospace values and button
+labels, using the first visible glyph range and its font ascent without changing
+the DOM, and rejects a spread over 0.25 CSS pixels. Glyph-only controls center
+independently. The recorder checks the expected UI outcomes and loads
 each finalized video to verify metadata and initial decoding.
 
 Use a new, empty directory for every take; the recorder refuses to overwrite
@@ -76,8 +80,12 @@ failure details, selection, confirmation and collapsed states in design review.
 | `individual` | Click three repository behind-count controls quickly. All requests complete; inspect their individual progress and results. |
 | `batch` | Click the collection's catch-up shortcut once. Observe sequential processing and three completion results. The sidebar and split views show the log without changing views. |
 
-The scripted delays make progress states visible; they are not performance
-measurements. Assertions intentionally fail if the relevant controls or behavior
+The fixture starts with its initial collection data and expanded state ready.
+Later responses retain their scripted delays to make progress visible; these are
+not performance measurements. The raw capture is not trimmed. Pointer moves go
+directly to their targets: sweeping an invisible recorded pointer over unrelated
+controls creates brief hover flashes that look like product flicker. The fixture
+uses neutral host-theme surfaces, small controls and primary confirmation colors. Assertions intentionally fail if the relevant controls or behavior
 change. Inspect the new source contract before updating fixtures or selectors;
 do not weaken an assertion merely to produce a video.
 
@@ -100,6 +108,25 @@ done
 
 Decode exports fully before sharing, for example
 `ffmpeg -v error -i 01-push-create-pr.mp4 -f null -`.
+### Check every frame when something flickers
+
+Extract frames and their actual timestamps, then compare the affected region
+before, during and after every change. Do not infer a phase from guessed seconds:
+use the named phase PNGs and request trace to identify the outcome.
+
+```sh
+mkdir frames
+ffmpeg -i take.mp4 -fps_mode passthrough frames/%06d.png
+ffprobe -v error -select_streams v:0 -show_frames \
+  -show_entries frame=best_effort_timestamp_time -of csv take.mp4 > frame-times.csv
+```
+
+Inspect one-frame reversals as well as the large changes. Separate intended
+hover/focus feedback, initial loading and temporary-panel expansion from a
+product redraw. Check every text baseline, unchanged cell/control bounds and
+shared-view busy state. Record the frame number, timestamp, changed region and
+cause in review evidence. Keep any diagnostic guides outside the raw video.
+
 Keep the gallery, videos and traces together when sending a take for review.
 Generated takes stay outside git by default. Publishing selected media under
 `public/media/` is a separate edit: retain provenance, label simulated responses,

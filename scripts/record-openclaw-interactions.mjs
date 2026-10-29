@@ -21,6 +21,8 @@ const modulePath = 'openclaw-plugin/dist/control-ui/v1/index.js';
 const revision = execFileSync('git', ['-C', upstream, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 if (execFileSync('git', ['-C', upstream, 'status', '--porcelain', '--', modulePath], { encoding: 'utf8' }).trim()) throw Error('Capture requires an unchanged upstream UI module');
 const renderer = await readFile(join(upstream, modulePath), 'utf8');
+const openKey = renderer.match(/const OPEN_KEY = "([^"]+)"/)?.[1];
+if (!openKey) throw Error('Renderer open-state contract changed; update the fixture');
 const template = await readFile(new URL('scripts/demos/openclaw.html', siteRoot), 'utf8');
 const output = pathToFileURL(resolve(positionals[1] ?? fileURLToPath(new URL('artifacts/openclaw-interactions', siteRoot))) + sep);
 const selected = positionals[2] === 'all' ? undefined : positionals[2];
@@ -54,11 +56,11 @@ try {
     html = inject(html, 'const request = async (method, params) => {', `
 const mode = ${JSON.stringify(mode)};
 const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
-window.calls=[]; window.completed=[]; window.published=false; let staleLeft=0;
+window.calls=[]; window.completed=[]; window.published=false; let staleLeft=0, initialStatus=true;
 const trace = text => window.calls.push({at:Date.now(),text});
 const request = async (method, params) => {
  if(method==='plugins.sessionAction'&&params.actionId==='collection') {
-  trace('→ collection status requested');await delay(700);
+  trace('→ collection status requested');if(!initialStatus)await delay(700);initialStatus=false;
   const snapshot=structuredClone(data);
   if(window.published && staleLeft>0){staleLeft--;snapshot.repos[0].unpublished=3;trace('← INJECTED STALE snapshot: PR #8 exists, unpublished=3');}
   else trace('← status: '+snapshot.repos.map(r=>r.repo+' behind='+r.behind+' unpublished='+(r.unpublished??0)).join(' · '));
@@ -86,11 +88,12 @@ const request = async (method, params) => {
 `);
     html = inject(html, "mounts.panel(document.querySelector('#panel'),ctx);", "window.demoPanel?.dispose(); document.querySelector('#panel').replaceChildren(); window.demoPanel=mounts.panel(document.querySelector('#panel'),ctx);");
     html = inject(html, '<div id="stage">', `<body class="${view}"><div id="stage">`);
-    html = inject(html, '</style>', `body{padding:16px;background:#101216}#stage{max-width:none;height:calc(100dvh - 32px);display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:0}#stage>h1,#stage>p,footer{display:none!important}#card{grid-column:1;grid-row:2;min-height:0;max-height:100%;display:flex;flex-direction:column;justify-content:flex-end}#card>.wtc-collection-card,#card>.composer{flex:none}#card>.wtc-transient-actions{flex:0 1 auto;min-height:0}#panel{border-radius:14px;height:calc(100dvh - 32px);overflow:auto}#recording-chat{display:${view === 'card' || view === 'sidebar' ? 'none' : 'grid'};grid-column:1;grid-row:1;min-height:0;overflow:auto;align-content:end;gap:18px;padding:24px 12px;font-size:14px}.recording-bubble{max-width:80%;padding:12px 16px;border-radius:14px}.recording-user{justify-self:end;background:#183139}.recording-assistant{justify-self:start;color:#d1d5dc}.composer{width:100%;margin:12px auto 0;padding:14px 20px}body.sidebar #stage{display:block}body.sidebar #card{display:none!important}body.sidebar #panel{display:block!important}body.split #stage{grid-template-columns:minmax(0,1fr) ${sidebarWidth}px;column-gap:16px}body.split #panel{display:block!important;grid-column:2;grid-row:1/3;height:100%}</style>`);
+    html = inject(html, '</style>', `:root{--bg:#0e1015;--bg-hover:#1f2330;--card:#161920;--text:#bcbcc0;--text-strong:#f4f4f5;--muted:#8b8b94;--border:#1e2028;--border-strong:#2e3040;--link:color-mix(in srgb,#ff7070 85%,var(--text));--accent:#ff5c5c;--accent-foreground:#fff;--primary:#d13c3c;--primary-foreground:#fff;--radius-sm:6px;--font-body:'Instrument Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}body{padding:16px;background:var(--bg);font-family:var(--font-body)}a{color:var(--link)}#stage{max-width:none;height:calc(100dvh - 32px);display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:0}#stage>h1,#stage>p,footer{display:none!important}#card{grid-column:1;grid-row:2;min-height:0;max-height:100%;display:flex;flex-direction:column;justify-content:flex-end}#card>.wtc-collection-card,#card>.composer{flex:none}#card>.wtc-transient-actions{flex:0 1 auto;min-height:0}#panel{border-radius:14px;height:calc(100dvh - 32px);overflow:auto}#recording-chat{display:${view === 'card' || view === 'sidebar' ? 'none' : 'grid'};grid-column:1;grid-row:1;min-height:0;overflow:auto;align-content:end;gap:18px;padding:24px 12px;font-size:14px}.recording-bubble{max-width:80%;padding:12px 16px;border-radius:14px}.recording-user{justify-self:end;background:color-mix(in srgb,var(--accent) 12%,var(--bg))}.recording-assistant{justify-self:start;color:var(--text)}.composer{width:100%;margin:12px auto 0;padding:14px 20px}body.sidebar #stage{display:block}body.sidebar #card{display:none!important}body.sidebar #panel{display:block!important}body.split #stage{grid-template-columns:minmax(0,1fr) ${sidebarWidth}px;column-gap:16px}body.split #panel{display:block!important;grid-column:2;grid-row:1/3;height:100%}</style>`);
     html = inject(html, '<div id="card">', '<div id="recording-chat"><div class="recording-bubble recording-user">Please update the collection and its pull request.</div><div class="recording-bubble recording-assistant">I’ll check the repositories and preserve your work.</div></div><div id="card">');
     if (view === 'split') html = inject(html, "document.querySelector('#card').hidden=true;", "document.body.classList.add('split');");
     if (view === 'sidebar' || view === 'split') html = inject(html, "mounts.card(document.querySelector('#card'),ctx);", "mounts.card(document.querySelector('#card'),ctx); host.ui.openPanel();");
     const context = await browser.newContext({ locale: 'en-US', timezoneId: 'UTC', deviceScaleFactor: 1, viewport: { width, height: 900 }, recordVideo: { dir: fileURLToPath(dir), size: { width, height: 900 } } });
+    await context.addInitScript(key => localStorage.setItem(key, '1'), openKey);
     const errors=[];
     await context.route('**/*', route => {
       const url=route.request().url();
@@ -104,7 +107,7 @@ const request = async (method, params) => {
 
     const surface=page.locator(view === 'sidebar' ? '#panel' : '#card');
     for (const selector of ['#stage > h1', '#caption', '#rpc', '#cursor']) if (await page.locator(selector).isVisible()) throw Error('Recording overlay must stay outside the raw product view: '+selector);
-    const click=async locator=>{const b=await locator.boundingBox();if(!b)throw Error('Missing click target');await page.mouse.move(b.x+b.width/2,b.y+b.height/2,{steps:15});await page.waitForTimeout(300);await locator.click();};
+    const click=async locator=>{const b=await locator.boundingBox();if(!b)throw Error('Missing click target');await page.mouse.move(b.x+b.width/2,b.y+b.height/2);await page.waitForTimeout(300);await locator.click();};
     await surface.locator('.wtc-repositories').waitFor();
     const positions=[];
     const measure=async phase=>{
@@ -112,10 +115,48 @@ const request = async (method, params) => {
         const rect=selector=>{const node=root.querySelector(selector);if(!node)return null;const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
         const grid=root.querySelector('.wtc-repositories>.wtc-table');
         const cells=grid?[...grid.children].slice(Number(grid.getAttribute('data-columns'))).map(node=>{const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};}):[];
-        const controls=[...root.querySelectorAll('.wtc-action-toolbar .wtc-toolbar-primary, .wtc-action-toolbar>button, .wtc-bulk-actions>button')].map(node=>{const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};});
+        const controls=[...root.querySelectorAll('.wtc-action-toolbar .wtc-toolbar-primary, .wtc-action-toolbar>button, .wtc-bulk-actions button')].map(node=>{const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};});
         const sideRect=selector=>{const node=document.querySelector('#panel '+selector);if(!node)return null;const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
-        return {controls,sideHeader:sideRect('.wtc-collection>header'),sideRepositories:sideRect('.wtc-repositories>.wtc-table'),sideServices:sideRect('.wtc-base-services'),header:rect('.wtc-collection-card>summary, .wtc-collection>header'),repositories:rect('.wtc-repositories>.wtc-table'),services:rect('.wtc-base-services'),composer:rect('.composer'),temporary:rect('.wtc-transient-actions'),cells};
+        // Read the first visible glyph and its font ascent without changing
+        // the DOM, including when a branch wraps onto several lines.
+        const fontMetrics=document.createElement('canvas').getContext('2d');
+        const textBaseline = node => {
+          if (!node?.getBoundingClientRect().width) return null;
+          const walker=document.createTreeWalker(node,NodeFilter.SHOW_TEXT);
+          let text;
+          while(text=walker.nextNode()) if(text.textContent.trim()&&!/^[束…⋯✓⌄⌃↻⤢·■▶+✕±]+$/.test(text.textContent.trim())&&text.parentElement.getBoundingClientRect().width) break;
+          if(!text) return null;
+          let start=text.textContent.search(/[\p{L}\p{N}]/u);if(start<0)start=text.textContent.search(/\S/);
+          const range=document.createRange();range.setStart(text,start);range.setEnd(text,start+1);
+          const style=getComputedStyle(text.parentElement);
+          fontMetrics.font=style.fontStyle+' '+style.fontWeight+' '+style.fontSize+' '+style.fontFamily;
+          const ascent=fontMetrics.measureText(text.textContent[start]).fontBoundingBoxAscent,box=range.getBoundingClientRect();
+          if(!Number.isFinite(ascent)||!box.height)throw Error('Browser cannot measure the visible text baseline');
+          return {text:text.textContent,baseline:box.y+ascent};
+        };
+        const baselines=[];
+        const check=(name,nodes)=>{
+          const values=nodes.map(textBaseline).filter(Boolean);
+          baselines.push({name,values,spread:values.length?Math.max(...values.map(v=>v.baseline))-Math.min(...values.map(v=>v.baseline)):0});
+        };
+        for(const scope of [root,...(document.querySelector('#panel')&&!root.closest('#panel')?[document.querySelector('#panel')]:[])]) {
+          const head=scope.querySelector('.wtc-collection-card>summary');
+          if(head)check('header',[head.querySelector('.wtc-brand-word'),...[...head.querySelectorAll('span')].filter(n=>n.textContent==='Collection'),head.querySelector('.wtc-header-feedback'),...head.querySelectorAll('.wtc-summary-facts>*'),...head.querySelectorAll('.wtc-action-toolbar button')]);
+          const side=scope.querySelector('.wtc-collection>header>div:first-child');
+          if(side)check('sidebar header',[...side.children]);
+          for(const grid of scope.querySelectorAll('.wtc-table')) {
+            const cols=Number(grid.getAttribute('data-columns')),cells=[...grid.children].slice(cols);
+            for(let i=0;i<cells.length;i+=cols)check('table '+cols+' row '+i,cells.slice(i,i+cols));
+          }
+          for(const facts of scope.querySelectorAll('.wtc-repo-facts')) {
+            const cells=[...facts.children],separatePR=getComputedStyle(cells.at(-1)).gridColumnEnd==='-1';
+            check('repository facts',separatePR?cells.slice(0,-1):cells);
+          }
+          for(const all of scope.querySelectorAll('.wtc-bulk-actions'))check('all repositories',[all.querySelector('span'),...all.querySelectorAll('button')]);
+        }
+        return {baselines,controls,sideHeader:sideRect('.wtc-collection>header'),sideRepositories:sideRect('.wtc-repositories>.wtc-table'),sideServices:sideRect('.wtc-base-services'),header:rect('.wtc-collection-card>summary, .wtc-collection>header'),repositories:rect('.wtc-repositories>.wtc-table'),services:rect('.wtc-base-services'),composer:rect('.composer'),temporary:rect('.wtc-transient-actions'),cells};
       });
+      for(const group of sample.baselines)if(group.spread>.25)throw Error(`Text baselines differ: ${view}/${mode}/${phase}/${group.name}: ${JSON.stringify(group.values)}`);
       positions.push({phase,...sample});
       await writeFile(new URL('layout-positions.json',dir),JSON.stringify(positions,null,2));
       await page.screenshot({path:fileURLToPath(new URL(phase+'.png',dir))});
