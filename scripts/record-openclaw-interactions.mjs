@@ -188,6 +188,7 @@ const request = async (method, params) => {
     await page.waitForTimeout(1400);await measure('idle');
     if(isPush){
       await click(surface.getByTitle(/^3 commits to push/));
+      await surface.locator('.wtc-action-toolbar').getByText('Preparing…',{exact:true}).waitFor();await measure('preparing');
       await surface.getByRole('button',{name:/^Confirm the captured push/}).waitFor();await surface.locator('.wtc-confirm-publication:enabled').waitFor();await measure('confirmation');await page.waitForTimeout(1500);
       await click(surface.getByRole('button',{name:/^Confirm the captured push/}));await measure('publishing');
       await page.waitForFunction(()=>window.published);
