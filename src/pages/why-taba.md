@@ -17,7 +17,9 @@ updated: '2026-10-29'
 
 <div class="detail-copy">
 
-A frontend change needs its API. A site change needs the CLI it documents. Which repository should own that conversation? Starting in one makes every other repository an exception to manage.
+On a Rails app, the Codex and Claude desktop apps made parallel features easy. Each conversation had its own worktree.
+
+That workflow was harder to carry into projects with several repos and different IDEs. Rider here, WebStorm there. A frontend change still needed its API. Which repository should own the conversation?
 
 Separate worktrees helped, but keeping track of them was still manual. New tasks could start from the wrong branch. Unrelated projects shared one interface, which was awkward to show during a call.
 
@@ -79,6 +81,8 @@ As work spread across more computers, the SER8 became the daily driver. The MacB
 <div class="detail-copy">
 
 Copying a few scripts into the next project was easier than introducing another tool. A shared boilerplate made it possible to pass improvements between projects while keeping the scripts local.
+
+Adding a site and gallery took [weeks.app](https://weeks.app/) beyond one repository too. The boilerplate gave those repositories the same way of working.
 
 On 16 August, I suggested worktree collections to Tommy Vedvik as an idea for Unpeel. A storefront, design system and marketing site illustrated the problem. The outline and reference implementation were public the next day.
 
