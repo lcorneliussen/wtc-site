@@ -26,28 +26,24 @@ const base = import.meta.env.BASE_URL;
   import '../scripts/story';
 </script>
 <style>
-  .story-progress { position: fixed; inset: 0 0 auto; height: 3px; z-index: 30; pointer-events: none; background: var(--line); }
-  .story-progress span { display: block; height: 100%; width: 100%; background: #718a49; transform: scaleX(var(--read-progress, 0)); transform-origin: left; }
-  .story { max-width: 1160px; padding-block: 55px 80px; }
-  .story-header { margin-bottom: 20px; padding-left: 130px; }
-  h1 { font: 650 clamp(52px, 7vw, 92px)/1.08 var(--display); letter-spacing: -.06em; margin: 0 0 18px; }
+  .story { max-width: 1160px; padding-block: 50px 80px; }
+  .story-header { display: flex; align-items: baseline; justify-content: space-between; gap: 25px; margin-bottom: 35px; }
+  h1 { font: 650 clamp(52px, 6vw, 76px)/1.08 var(--display); letter-spacing: -.06em; margin: 0; }
   .story-byline { color: var(--muted); font-size: 11px; margin: 0; }
   .story-byline span { padding-inline: 8px; }
   .story-content { min-width: 0; }
   .prose { font-size: 16px; line-height: 1.85; }
-  .prose :global(.problem-timeline) { position: relative; list-style: none; margin: 0; padding: 0; }
-  .prose :global(.problem-timeline::before) { content: ''; position: absolute; left: 8px; top: 96px; bottom: 100px; width: 1px; background: #ccd7bc; }
-  .prose :global(.problem) { position: relative; display: grid; grid-template-columns: 95px minmax(0, 1.1fr) minmax(0, .9fr); gap: 35px; align-items: start; min-height: 600px; padding: 95px 0 95px 0; }
-  .prose :global(.problem::before) { display: none; }
-  .prose :global(.problem-date) { position: relative; align-self: start; margin: 6px 0 0; padding-left: 25px; color: var(--muted); font: 10px/1.8 var(--mono); }
-  .prose :global(.problem-date::before) { content: ''; position: absolute; top: calc(.9em - 4.5px); left: 4px; height: 9px; width: 9px; border: 2px solid #99aa80; border-radius: 50%; background: var(--paper); }
-  .prose :global(.problem.is-current .problem-date::before) { border-color: #718a49; background: #718a49; }
-  .prose :global(.problem.is-current .problem-date) { color: var(--green); }
-  .prose :global(.problem-body) { min-width: 0; }
-  .prose :global(.problem h2) { font: 650 clamp(38px, 4.3vw, 62px)/1.1 var(--display); letter-spacing: -.05em; color: var(--ink); margin: 0 0 24px; }
-  .prose :global(.problem-subline) { max-width: 430px; font-size: 18px; line-height: 1.75; margin: 0 0 25px; color: #5d7064; }
-  .prose :global(.scene-art) { align-self: start; margin-top: -18px; }
-  .prose :global(.scene-art img) { display: block; width: 100%; height: auto; max-width: 440px; margin-inline: auto; }
+  .prose :global(.problem-timeline) { list-style: none; margin: 0; padding: 0; }
+  .prose :global(.problem) { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 90px; align-content: center; min-height: 75svh; padding-block: 85px; border-bottom: 1px solid var(--line); scroll-margin-top: 130px; }
+  .prose :global(.problem-date) { grid-column: 1; grid-row: 1; margin: 0 0 22px; color: var(--muted); font: 11px/1.8 var(--mono); }
+  .prose :global(.problem-body) { grid-column: 1; grid-row: 2; min-width: 0; }
+  .prose :global(.problem h2) { font: 650 clamp(38px, 4.8vw, 68px)/1.08 var(--display); letter-spacing: -.055em; color: var(--ink); margin: 0 0 25px; }
+  .prose :global(.problem-subline) { max-width: 470px; font-size: 18px; line-height: 1.7; margin: 0 0 25px; color: #5d7064; }
+  .prose :global(.scene-art) { grid-column: 2; grid-row: 1 / 3; align-self: center; transform: translate3d(0, var(--art-y, 0px), 0) rotate(var(--art-tilt, 0deg)); }
+  .prose :global(.scene-art img) { display: block; width: 100%; height: auto; max-width: 510px; margin-inline: auto; }
+  .prose :global(.problem:nth-child(even) .problem-date), .prose :global(.problem:nth-child(even) .problem-body) { grid-column: 2; }
+  .prose :global(.problem:nth-child(even) .scene-art) { grid-column: 1; }
+  .prose :global(.problem:has(details[open]) .scene-art) { position: sticky; top: 140px; align-self: start; }
   .prose :global(.problem-detail) { margin-top: 0; }
   .prose :global(.problem-detail summary) { display: inline-flex; align-items: center; gap: 10px; list-style: none; cursor: pointer; font: 12px/1.8 var(--mono); color: var(--green); text-decoration: underline; text-underline-offset: 5px; }
   .prose :global(.problem-detail summary::-webkit-details-marker) { display: none; }
@@ -69,88 +65,40 @@ const base = import.meta.env.BASE_URL;
   .prose :global(.post-author small) { display: block; color: var(--muted); font-size: 10px; }
   .prose :global(.post-card blockquote) { margin: 19px 0; padding: 0; border: 0; background: none; color: var(--ink); font-size: 16px; line-height: 1.7; }
   .prose :global(.post-meta) { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: 10px; color: var(--muted); }
-  .story-next { margin-left: 130px; border-top: 1px solid var(--line); padding-top: 30px; }
+  .prose :global(.story-rail) { position: sticky; top: 0; z-index: 20; width: var(--rail-width); margin-inline: calc((100% - var(--rail-width)) / 2); height: 96px; overflow: clip; background: var(--paper); border-block: 1px solid var(--line); }
+  .prose :global(.rail-track) { position: absolute; top: 0; left: 0; display: flex; width: max-content; height: 100%; transform: translate3d(var(--rail-shift, 0px), 0, 0); will-change: transform; }
+  .prose :global(.rail-track::before), .prose :global(.rail-track::after) { content: ''; position: absolute; left: calc(var(--rail-step) / 2); right: calc(var(--rail-step) / 2); top: 54px; height: 1px; background: #c5d0b6; }
+  .prose :global(.rail-track::after) { background: var(--green); height: 2px; transform: scaleX(var(--rail-progress, 0)); transform-origin: left; }
+  .prose :global(.rail-track a) { position: relative; flex: 0 0 var(--rail-step); display: grid; grid-template-rows: 14px 16px; gap: 12px; justify-items: center; align-items: center; padding-top: 20px; height: 100%; text-decoration: none; color: var(--muted); font: 11px/14px var(--mono); }
+  .prose :global(.rail-dot) { width: 9px; height: 9px; border-radius: 50%; border: 1px solid #91a17b; background: var(--paper); z-index: 1; }
+  .prose :global(.rail-track a[aria-current="step"]) { color: var(--green); }
+  .prose :global(.rail-track a[aria-current="step"] .rail-dot) { background: var(--green); border-color: var(--green); }
+  .prose :global(.rail-cursor) { position: absolute; left: calc(50% - 1px); top: 70px; height: 15px; width: 2px; background: var(--green); }
+  .prose :global(.rail-cursor::before) { content: ''; position: absolute; left: -4px; top: -5px; border-inline: 5px solid transparent; border-bottom: 5px solid var(--green); }
+  .prose :global(.story-rail.is-reduced .rail-cursor) { display: none; }
+  .prose :global(.story-rail.is-reduced .rail-track) { width: 100%; transform: none; }
+  .prose :global(.story-rail.is-reduced .rail-track a) { flex-basis: calc(100% / var(--chapters)); font-size: 9px; }
+  .story-next { padding-top: 35px; }
   .story-next > div { display: flex; flex-wrap: wrap; gap: 25px; align-items: center; }
-  @media (max-width: 1000px) {
-    .prose :global(.problem) { grid-template-columns: 80px minmax(0, 1fr) minmax(0, .8fr); gap: 25px; }
-    .story-header { padding-left: 105px; }
-    .story-next { margin-left: 105px; }
-    .prose :global(.problem-date) { font-size: 9px; padding-left: 20px; }
-  }
+  @media (max-width: 900px) { .prose :global(.problem) { column-gap: 40px; } }
   @media (max-width: 700px) {
     .story { padding-top: 35px; }
-    .story-header { padding-left: 25px; margin-bottom: 30px; }
-    .prose :global(.problem) { display: grid; grid-template-columns: 25px minmax(0, 1fr); row-gap: 18px; column-gap: 0; padding-block: 35px 45px; min-height: 0; }
-    .prose :global(.problem-date::before) { left: -21px; }
-    .prose :global(.problem-date) { grid-column: 2; grid-row: 1; position: relative; padding-left: 0; margin: 0; font-size: 10px; }
-    .prose :global(.scene-art) { grid-column: 2; grid-row: 3; position: static; margin: 0; }
-    .prose :global(.scene-art img) { max-width: 270px; }
-    .prose :global(.problem-body) { grid-column: 2; grid-row: 2; }
-    .prose :global(.problem h2) { font-size: clamp(36px, 7vw, 48px); max-width: 440px; }
-    .prose :global(.problem-subline) { font-size: 16px; margin-bottom: 20px; }
-    .prose :global(.problem-timeline::before) { top: 37px; bottom: 100px; }
-    .story-next { margin-left: 25px; }
+    .story-header { display: block; margin-bottom: 28px; }
+    h1 { margin-bottom: 18px; }
+    .prose :global(.problem) { grid-template-columns: minmax(0, 1fr); row-gap: 0; min-height: 0; padding-block: 48px 55px; }
+    .prose :global(.problem .problem-date), .prose :global(.problem:nth-child(even) .problem-date) { grid-column: 1; grid-row: 1; margin-bottom: 20px; }
+    .prose :global(.problem .problem-body), .prose :global(.problem:nth-child(even) .problem-body) { grid-column: 1; grid-row: 2; }
+    .prose :global(.problem h2) { font-size: clamp(36px, 9.5vw, 48px); }
+    .prose :global(.problem-subline) { font-size: 16px; }
+    .prose :global(.problem .scene-art), .prose :global(.problem:nth-child(even) .scene-art), .prose :global(.problem:has(details[open]) .scene-art) { grid-column: 1; grid-row: 3; position: static; margin-top: 28px; }
+    .prose :global(.scene-art img) { max-width: 300px; }
+    .prose :global(.story-rail) { height: 86px; }
+    .prose :global(.rail-track a) { font-size: 10px; }
+    .prose :global(.rail-cursor) { height: 9px; }
+    .prose :global(.story-rail.is-reduced .rail-year) { display: none; }
+    .prose :global(.story-rail.is-reduced .rail-track a) { font-size: 8px; }
+    .prose :global(.post-card) { padding: 18px; }
   }
-  @media (max-width: 420px) {
-    .prose :global(.post-card) { padding: 17px; }
-    .story-next > div { align-items: flex-start; flex-direction: column; gap: 20px; }
-  }
-  .prose :global(.story-scroll), .prose :global(.story-viewport) { display: contents; }
-  .prose :global(.story-rail), .prose :global(.panel-number) { display: none; }
-  .prose.has-cinema :global(.story-scroll) { display: block; width: var(--story-width); margin-left: calc(50% - var(--story-width) / 2); height: var(--story-height); }
-  .prose.has-cinema :global(.story-viewport) { display: block; position: sticky; top: 0; height: 100svh; overflow: hidden; background: var(--paper); }
-  .prose.has-cinema :global(.problem-timeline) { display: flex; height: 100%; will-change: transform; }
-  .prose.has-cinema :global(.problem-timeline::before), .prose.has-cinema :global(.problem::before) { display: none; }
-  .prose.has-cinema :global(.problem) { flex: 0 0 100%; display: block; min-height: 0; height: 100%; padding: 0; overflow: hidden; isolation: isolate; }
-  .prose.has-cinema :global(.problem:nth-child(even)) { background: #edf0e5; }
-  .prose.has-cinema :global(.problem-date) { display: none; }
-  .prose.has-cinema :global(.problem-body) { position: absolute; left: 7%; top: 47%; width: 43%; transform: translateY(-50%); z-index: 2; }
-  .prose.has-cinema :global(.problem h2) { font-size: clamp(44px, 5.5vw, 84px); line-height: 1.05; letter-spacing: -.06em; margin: 0 0 28px; }
-  .prose.has-cinema :global(.problem-subline) { font-size: clamp(16px, 1.5vw, 21px); max-width: 470px; line-height: 1.65; margin-bottom: 27px; }
-  .prose.has-cinema :global(.scene-art) { position: absolute; top: 12%; right: 3%; width: 49%; height: 64%; margin: 0; transform: translate3d(var(--scene-x, 0px), 0, 0) rotate(var(--scene-tilt, 0deg)); will-change: transform; }
-  .prose.has-cinema :global(.scene-art img) { width: 100%; height: 100%; max-width: none; object-fit: contain; }
-  .prose.has-cinema :global(.panel-number) { display: block; position: absolute; right: 8%; bottom: 12%; font: 650 clamp(130px, 20vw, 280px)/1 var(--display); letter-spacing: -.09em; color: #d5dec8; z-index: -1; }
-  .prose.has-cinema :global(.story-rail) { display: grid; grid-template-columns: repeat(var(--chapters, 8), minmax(0, 1fr)); position: absolute; bottom: 26px; left: 7%; right: 7%; z-index: 3; }
-  .prose.has-cinema :global(.story-rail::before), .prose.has-cinema :global(.story-rail::after) { content: ''; position: absolute; left: calc(50% / var(--chapters, 8)); right: calc(50% / var(--chapters, 8)); top: 32px; height: 1px; background: #aebb9f; pointer-events: none; }
-  .prose.has-cinema :global(.story-rail::after) { background: var(--green); height: 2px; transform: scaleX(var(--rail-progress, 0)); transform-origin: left; }
-  .prose.has-cinema :global(.story-rail a) { position: relative; display: grid; grid-template-rows: 14px 16px; gap: 10px; justify-items: center; align-items: center; text-decoration: none; color: var(--muted); font: 10px/14px var(--mono); padding: 0; }
-  .prose.has-cinema :global(.rail-dot) { width: 9px; height: 9px; border-radius: 50%; border: 1px solid #91a17b; background: var(--paper); z-index: 1; }
-  .prose.has-cinema :global(.story-rail a[aria-current="step"]) { color: var(--green); }
-  .prose.has-cinema :global(.story-rail a[aria-current="step"] .rail-dot) { background: var(--green); border-color: var(--green); box-shadow: 0 0 0 5px #e4ebd7; }
-  .prose :global(.story-dialog) { width: min(640px, calc(100% - 32px)); max-height: 85svh; padding: 30px 40px; border: 1px solid #bdcbb0; border-radius: 18px; color: var(--ink); background: var(--paper); overscroll-behavior: contain; }
-  .prose :global(.story-dialog::backdrop) { background: #18382dc4; backdrop-filter: blur(6px); }
-  .prose :global(.dialog-heading) { display: flex; align-items: start; gap: 25px; justify-content: space-between; }
-  .prose :global(.dialog-heading h2) { font: 650 32px/1.15 var(--display); letter-spacing: -.05em; margin: 0; }
-  .prose :global(.dialog-heading button) { background: none; border: 0; padding: 6px 0; font: 11px var(--mono); text-decoration: underline; text-underline-offset: 4px; }
-  .prose :global(.story-dialog .detail-copy) { margin-top: 24px; }
-  @media (min-width: 901px) {
-    .story-header { display: flex; align-items: baseline; justify-content: space-between; gap: 25px; padding-left: 0; margin-bottom: 22px; }
-    .story-header h1 { font-size: 64px; margin-bottom: 0; }
-    .story-byline { white-space: nowrap; }
-  }
-  @media (max-width: 700px) {
-    .prose.has-cinema :global(.problem-body) { left: 8%; top: 9%; width: 84%; transform: none; }
-    .prose.has-cinema :global(.problem h2) { font-size: clamp(38px, 10.7vw, 64px); margin-bottom: 20px; }
-    .prose.has-cinema :global(.problem-subline) { font-size: 16px; line-height: 1.6; margin-bottom: 19px; }
-    .prose.has-cinema :global(.scene-art) { top: auto; bottom: 110px; right: 7%; width: 86%; height: 34%; }
-    .prose.has-cinema :global(.panel-number) { right: 10%; bottom: 85px; font-size: 130px; }
-    .prose.has-cinema :global(.story-rail) { left: 3%; right: 3%; bottom: 25px; }
-    .prose.has-cinema :global(.story-rail a) { font-size: 8px; }
-    .prose.has-cinema :global(.rail-year) { display: none; }
-    .prose :global(.story-dialog) { padding: 23px; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .prose :global(.scene-art), .prose :global(.problem::before), .prose :global(.problem-detail summary svg) { transform: none !important; transition: none; }
-  }
-  @media print {
-    .story-progress { display: none; }
-    .prose :global(.problem) { min-height: 0; padding-block: 30px; break-inside: avoid; }
-    .prose :global(.scene-art) { position: static; transform: none; }
-    .prose.has-cinema :global(.story-scroll), .prose.has-cinema :global(.story-viewport) { display: contents; }
-    .prose.has-cinema :global(.problem-timeline) { display: block; transform: none !important; }
-    .prose.has-cinema :global(.problem) { height: auto; min-height: 0; padding-block: 30px; }
-    .prose.has-cinema :global(.problem-body), .prose.has-cinema :global(.scene-art) { position: static; width: auto; height: auto; transform: none; }
-    .prose.has-cinema :global(.problem-date) { display: block; }
-    .prose.has-cinema :global(.story-rail), .prose.has-cinema :global(.panel-number) { display: none; }
-  }
+  @media (prefers-reduced-motion: reduce) { .prose :global(.scene-art), .prose :global(.problem-detail summary svg) { transform: none !important; transition: none; } }
+  @media print { .prose :global(.story-rail) { display: none; } .prose :global(.problem) { min-height: 0; padding-block: 30px; break-inside: avoid; } .prose :global(.scene-art) { position: static; transform: none; } }
 </style>
