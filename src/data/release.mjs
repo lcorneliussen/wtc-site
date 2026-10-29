@@ -19,7 +19,8 @@ export async function publishedRelease(fetchRelease = fetch) {
     }
     release = { tag: data.tag_name, checked: new Date().toISOString().slice(0, 10), live: true };
   } catch {
-    // Static output still offers a verified install when GitHub cannot be reached.
+    // Any lookup or validation failure uses the dated fallback above.
+    // Update that constant by hand after verifying a published stable release.
   }
   return {
     ...release,
