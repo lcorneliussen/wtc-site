@@ -88,7 +88,9 @@ Capture starts after the initialized idle view is measured. Chromium screencast
 supplies lossless PNG frames and their original timestamps; FFmpeg encodes them
 without a trimming pass. Navigation before capture is excluded, so this demonstrates
 interactions rather than page-load performance. Per-take capture frames, timestamps
-and the encoding timeline remain available for inspection. The
+and the encoding timeline remain available for inspection. Encoding uses a
+millisecond time base and fails if any captured frame disappears or its timestamp
+drifts by more than 2ms. The
 decoded first frame must retain at least 70% of the idle reference text pixels
 in each base region, allowing a 48-level channel difference for lossy encoding;
 a missing card, repository list or composer fails the take. The manifest records

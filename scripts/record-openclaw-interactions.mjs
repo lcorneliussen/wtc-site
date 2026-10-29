@@ -198,7 +198,7 @@ const request = async (method, params) => {
       await click(surface.getByTitle(/^3 commits to push/));
       await surface.locator('.wtc-action-toolbar').getByText('Preparing…',{exact:true}).waitFor();await measure('preparing');
       await surface.getByRole('button',{name:/^Confirm the captured push/}).waitFor();await surface.locator('.wtc-confirm-publication:enabled').waitFor();await measure('confirmation');await page.waitForTimeout(1500);
-      await click(surface.getByRole('button',{name:/^Confirm the captured push/}));await measure('publishing');
+      await click(surface.getByRole('button',{name:/^Confirm the captured push/}));await surface.locator('.wtc-action-toolbar').getByText('Publishing…',{exact:true}).waitFor();await measure('publishing');
       await page.waitForFunction(()=>window.published);
       await surface.locator('a[href="https://example.invalid/web/pull-requests/8"]').first().waitFor({state:'visible'});
       await surface.locator('.wtc-action-toolbar').getByText('✓ Pushed',{exact:true}).waitFor({state:'visible'});
@@ -214,11 +214,11 @@ const request = async (method, params) => {
       }
       await page.waitForTimeout(2800);
     }else if(mode==='individual'){
-      for(const n of [12,7,3]) await click(surface.getByTitle(new RegExp('^'+n+' new on main\\. Catch up locally')));await measure('running');
+      for(const n of [12,7,3]) await click(surface.getByTitle(new RegExp('^'+n+' new on main\\. Catch up locally')));await surface.locator('.wtc-action-toolbar').getByText('Catching up…',{exact:true}).waitFor();await measure('running');
       await page.waitForFunction(()=>new Set(window.completed).size===3);await waitForSettledRepositories();await measure('completed');await page.waitForTimeout(1300);
       await page.waitForTimeout(3000);
     }else{
-      await click(surface.locator('.wtc-action-toolbar button').filter({hasText:'Catch up 3'}).first());await measure('running');
+      await click(surface.locator('.wtc-action-toolbar button').filter({hasText:'Catch up 3'}).first());await surface.locator('.wtc-action-toolbar').getByText('Catching up…',{exact:true}).waitFor();await measure('running');
       await page.waitForFunction(()=>new Set(window.completed).size===3);await waitForSettledRepositories();
       await measure('completed');await page.waitForTimeout(1600);
       if (view==='sidebar'||view==='split') {
@@ -234,11 +234,13 @@ const request = async (method, params) => {
     await cdp.send('Page.stopScreencast');await frameWrites;await context.close();
     if(!frames.length||frames.some((f,i)=>!Number.isFinite(f.timestamp)||(i&&f.timestamp<frames[i-1].timestamp)))throw Error('Invalid capture timestamps');
     await writeFile(new URL('capture-frames.json',dir),JSON.stringify(frames,null,2));
-    const timeline=frames.map((f,i)=>"file 'capture-frames/"+f.name+"'\nduration "+Math.max(.001,(frames[i+1]?.timestamp??stoppedAt)-f.timestamp).toFixed(6)).join('\n')+"\nfile 'capture-frames/"+frames.at(-1).name+"'\n";
+    const timeline=frames.map((f,i)=>"file 'capture-frames/"+f.name+"'\noption framerate 1000\nduration "+Math.max(.001,(frames[i+1]?.timestamp??stoppedAt)-f.timestamp).toFixed(6)).join('\n')+"\nfile 'capture-frames/"+frames.at(-1).name+"'\noption framerate 1000\n";
     await writeFile(new URL('capture-timeline.txt',dir),timeline);
     const videoName=id+'.webm';
     execFileSync('ffmpeg',['-v','error','-y','-f','concat','-safe','0','-i',fileURLToPath(new URL('capture-timeline.txt',dir)),'-fps_mode','vfr','-c:v','libvpx-vp9','-threads','2','-crf','24','-b:v','0',fileURLToPath(new URL(videoName,output))]);
     execFileSync('ffmpeg',['-v','error','-i',fileURLToPath(new URL(videoName,output)),'-f','null','-']);
+    const encoded=JSON.parse(execFileSync('ffprobe',['-v','error','-select_streams','v:0','-show_frames','-show_entries','frame=best_effort_timestamp_time','-of','json',fileURLToPath(new URL(videoName,output))],{encoding:'utf8'})).frames;
+    if(encoded.length!==frames.length+1||frames.some((frame,i)=>Math.abs(Number(encoded[i].best_effort_timestamp_time)-(frame.timestamp-frames[0].timestamp))>.002))throw Error('Encoding dropped capture frames or changed their timestamps');
     const verifier=await browser.newContext();
     let firstFrame;
     try {
