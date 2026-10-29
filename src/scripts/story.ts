@@ -1,3 +1,5 @@
+import { setupStoryPosts } from './story-posts';
+
 const timeline = document.querySelector<HTMLElement>('.problem-timeline');
 
 if (timeline) {
@@ -107,5 +109,7 @@ if (timeline) {
     const index = problems.findIndex(problem => `#${problem.id}` === location.hash);
     if (index >= 0) goTo(index, false);
   });
+  new ResizeObserver(schedule).observe(timeline);
+  setupStoryPosts(schedule);
   layout();
 }

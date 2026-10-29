@@ -23,13 +23,17 @@ A frontend change needs its API. A site change needs the CLI it documents. Which
 
 Separate worktrees helped, but keeping track of them was still manual. New tasks could start from the wrong branch. Unrelated projects shared one interface, which was awkward to show during a call.
 
-A worktree collection gives the task its own folder, with the repositories it needs side by side. Each gets a worktree with an explicit starting point.
+A worktree collection gives the task its own folder, with the repositories it needs side by side. Bare repository owners hold the shared history. Every working checkout is a worktree, with an explicit starting point.
 
+<div class="x-post" data-x-post="2089078288043934198" data-x-media="hidden">
 <aside class="post-card" aria-label="Post by Lars Corneliussen">
 <div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
-<blockquote>Still using copy&amp;paste, between harness-repos, no central tool or library.</blockquote>
-<div class="post-meta"><time datetime="2026-08-12">12 Aug 2026</time><a href="https://x.com/lcorneliussen/status/2087524799480274987">View post <span aria-hidden="true">↗</span></a></div>
+<blockquote>None of the agent clis or desktop apps handle multi-repo well.</blockquote>
+<div class="post-meta"><time datetime="2026-08-16">16 Aug 2026</time><a href="https://x.com/lcorneliussen/status/2089078288043934198">View post <span aria-hidden="true">↗</span></a></div>
 </aside>
+</div>
+
+<div class="record-links"><span>Public record</span><ul><li><a href="https://x.com/lcorneliussen/status/2105924161562423589">2 October. Working only in worktrees</a></li></ul></div>
 </div>
 </details>
 </div>
@@ -47,11 +51,19 @@ A worktree collection gives the task its own folder, with the repositories it ne
 <summary><span class="when-closed">Read more</span><span class="when-open">Read less</span><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4 3 3 3-3" stroke="currentColor" stroke-width="1.5" /></svg></summary>
 <div class="detail-copy">
 
-Collection folders already held the repositories for each task. Cursor was still part of the workflow before the move to herdr spaces.
+Collection folders came first. Herdr was installed on 11 August. On [17 August](https://x.com/lcorneliussen/status/2089256065393127485), hitting a plan limit prompted one project's move away from the Codex app.
 
-Herdr grouped the task's terminals and agent conversations into a workspace. The collection had a place on screen as well as a place on disk.
+By 1 September, herdr was helping coordinate parallel work across projects. Each collection had its own terminals and conversations, whatever agent was running.
 
-Later, herdr and the tailnet also let work keep running on the office machine while another device connected to it.
+By [4 September](https://x.com/lcorneliussen/status/2095853356983943262), remote herdr sessions were already running from Omarchy. The office machine could keep working while another device connected to it.
+
+<div class="x-post" data-x-post="2094789074930250013" data-x-media="hidden">
+<aside class="post-card" aria-label="Post by Lars Corneliussen">
+<div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
+<blockquote>I&#x27;ve started pimping my terminal with herdr goodness. Works really well.</blockquote>
+<div class="post-meta"><time datetime="2026-09-01">1 Sep 2026</time><a href="https://x.com/lcorneliussen/status/2094789074930250013">View post <span aria-hidden="true">↗</span></a></div>
+</aside>
+</div>
 
 <div class="record-links"><span>Herdr</span><ul><li><a href="https://herdr.dev/">Workspaces and remote agents</a></li></ul></div>
 
@@ -124,6 +136,14 @@ Those differences belong in project configuration. Mixing them into shared scrip
 
 The versioned CLI separated the two. Teams could pin the shared tooling and keep their own configuration and hooks.
 
+<div class="x-post" data-x-post="2107369079929545065" data-x-media="hidden">
+<aside class="post-card" aria-label="Post by Lars Corneliussen">
+<div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
+<blockquote>I really didn&#x27;t want to create sth - but now I can&#x27;t live without.</blockquote>
+<div class="post-meta"><time datetime="2026-10-06">6 Oct 2026</time><a href="https://x.com/lcorneliussen/status/2107369079929545065">View post <span aria-hidden="true">↗</span></a></div>
+</aside>
+</div>
+
 <div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/237def7cb6884f8c237f673b8a2c088fec89dd8f">29 September. The CLI skeleton</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/blob/579b66280f1b4cc391b4731dd0022703cb4ce651/docs/harness-design.md">6 October. A smaller harness with explicit project ownership</a></li></ul></div>
 
 </div>
@@ -158,7 +178,7 @@ Taba's review tooling runs inside the worktree collection. Its built-in review c
 </li>
 
 <li class="problem" id="services" aria-labelledby="services-title">
-<p class="problem-date"><time datetime="2026-10-06">6 Oct 2026</time></p>
+<p class="problem-date"><time datetime="2026-10-10">10 Oct 2026</time></p>
 <div class="problem-body">
 
 <h2 id="services-title">Environments multiplied</h2>
@@ -170,9 +190,19 @@ Taba's review tooling runs inside the worktree collection. Its built-in review c
 
 An API, a web application and a database have to talk to each other. Run several tasks in parallel and each needs the right ports and service connections. Move the work to a remote machine and tunnels become part of the setup too.
 
+Parallel application stacks also consumed memory. By [10 October](https://x.com/lcorneliussen/status/2108966803879948716), even a 64 GB MacBook Pro could run out. Four days later, the 24 GB SER8 was struggling too, largely with browser profiles and web apps. Most harnesses were already running elsewhere.
+
 A demo link should reach the services for the task being shown. An agent needs to know which processes are running and where to find their logs.
 
 The `svc` module brings startup, status, logs and tunnels into the collection, using each repository's existing launch commands.
+
+<div class="x-post" data-x-post="2110253789001232860" data-x-media="visible">
+<aside class="post-card" aria-label="Post by Lars Corneliussen">
+<div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
+<blockquote>My SER8 with 24 GB just can&#x27;t keep up</blockquote>
+<div class="post-meta"><time datetime="2026-10-14">14 Oct 2026</time><a href="https://x.com/lcorneliussen/status/2110253789001232860">View post <span aria-hidden="true">↗</span></a></div>
+</aside>
+</div>
 
 <div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/68e8a66da212ed0351e0f85f141eba3d09d4ea40">6 October. Collection runtime and resource cleanup</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/1a27f2bbfaea2626be6877437b01e2b4ef856878">14 October. Services and tunnels through svc</a></li></ul></div>
 
@@ -197,16 +227,18 @@ The agent already had the code and configured read access it needed to investiga
 
 Giving support a development environment didn't fix the handoff. The terminal and the repositories were work they weren't comfortable managing.
 
-A preconfigured OpenClaw setup let support ask directly. Read-only access came first. Making changes then needed worktrees across repositories, personal commits and pull requests. Taba supplied that collection workflow. A developer could also join the same session when a question needed escalation.
+A preconfigured OpenClaw setup let support ask directly, with read-only access first. OpenClaw was already in use by [February](https://x.com/lcorneliussen/status/2024521439244599733). The October plugin added multi-repository work for teams, with commits and pull requests handled through the gateway for the user who requested them. The same session could also be escalated to a developer.
 
-<div class="record-links"><span>Public record</span><ul><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/b63857c0a84c573387d493c80ff4b9f041106068">14 October. One conversation across a collection</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/2cb70fe6facb8fb4239ffbad81bec4586b3b22a0">19 October. The host-mode integration reached main</a></li></ul></div>
+<div class="record-links"><span>Public record</span><ul><li><a href="https://x.com/lcorneliussen/status/2110439039463751749">14 October. The collection plugin announcement</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/b63857c0a84c573387d493c80ff4b9f041106068">14 October. One conversation across a collection</a></li><li><a href="https://github.com/lcorneliussen/wtc-cli/commit/2cb70fe6facb8fb4239ffbad81bec4586b3b22a0">19 October. The host-mode integration reached main</a></li></ul></div>
 
 
+<div class="x-post" data-x-post="2110439731540775194" data-x-media="hidden">
 <aside class="post-card" aria-label="Post by Lars Corneliussen">
 <div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
-<blockquote>Creating my first @openclaw plugin to support multi-repository work via wtc.</blockquote>
-<div class="post-meta"><time datetime="2026-10-14">14 Oct 2026</time><a href="https://x.com/lcorneliussen/status/2110439039463751749">View post <span aria-hidden="true">↗</span></a></div>
+<blockquote>Agents run in sandbox with readonly, commiting and PRs are handled via the gateway, tied to the OC user triggering it.</blockquote>
+<div class="post-meta"><time datetime="2026-10-14">14 Oct 2026</time><a href="https://x.com/lcorneliussen/status/2110439731540775194">View post <span aria-hidden="true">↗</span></a></div>
 </aside>
+</div>
 </div>
 </details>
 </div>
@@ -238,11 +270,13 @@ The [rename guide](../wtc-is-now-taba/) covers the command and configuration tra
 <blockquote>Horrible name.</blockquote>
 <div class="post-meta"><time datetime="2026-10-06">6 Oct 2026</time><a href="https://x.com/lcorneliussen/status/2107368417787269264">View post <span aria-hidden="true">↗</span></a></div>
 </aside>
+<div class="x-post" data-x-post="2114785403844850159" data-x-media="hidden">
 <aside class="post-card" aria-label="Post by Lars Corneliussen">
 <div class="post-author"><span class="post-avatar" aria-hidden="true">LC</span><span><strong>Lars Corneliussen</strong><small>@lcorneliussen</small></span></div>
 <blockquote>Everyone agent deserves monorepos, even the ones that don&#x27;t have them...</blockquote>
 <div class="post-meta"><time datetime="2026-10-26">26 Oct 2026</time><a href="https://x.com/lcorneliussen/status/2114785403844850159">View post <span aria-hidden="true">↗</span></a></div>
 </aside>
+</div>
 </div>
 </details>
 </div>

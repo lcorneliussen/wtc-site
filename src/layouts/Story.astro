@@ -78,6 +78,9 @@ const base = import.meta.env.BASE_URL;
   .prose :global(.story-rail.is-reduced .rail-cursor) { display: none; }
   .prose :global(.story-rail.is-reduced .rail-track) { width: 100%; transform: none; }
   .prose :global(.story-rail.is-reduced .rail-track a) { flex-basis: calc(100% / var(--chapters)); font-size: 9px; }
+  .prose :global(.x-post) { margin-block: 30px; min-width: 0; }
+  .prose :global(.x-post .post-card) { margin: 0; }
+  .prose :global(.x-post iframe) { max-width: 100%; }
   .story-next { padding-top: 35px; }
   .story-next > div { display: flex; flex-wrap: wrap; gap: 25px; align-items: center; }
   @media (max-width: 900px) { .prose :global(.problem) { column-gap: 40px; } }
