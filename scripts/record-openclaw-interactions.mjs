@@ -92,6 +92,12 @@ const request = async (method, params) => {
     html = inject(html, '<div id="card">', '<div id="recording-chat"><div class="recording-bubble recording-user">Please update the collection and its pull request.</div><div class="recording-bubble recording-assistant">I’ll check the repositories and preserve your work.</div></div><div id="card">');
     if (view === 'split') html = inject(html, "document.querySelector('#card').hidden=true;", "document.body.classList.add('split');");
     if (view === 'sidebar' || view === 'split') html = inject(html, "mounts.card(document.querySelector('#card'),ctx);", "mounts.card(document.querySelector('#card'),ctx); host.ui.openPanel();");
+    // Put the deferred module in the head as a render blocker. Its first
+    // in-memory snapshot and expanded state settle before the first paint.
+    const boot=html.match(/<script type="module">[\s\S]*?<\/script>/)?.[0];
+    if(!boot)throw Error('Shared fixture module boundary changed');
+    html=inject(html,boot,'');
+    html=inject(html,'<style>',boot.replace('<script type="module">','<script type="module" blocking="render">')+'<style>');
     const context = await browser.newContext({ locale: 'en-US', timezoneId: 'UTC', deviceScaleFactor: 1, viewport: { width, height: 900 }, recordVideo: { dir: fileURLToPath(dir), size: { width, height: 900 } } });
     await context.addInitScript(key => localStorage.setItem(key, '1'), openKey);
     const errors=[];
@@ -219,12 +225,38 @@ const request = async (method, params) => {
     const videoName=id+'.webm';
     await rename(await video.path(),new URL(videoName,output));
     const verifier=await browser.newContext();
+    let firstFrame;
     try {
       const check=await verifier.newPage();
-      await check.goto(new URL(videoName,output).href);
-      await check.waitForFunction(()=>{const v=document.querySelector('video');return v&&v.readyState>=2&&v.duration>0;});
+      const videoBytes=await readFile(new URL(videoName,output)),idleBytes=await readFile(new URL('idle.png',dir));
+      await verifier.route('**/*',route=>{
+        const url=route.request().url();
+        if(url==='https://recording-check.invalid/')return route.fulfill({contentType:'text/html',body:'<video preload="auto" src="/video.webm"></video><img src="/idle.png">'});
+        if(url==='https://recording-check.invalid/video.webm')return route.fulfill({contentType:'video/webm',body:videoBytes});
+        if(url==='https://recording-check.invalid/idle.png')return route.fulfill({contentType:'image/png',body:idleBytes});
+        return route.abort();
+      });
+      await check.goto('https://recording-check.invalid/');
+      await check.waitForFunction(()=>{const v=document.querySelector('video'),i=document.querySelector('img');return v?.readyState>=2&&v.duration>0&&i?.complete&&i.naturalWidth>0;});
+      firstFrame=await check.evaluate(regions=>{
+        const video=document.querySelector('video'),image=document.querySelector('img');
+        if(video.currentTime!==0||video.videoWidth!==image.naturalWidth||video.videoHeight!==image.naturalHeight)throw Error('First-frame dimensions or timestamp differ');
+        const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+        const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);const reference=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+        ctx.drawImage(video,0,0);const initial=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+        return Object.entries(regions).filter(([,r])=>r).map(([name,r])=>{
+          let ink=0,matched=0;
+          for(let y=Math.max(0,Math.floor(r.y));y<Math.min(canvas.height,Math.ceil(r.y+r.height));y++)for(let x=Math.max(0,Math.floor(r.x));x<Math.min(canvas.width,Math.ceil(r.x+r.width));x++){
+            const i=(y*canvas.width+x)*4;
+            if(Math.max(reference[i],reference[i+1],reference[i+2])<=110)continue;
+            ink++;if(Math.max(Math.abs(reference[i]-initial[i]),Math.abs(reference[i+1]-initial[i+1]),Math.abs(reference[i+2]-initial[i+2]))<=48)matched++;
+          }
+          if(ink<30||matched/ink<.7)throw Error('Initial video frame lacks the initialized '+name+': '+matched+'/'+ink+' reference text pixels');
+          return {name,referenceTextPixels:ink,matchedTextFraction:matched/ink};
+        });
+      },Object.fromEntries(['header','repositories','services','composer','sideHeader','sideRepositories','sideServices'].map(key=>[key,positions[0][key]])));
     } finally { await verifier.close(); }
-    manifest.recordings.push({id,title,mode,video:videoName,poster:id+'/final.png',assertions:'passed',layoutPositions:positions,requests:trace});
+    manifest.recordings.push({id,title,mode,video:videoName,poster:id+'/idle.png',assertions:'passed',firstFrame,layoutPositions:positions,requests:trace});
     await writeFile(new URL('manifest.json',output),JSON.stringify(manifest,null,2));
     console.log(id+': recorded and decoded '+videoName);
   }

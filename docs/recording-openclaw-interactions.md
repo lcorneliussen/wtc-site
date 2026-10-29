@@ -81,6 +81,11 @@ failure details, selection, confirmation and collapsed states in design review.
 | `batch` | Click the collection's catch-up shortcut once. Observe sequential processing and three completion results. The sidebar and split views show the log without changing views. |
 
 The fixture starts with its initial collection data and expanded state ready.
+Its deferred module blocks first paint until the initialized view mounts. The
+decoded first frame must retain at least 70% of the idle reference text pixels
+in each base region, allowing a 48-level channel difference for lossy encoding;
+a missing card, repository list or composer fails the take. The manifest records
+the measured matches, and the gallery poster uses the idle frame.
 Later responses retain their scripted delays to make progress visible; these are
 not performance measurements. The raw capture is not trimmed. Pointer moves go
 directly to their targets: sweeping an invisible recorded pointer over unrelated
