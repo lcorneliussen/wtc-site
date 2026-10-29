@@ -13,8 +13,8 @@ if (values.help) { console.log(usage); process.exit(0); }
 if (!positionals[0] || positionals.length > 3) throw Error(usage);
 const view = values.view, width = Number(values.width), sidebarWidth = Number(values['sidebar-width']);
 if (!['card', 'chat', 'sidebar', 'split'].includes(view) || !Number.isInteger(width) || width < 320 || width > 2560) throw Error(usage);
-if (!Number.isInteger(sidebarWidth) || sidebarWidth < 260 || sidebarWidth > 800) throw Error(usage);
-if (view === 'split' && (width < 900 || width - sidebarWidth < 320)) throw Error('Split view requires width >= 900; use chat or sidebar on mobile');
+if (!Number.isInteger(sidebarWidth) || sidebarWidth < 320 || sidebarWidth > 800) throw Error(usage);
+if (view === 'split' && (width < 900 || width - sidebarWidth < 320)) throw Error('Split view needs width >= 900 and at least 320 pixels left for chat; use chat or sidebar on mobile');
 const siteRoot = new URL('../', import.meta.url);
 const upstream = resolve(positionals[0]);
 const modulePath = 'openclaw-plugin/dist/control-ui/v1/index.js';
@@ -118,6 +118,7 @@ const request = async (method, params) => {
       });
       positions.push({phase,...sample});
       await writeFile(new URL('layout-positions.json',dir),JSON.stringify(positions,null,2));
+      await page.screenshot({path:fileURLToPath(new URL(phase+'.png',dir))});
       if(sample.temporary){
         if(view==='sidebar') {if(sample.services && sample.temporary.y<sample.services.y+sample.services.height-1)throw Error('Sidebar temporary content displaced Services');}
         else if(sample.header && sample.temporary.y+sample.temporary.height>sample.header.y+1)throw Error('Composer temporary content must extend above its fixed header');
@@ -180,7 +181,7 @@ const request = async (method, params) => {
     console.log(id+': recorded and decoded '+videoName);
   }
   const escape = text => String(text).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  const cards=manifest.recordings.map(r=>`<article><h2>${escape(r.title)}</h2><video controls preload="none" playsinline poster="${r.poster}" src="${r.video}"></video><p><a href="${r.video}">Video</a> · <a href="${r.id}/trace.json">Request trace</a></p></article>`).join('');
+  const cards=manifest.recordings.map(r=>`<article><h2>${escape(r.title)}</h2><video controls preload="none" playsinline poster="${r.poster}" src="${r.video}"></video><p><a href="${r.video}">Video</a> · <a href="${r.id}/trace.json">Request trace</a></p><p>${r.layoutPositions.map(p=>`<a href="${r.id}/${p.phase}.png">${escape(p.phase)}</a>`).join(' · ')}</p></article>`).join('');
   await writeFile(new URL('index.html',output),`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OpenClaw interaction recordings</title><style>:root{color-scheme:dark}body{max-width:1120px;margin:32px auto;padding:0 24px;font:16px/1.6 system-ui;background:#11161d;color:#e4eaf2}h2{font-size:20px}article{margin:32px 0;border:1px solid #354151;border-radius:12px;padding:16px}video{width:100%;height:auto}a{color:#8edbd5}</style><h1>OpenClaw interaction recordings</h1><p>View: ${escape(view)}, ${width}px. Actual renderer ${escape(revision)}; synthetic repositories and simulated gateway responses. No live gateway or publication. The stale scenario deliberately injects old status; it does not establish a live gateway defect. Raw product views have no captions or trace overlay; request traces are separate files.</p>${cards}<p><a href="manifest.json">Renderer provenance and results</a></p></html>`);
   console.log('Gallery: '+fileURLToPath(new URL('index.html',output)));
 } finally { await browser.close(); }

@@ -29,7 +29,7 @@ the site's reviewed or published baseline.
 The default output is the ignored `artifacts/openclaw-interactions/` directory.
 Open `index.html` there to watch the four silent, raw WebM clips. The video
 contains only the product view, without a title card, captions, cursor marker or
-request-trace overlay. Each clip has a separate request trace and final PNG.
+request-trace overlay. Each clip has a separate request trace, named phase captures and a final PNG.
 `manifest.json` records the source revision/hash, Playwright/browser versions,
 scenario, assertions and measured base-layout coordinates. Takes fail if the
 header, repository grid, Services or composer shifts by more than one CSS pixel
@@ -62,7 +62,7 @@ npm run demos:openclaw:interactions -- /path/to/wtc-cli artifacts/sidebar all --
 
 `card` is the default. Supported widths are 320–2560 pixels; `split` requires
 at least 900. Use `--sidebar-width 320` to test a narrow panel in a wide split
-view (260–800 pixels, with at least 320 pixels left for the chat). The surrounding chat is synthetic, not a recording of a live
+view (320–800 pixels, with at least 320 pixels left for the chat). The surrounding chat is synthetic, not a recording of a live
 conversation. Its composer is anchored at the viewport bottom: temporary action
 controls grow above the stable card, while sidebar details grow below Services. The gallery and manifest retain the simulation label outside the
 raw video. Inspect at 320/390, 640/760 and 1120/1440 pixels when changing layout;
