@@ -7,13 +7,14 @@ import { resolve, join, sep } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
-const usage = 'Usage: npm run demos:openclaw:interactions -- /path/to/wtc-cli [output-directory] [push|stale|individual|batch|all] [--view card|chat|sidebar|split] [--width 390]';
-const { values, positionals } = parseArgs({ allowPositionals: true, options: { help: { type: 'boolean' }, view: { type: 'string', default: 'card' }, width: { type: 'string', default: '1120' } } });
+const usage = 'Usage: npm run demos:openclaw:interactions -- /path/to/wtc-cli [output-directory] [push|stale|individual|batch|all] [--view card|chat|sidebar|split] [--width 390] [--sidebar-width 320]';
+const { values, positionals } = parseArgs({ allowPositionals: true, options: { help: { type: 'boolean' }, view: { type: 'string', default: 'card' }, width: { type: 'string', default: '1120' }, 'sidebar-width': { type: 'string', default: '420' } } });
 if (values.help) { console.log(usage); process.exit(0); }
 if (!positionals[0] || positionals.length > 3) throw Error(usage);
-const view = values.view, width = Number(values.width);
+const view = values.view, width = Number(values.width), sidebarWidth = Number(values['sidebar-width']);
 if (!['card', 'chat', 'sidebar', 'split'].includes(view) || !Number.isInteger(width) || width < 320 || width > 2560) throw Error(usage);
-if (view === 'split' && width < 900) throw Error('Split view requires width >= 900; use chat or sidebar on mobile');
+if (!Number.isInteger(sidebarWidth) || sidebarWidth < 260 || sidebarWidth > 800) throw Error(usage);
+if (view === 'split' && (width < 900 || width - sidebarWidth < 320)) throw Error('Split view requires width >= 900; use chat or sidebar on mobile');
 const siteRoot = new URL('../', import.meta.url);
 const upstream = resolve(positionals[0]);
 const modulePath = 'openclaw-plugin/dist/control-ui/v1/index.js';
@@ -37,19 +38,19 @@ const inject = (html, anchor, replacement) => {
   return html.replace(anchor, replacement);
 };
 const browser = await chromium.launch({ headless: true });
-const manifest = { created: new Date().toISOString(), kind: 'Actual upstream renderer with synthetic gateway responses; not a live gateway', repository: 'https://github.com/lcorneliussen/wtc-cli', revision, modulePath, playwright: JSON.parse(await readFile(new URL('node_modules/playwright/package.json', siteRoot), 'utf8')).version, browser: browser.version(), rendererSha256: createHash('sha256').update(renderer).digest('hex'), simulation: true, view, viewport: { width, height: 900 }, recordings: [] };
+const manifest = { created: new Date().toISOString(), kind: 'Actual upstream renderer with synthetic gateway responses; not a live gateway', repository: 'https://github.com/lcorneliussen/wtc-cli', revision, modulePath, playwright: JSON.parse(await readFile(new URL('node_modules/playwright/package.json', siteRoot), 'utf8')).version, browser: browser.version(), rendererSha256: createHash('sha256').update(renderer).digest('hex'), simulation: true, view, sidebarWidth: view === 'split' ? sidebarWidth : null, viewport: { width, height: 900 }, recordings: [] };
 try {
   for (const [id, title, mode] of scenarios.filter(s => !selected || s[2] === selected)) {
     const dir = new URL(`${id}/`, output); await mkdir(dir, { recursive: true });
     const isPush = mode === 'push' || mode === 'stale';
     const rows = isPush
-      ? [{ repo: 'web', owner: 'example-org', forge: 'bitbucket', sessionKey: 'demo:web', branch: 'feature/search', base: 'origin/main', ahead: 3, behind: 0, unpublished: 3, dirty: 0 }]
+      ? [{ repo: 'web', owner: 'example-org', forge: 'bitbucket', sessionKey: 'demo:web', branch: 'feature/search', base: 'origin/main', ahead: 3, behind: 0, unpublished: 3, dirty: 0, pullRequests: [{number:2,state:'merged',title:'Earlier task',url:'https://example.invalid/web/pull-requests/2'}] }]
       : ['api', 'web', 'docs'].map((name, i) => {
         const next = { repo: name, step: 'catch-up', by: 'wtc', reason: `${[12, 7, 3][i]} new on main`, command: ['wtc', 'catch-up'], key: `${name}:catch-up:h1` };
         return { repo: name, owner: 'example-org', forge: 'github', sessionKey: `demo:${name}`, branch: null, base: 'origin/main', ahead: 0, behind: [12, 7, 3][i], unpublished: 0, dirty: 0, next, choices: { recommended: next.key, actions: [{ ...next, available: true }] } };
       });
     if (!/ repos:\[.*\],\n services:\[.*\]/.test(template) || !template.includes('const request = async (method, params) => {')) throw Error('Shared fixture changed; update interaction fixture injection');
-    let html = template.replace(/ repos:\[.*\],\n services:\[.*\]/, ` repos:${JSON.stringify(rows)},\n services:[]`);
+    let html = template.replace(/ repos:\[.*\],\n services:\[.*\]/, ` repos:${JSON.stringify(rows)},\n services:[{group:'web/preview',path:'web/preview',repo:'web',kind:'service',label:'Preview',state:'ready',url:'http://127.0.0.1:4321'}]`);
     html = inject(html, 'const request = async (method, params) => {', `
 const mode = ${JSON.stringify(mode)};
 const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
@@ -84,9 +85,11 @@ const request = async (method, params) => {
  }
 `);
     html = inject(html, "mounts.panel(document.querySelector('#panel'),ctx);", "window.demoPanel?.dispose(); document.querySelector('#panel').replaceChildren(); window.demoPanel=mounts.panel(document.querySelector('#panel'),ctx);");
-    html = inject(html, '</style>', `body{padding:16px;background:#101216}#stage{max-width:none}#stage>h1,#stage>p,footer,#rpc,#cursor{display:none!important}#card{margin-top:0}#panel{border-radius:14px}#recording-chat{display:${view === 'card' || view === 'sidebar' ? 'none' : 'grid'};align-content:end;gap:18px;min-height:240px;padding:24px 12px;font-size:14px}.recording-bubble{max-width:80%;padding:12px 16px;border-radius:14px}.recording-user{justify-self:end;background:#183139}.recording-assistant{justify-self:start;color:#d1d5dc}.composer{margin-top:12px;padding:14px 20px}body.split #stage{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:16px}body.split #recording-chat,body.split #card{grid-column:1}body.split #panel{grid-column:2;grid-row:1/4;height:850px;overflow:auto}</style>`);
+    html = inject(html, '<div id="stage">', `<body class="${view}"><div id="stage">`);
+    html = inject(html, '</style>', `body{padding:16px;background:#101216}#stage{max-width:none;height:calc(100dvh - 32px);display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:0}#stage>h1,#stage>p,footer{display:none!important}#card{grid-column:1;grid-row:2;min-height:0;max-height:100%;display:flex;flex-direction:column;justify-content:flex-end}#card>.wtc-collection-card,#card>.composer{flex:none}#card>.wtc-transient-actions{flex:0 1 auto;min-height:0}#panel{border-radius:14px;height:calc(100dvh - 32px);overflow:auto}#recording-chat{display:${view === 'card' || view === 'sidebar' ? 'none' : 'grid'};grid-column:1;grid-row:1;min-height:0;overflow:auto;align-content:end;gap:18px;padding:24px 12px;font-size:14px}.recording-bubble{max-width:80%;padding:12px 16px;border-radius:14px}.recording-user{justify-self:end;background:#183139}.recording-assistant{justify-self:start;color:#d1d5dc}.composer{width:100%;margin:12px auto 0;padding:14px 20px}body.sidebar #stage{display:block}body.sidebar #card{display:none!important}body.sidebar #panel{display:block!important}body.split #stage{grid-template-columns:minmax(0,1fr) ${sidebarWidth}px;column-gap:16px}body.split #panel{display:block!important;grid-column:2;grid-row:1/3;height:100%}</style>`);
     html = inject(html, '<div id="card">', '<div id="recording-chat"><div class="recording-bubble recording-user">Please update the collection and its pull request.</div><div class="recording-bubble recording-assistant">I’ll check the repositories and preserve your work.</div></div><div id="card">');
     if (view === 'split') html = inject(html, "document.querySelector('#card').hidden=true;", "document.body.classList.add('split');");
+    if (view === 'sidebar' || view === 'split') html = inject(html, "mounts.card(document.querySelector('#card'),ctx);", "mounts.card(document.querySelector('#card'),ctx); host.ui.openPanel();");
     const context = await browser.newContext({ locale: 'en-US', timezoneId: 'UTC', deviceScaleFactor: 1, viewport: { width, height: 900 }, recordVideo: { dir: fileURLToPath(dir), size: { width, height: 900 } } });
     const errors=[];
     await context.route('**/*', route => {
@@ -96,38 +99,69 @@ const request = async (method, params) => {
       errors.push('Unexpected network: '+url);return route.abort();
     });
     const page = await context.newPage(); page.on('pageerror', e => errors.push(e.message));
-    await page.goto('https://demo.invalid/'); await page.locator('#card details').waitFor();
-    if(!await page.locator('#card details').evaluate(n=>n.open))await page.locator('#card summary').click({position:{x:(await page.locator('#card summary').boundingBox()).width-8,y:8}});
-    if (view === 'sidebar' || view === 'split') await page.getByTitle(/^Open the (wtc|taba) Collection panel$/).click();
+    await page.goto('https://demo.invalid/'); await page.locator('#card .wtc-collection-card').waitFor({state:view==='sidebar'?'attached':'visible'});
+    if(view!=='sidebar'&&!await page.locator('#card .wtc-collection-card').evaluate(n=>n.open))await page.locator('#card summary').click({position:{x:(await page.locator('#card summary').boundingBox()).width-8,y:8}});
+
     const surface=page.locator(view === 'sidebar' ? '#panel' : '#card');
     for (const selector of ['#stage > h1', '#caption', '#rpc', '#cursor']) if (await page.locator(selector).isVisible()) throw Error('Recording overlay must stay outside the raw product view: '+selector);
     const click=async locator=>{const b=await locator.boundingBox();if(!b)throw Error('Missing click target');await page.mouse.move(b.x+b.width/2,b.y+b.height/2,{steps:15});await page.waitForTimeout(300);await locator.click();};
-    await page.waitForTimeout(1400);
+    await surface.locator('.wtc-repositories').waitFor();
+    const positions=[];
+    const measure=async phase=>{
+      const sample=await surface.evaluate(root=>{
+        const rect=selector=>{const node=root.querySelector(selector);if(!node)return null;const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
+        const grid=root.querySelector('.wtc-repositories>.wtc-table');
+        const cells=grid?[...grid.children].slice(Number(grid.getAttribute('data-columns'))).map(node=>{const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};}):[];
+        const controls=[...root.querySelectorAll('.wtc-action-toolbar .wtc-toolbar-primary, .wtc-action-toolbar>button, .wtc-bulk-actions>button')].map(node=>{const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};});
+        const sideRect=selector=>{const node=document.querySelector('#panel '+selector);if(!node)return null;const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
+        return {controls,sideHeader:sideRect('.wtc-collection>header'),sideRepositories:sideRect('.wtc-repositories>.wtc-table'),sideServices:sideRect('.wtc-base-services'),header:rect('.wtc-collection-card>summary, .wtc-collection>header'),repositories:rect('.wtc-repositories>.wtc-table'),services:rect('.wtc-base-services'),composer:rect('.composer'),temporary:rect('.wtc-transient-actions'),cells};
+      });
+      positions.push({phase,...sample});
+      await writeFile(new URL('layout-positions.json',dir),JSON.stringify(positions,null,2));
+      if(sample.temporary){
+        if(view==='sidebar') {if(sample.services && sample.temporary.y<sample.services.y+sample.services.height-1)throw Error('Sidebar temporary content displaced Services');}
+        else if(sample.header && sample.temporary.y+sample.temporary.height>sample.header.y+1)throw Error('Composer temporary content must extend above its fixed header');
+      }
+      if(positions.length>1){
+        if(positions[0].cells.length!==sample.cells.length)throw Error('Fixture repository slots disappeared');
+        if(positions[0].controls.length!==sample.controls.length)throw Error('Fixed toolbar controls disappeared');
+        sample.controls.forEach((cell,i)=>{for(const axis of ['x','y','width','height'])if(Math.abs(positions[0].controls[i][axis]-cell[axis])>1)throw Error(`Toolbar control moved: ${view}/${mode}/${phase}/${i}/${axis}: ${positions[0].controls[i]?.[axis]} -> ${cell[axis]}`);});
+        sample.cells.forEach((cell,i)=>{for(const axis of ['x','y','width','height'])if(Math.abs(positions[0].cells[i][axis]-cell[axis])>1)throw Error(`Repository slot moved: ${view}/${mode}/${phase}/${i}/${axis}`);});
+      }
+      if(positions.length>1)for(const key of ['header','repositories','services','composer','sideHeader','sideRepositories','sideServices']){
+        const before=positions[0][key],after=sample[key];if(!before||!after)continue;
+        for(const axis of ['x','y','width','height'])if(Math.abs(before[axis]-after[axis])>1)throw Error(`Base layout moved: ${view}/${mode}/${phase}/${key}/${axis}: ${before[axis]} -> ${after[axis]}`);
+      }
+    };
+    await page.waitForTimeout(1400);await measure('idle');
     if(isPush){
       await click(surface.getByTitle(/^3 commits to push/));
-      await surface.getByRole('button',{name:/^Confirm the captured push/}).waitFor();await page.waitForTimeout(1500);
-      await click(surface.getByRole('button',{name:/^Confirm the captured push/}));
-      await page.waitForFunction(()=>window.published);await page.waitForTimeout(1400);
+      await surface.getByRole('button',{name:/^Confirm the captured push/}).waitFor();await surface.locator('.wtc-confirm-publication:enabled').waitFor();await measure('confirmation');await page.waitForTimeout(1500);
+      await click(surface.getByRole('button',{name:/^Confirm the captured push/}));await measure('publishing');
+      await page.waitForFunction(()=>window.published);await page.waitForTimeout(1400);await measure('published');
       if(mode==='stale'){
         await surface.getByTitle(/^3 commits to push/).waitFor();
         await page.screenshot({path:fileURLToPath(new URL('stale-frame.png',dir))});await page.waitForTimeout(3000);
         await click(surface.getByTitle(view === 'sidebar' ? 'Refresh' : /Updated .* Refresh/));
-        await surface.getByTitle(/^3 commits to push/).waitFor({state:'detached'});
+        await surface.getByTitle(/^3 commits to push/).waitFor({state:'detached'});await measure('refreshed');
       }else{
         if(await surface.getByTitle(/^3 commits to push/).count())throw Error('Fresh status left push available');
       }
       await surface.locator('a[href="https://example.invalid/web/pull-requests/8"]').first().waitFor({state:'visible'});
       await page.waitForTimeout(2800);
     }else if(mode==='individual'){
-      for(const n of [12,7,3]) await click(surface.getByTitle(new RegExp('^'+n+' new on main\\. Catch up locally')));
-      await page.waitForFunction(()=>new Set(window.completed).size===3);await page.waitForTimeout(1300);
+      for(const n of [12,7,3]) await click(surface.getByTitle(new RegExp('^'+n+' new on main\\. Catch up locally')));await measure('running');
+      await page.waitForFunction(()=>new Set(window.completed).size===3);await page.waitForTimeout(1300);await measure('completed');
       await page.waitForTimeout(3000);
     }else{
-      await click(surface.locator('.wtc-action-toolbar button').filter({hasText:'Catch up 3'}).first());
+      await click(surface.locator('.wtc-action-toolbar button').filter({hasText:'Catch up 3'}).first());await measure('running');
       await page.waitForFunction(()=>new Set(window.completed).size===3);await page.waitForTimeout(1600);
-      await click(surface.getByText('✓ Caught up 3',{exact:true}));
-      await page.locator('#panel .wtc-activity-log').waitFor();await page.waitForTimeout(2400);
-      if(await page.locator('#panel .wtc-activity-log').getByText('Completed',{exact:true}).count()!==3)throw Error('Missing completion records');
+      await measure('completed');
+      if (view==='sidebar'||view==='split') {
+        await page.locator('#panel .wtc-activity-log').waitFor();
+        if(await page.locator('#panel .wtc-activity-log').getByText('Completed',{exact:true}).count()!==3)throw Error('Missing completion records');
+      }
+      await page.waitForTimeout(2400);
     }
     if(errors.length)throw Error(errors.join('\n'));
     await page.screenshot({path:fileURLToPath(new URL('final.png',dir))});
@@ -141,7 +175,7 @@ const request = async (method, params) => {
       await check.goto(new URL(videoName,output).href);
       await check.waitForFunction(()=>{const v=document.querySelector('video');return v&&v.readyState>=2&&v.duration>0;});
     } finally { await verifier.close(); }
-    manifest.recordings.push({id,title,mode,video:videoName,poster:id+'/final.png',assertions:'passed',requests:trace});
+    manifest.recordings.push({id,title,mode,video:videoName,poster:id+'/final.png',assertions:'passed',layoutPositions:positions,requests:trace});
     await writeFile(new URL('manifest.json',output),JSON.stringify(manifest,null,2));
     console.log(id+': recorded and decoded '+videoName);
   }

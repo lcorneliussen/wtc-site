@@ -31,7 +31,9 @@ Open `index.html` there to watch the four silent, raw WebM clips. The video
 contains only the product view, without a title card, captions, cursor marker or
 request-trace overlay. Each clip has a separate request trace and final PNG.
 `manifest.json` records the source revision/hash, Playwright/browser versions,
-scenario and assertions. The recorder checks the expected UI outcomes and loads
+scenario, assertions and measured base-layout coordinates. Takes fail if the
+header, repository grid, Services or composer shifts by more than one CSS pixel
+during preparation, progress, completion or refresh. The recorder checks the expected UI outcomes and loads
 each finalized video to verify metadata and initial decoding.
 
 Use a new, empty directory for every take; the recorder refuses to overwrite
@@ -59,8 +61,10 @@ npm run demos:openclaw:interactions -- /path/to/wtc-cli artifacts/sidebar all --
 ```
 
 `card` is the default. Supported widths are 320–2560 pixels; `split` requires
-at least 900. The surrounding chat is synthetic, not a recording of a live
-conversation. The gallery and manifest retain the simulation label outside the
+at least 900. Use `--sidebar-width 320` to test a narrow panel in a wide split
+view (260–800 pixels, with at least 320 pixels left for the chat). The surrounding chat is synthetic, not a recording of a live
+conversation. Its composer is anchored at the viewport bottom: temporary action
+controls grow above the stable card, while sidebar details grow below Services. The gallery and manifest retain the simulation label outside the
 raw video. Inspect at 320/390, 640/760 and 1120/1440 pixels when changing layout;
 also check a narrow sidebar beside a wide chat. Include running, success,
 failure details, selection, confirmation and collapsed states in design review.
@@ -70,7 +74,7 @@ failure details, selection, confirmation and collapsed states in design review.
 | `push` | Bitbucket preparation → personal confirmation → simulated publication → refresh. A draft PR appears and the unpublished count clears. |
 | `stale` | Same push, then a deliberately injected stale count alongside the new PR. The arrow returns; a manual refresh clears it. This models a response, not a verified backend bug. |
 | `individual` | Click three repository behind-count controls quickly. All requests complete; inspect their individual progress and results. |
-| `batch` | Click the collection's catch-up shortcut once. Observe sequential processing and open three completion results in the sidebar. |
+| `batch` | Click the collection's catch-up shortcut once. Observe sequential processing and three completion results. The sidebar and split views show the log without changing views. |
 
 The scripted delays make progress states visible; they are not performance
 measurements. Assertions intentionally fail if the relevant controls or behavior
