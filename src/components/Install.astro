@@ -1,0 +1,54 @@
+---
+import { publishedRelease } from '../data/release.mjs';
+const release = await publishedRelease();
+const base = import.meta.env.BASE_URL;
+---
+<section class="install" id="install" aria-labelledby="install-title">
+  <div class="install-heading">
+    <h2 id="install-title">Install the CLI</h2>
+    <a href={release.notes}>{release.live ? 'Stable' : 'Last verified'} {release.tag} · Release notes <span aria-hidden="true">↗</span></a>
+  </div>
+  <div class="install-command">
+    <code id="install-command">{release.command}</code>
+    <button type="button" id="copy-install" hidden aria-label="Copy CLI installation command">Copy <span aria-hidden="true">⧉</span></button>
+  </div>
+  <p class="install-details">With <a href="https://mise.jdx.dev/">mise</a> · macOS & Linux · Git required<br />
+    <a href={release.notes}>Download a binary</a> · <a href={`${base}docs/openclaw/`}>OpenClaw setup</a>
+  </p>
+  <p class="release-check">{release.live ? 'Release checked' : 'Release lookup unavailable. Last verified'} <time datetime={release.checked}>{release.checked}</time>. Updates when the site rebuilds.</p>
+  <p class="sr-only" id="install-status" role="status"></p>
+</section>
+<script>
+  const copy = document.querySelector<HTMLButtonElement>('#copy-install');
+  const command = document.querySelector<HTMLElement>('#install-command');
+  const status = document.querySelector<HTMLElement>('#install-status');
+  if (copy && command && status) {
+    copy.hidden = false;
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(command.textContent ?? '');
+        status.textContent = 'Installation command copied.';
+        copy.textContent = 'Copied ✓';
+      } catch {
+        status.textContent = 'Clipboard unavailable. The command is selected; copy it manually.';
+        const range = document.createRange();
+        range.selectNodeContents(command);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+    });
+  }
+</script>
+<style>
+  .install { margin-top: 23px; max-width: 570px; scroll-margin-top: 24px; }
+  .install-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-bottom: 9px; }
+  .install-heading h2 { font-size: 17px; letter-spacing: -.4px; }
+  .install a { text-decoration: underline; text-underline-offset: 3px; }
+  .install-heading a { font-size: 12px; }
+  .install-command { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #cbd6bf; background: #edf0e5; border-radius: 6px; }
+  .install-command code { min-width: 0; overflow-wrap: anywhere; font: 12px/1.7 var(--mono); }
+  .install-command button { flex-shrink: 0; margin-left: auto; background: #fcfdf7; border: 1px solid #b6c4aa; border-radius: 4px; padding: 8px; font-size: 12px; }
+  .install-details { margin: 8px 0 4px; font-size: 12px; line-height: 1.8; }
+  .release-check { margin: 0; font-size: 11px; line-height: 1.7; color: #56685d; }
+</style>
