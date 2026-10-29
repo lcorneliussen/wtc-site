@@ -134,30 +134,37 @@ const request = async (method, params) => {
         for(const axis of ['x','y','width','height'])if(Math.abs(before[axis]-after[axis])>1)throw Error(`Base layout moved: ${view}/${mode}/${phase}/${key}/${axis}: ${before[axis]} -> ${after[axis]}`);
       }
     };
+    const waitForSettledRepositories=()=>page.waitForFunction(selector=>{
+      const root=document.querySelector(selector);
+      return root && ![...root.querySelectorAll('.wtc-repositories button, .wtc-step-status')].some(n=>/^\d+ new on main/.test(n.title)||/Working…|Catching up…|Running…|Rechecking…|Queued/.test(n.textContent));
+    },view==='sidebar'?'#panel':'#card');
     await page.waitForTimeout(1400);await measure('idle');
     if(isPush){
       await click(surface.getByTitle(/^3 commits to push/));
       await surface.getByRole('button',{name:/^Confirm the captured push/}).waitFor();await surface.locator('.wtc-confirm-publication:enabled').waitFor();await measure('confirmation');await page.waitForTimeout(1500);
       await click(surface.getByRole('button',{name:/^Confirm the captured push/}));await measure('publishing');
-      await page.waitForFunction(()=>window.published);await page.waitForTimeout(1400);await measure('published');
+      await page.waitForFunction(()=>window.published);
+      await surface.locator('a[href="https://example.invalid/web/pull-requests/8"]').first().waitFor({state:'visible'});
+      await surface.locator('.wtc-action-toolbar').getByText('✓ Pushed',{exact:true}).waitFor({state:'visible'});
+      if(mode==='stale') await surface.getByTitle(/^3 commits to push/).waitFor();
+      else if(await surface.getByTitle(/^3 commits to push/).count())throw Error('Fresh status left push available');
+      await measure('published');
       if(mode==='stale'){
-        await surface.getByTitle(/^3 commits to push/).waitFor();
         await page.screenshot({path:fileURLToPath(new URL('stale-frame.png',dir))});await page.waitForTimeout(3000);
         await click(surface.getByTitle(view === 'sidebar' ? 'Refresh' : /Updated .* Refresh/));
-        await surface.getByTitle(/^3 commits to push/).waitFor({state:'detached'});await measure('refreshed');
-      }else{
-        if(await surface.getByTitle(/^3 commits to push/).count())throw Error('Fresh status left push available');
+        await surface.getByTitle(/^3 commits to push/).waitFor({state:'detached'});
+        await surface.locator('.wtc-action-toolbar').getByText('✓ Refreshed',{exact:true}).waitFor({state:'visible'});
+        await measure('refreshed');
       }
-      await surface.locator('a[href="https://example.invalid/web/pull-requests/8"]').first().waitFor({state:'visible'});
       await page.waitForTimeout(2800);
     }else if(mode==='individual'){
       for(const n of [12,7,3]) await click(surface.getByTitle(new RegExp('^'+n+' new on main\\. Catch up locally')));await measure('running');
-      await page.waitForFunction(()=>new Set(window.completed).size===3);await page.waitForTimeout(1300);await measure('completed');
+      await page.waitForFunction(()=>new Set(window.completed).size===3);await waitForSettledRepositories();await measure('completed');await page.waitForTimeout(1300);
       await page.waitForTimeout(3000);
     }else{
       await click(surface.locator('.wtc-action-toolbar button').filter({hasText:'Catch up 3'}).first());await measure('running');
-      await page.waitForFunction(()=>new Set(window.completed).size===3);await page.waitForTimeout(1600);
-      await measure('completed');
+      await page.waitForFunction(()=>new Set(window.completed).size===3);await waitForSettledRepositories();
+      await measure('completed');await page.waitForTimeout(1600);
       if (view==='sidebar'||view==='split') {
         await page.locator('#panel .wtc-activity-log').waitFor();
         if(await page.locator('#panel .wtc-activity-log').getByText('Completed',{exact:true}).count()!==3)throw Error('Missing completion records');
