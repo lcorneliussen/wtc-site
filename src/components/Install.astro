@@ -30,6 +30,7 @@ const base = import.meta.env.BASE_URL;
         status.textContent = 'Installation command copied.';
         copy.textContent = 'Copied ✓';
       } catch {
+        copy.textContent = 'Copy ⧉';
         status.textContent = 'Clipboard unavailable. The command is selected; copy it manually.';
         const range = document.createRange();
         range.selectNodeContents(command);

@@ -49,3 +49,7 @@ A static build with the release fetch forced to reject was also rendered: the
 “Last verified” version, outage/date text, install command and numbered notes
 remain consistent. The normal network-enabled build was restored afterward.
 Coverage was verified against the exact v0.1.51 source revision as well as offline.
+
+Independent review follow-up: the existing site build job now runs the release
+unit tests directly. A failed copy after a successful copy resets the visible
+button label, and browser QA asserts that sequence.

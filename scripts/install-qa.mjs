@@ -26,6 +26,7 @@ for (const [width, height] of [[1440,900],[1280,720],[390,844],[320,640]]) {
   await copy.click();
   assert.equal(await page.evaluate(() => getSelection().toString()), command);
   assert.match(await page.locator('#install-status').innerText(), /copy it manually/);
+  assert.equal(await copy.innerText(), 'Copy ⧉');
   console.log(`${width}x${height}: command bottom ${Math.round(bounds.y+bounds.height)}, links/copy/manual selection/no overflow pass`);
   await context.close();
 }
