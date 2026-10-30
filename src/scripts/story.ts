@@ -6,6 +6,12 @@ if (timeline) {
   const problems = [...timeline.querySelectorAll<HTMLElement>('.problem')];
   const headings = problems.map(problem => problem.querySelector<HTMLElement>('h2')!);
   const dates = problems.map(problem => problem.querySelector<HTMLElement>('.problem-date')!);
+  dates.forEach((date, index) => {
+    const column = document.createElement('div');
+    column.className = 'date-column';
+    problems[index].prepend(column);
+    column.append(date);
+  });
   const links = dates.map((date, index) => {
     const link = document.createElement('a');
     link.href = `#${problems[index].id}`;
@@ -22,8 +28,9 @@ if (timeline) {
   const update = () => {
     scheduled = false;
     const bounds = timeline.getBoundingClientRect();
-    const firstDot = dates[0].getBoundingClientRect().top + 10;
-    const lastDot = dates[dates.length - 1].getBoundingClientRect().top + 10;
+    const inset = parseFloat(getComputedStyle(timeline).getPropertyValue('--timeline-inset'));
+    const firstDot = problems[0].getBoundingClientRect().top + inset + 10;
+    const lastDot = problems[problems.length - 1].getBoundingClientRect().bottom - inset - dates[dates.length - 1].offsetHeight + 10;
     const length = Math.max(1, lastDot - firstDot);
     timeline.style.setProperty('--timeline-start', `${firstDot - bounds.top}px`);
     timeline.style.setProperty('--timeline-length', `${length}px`);

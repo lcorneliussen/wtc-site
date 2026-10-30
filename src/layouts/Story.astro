@@ -37,7 +37,9 @@ const base = import.meta.env.BASE_URL;
   .prose :global(.problem-timeline::before), .prose :global(.problem-timeline::after) { content: ''; position: absolute; left: -24px; top: var(--timeline-start, 95px); width: 1px; height: var(--timeline-length, calc(100% - 190px)); background: #c5d0b6; }
   .prose :global(.problem-timeline::after) { background: var(--green); transform: scaleY(var(--story-progress, 0)); transform-origin: top; }
   .prose :global(.problem) { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto; column-gap: 64px; align-content: start; min-height: 75svh; padding-block: 85px; border-bottom: 1px solid var(--line); scroll-margin-top: 130px; }
-  .prose :global(.problem-date) { position: absolute; left: -128px; top: var(--timeline-inset); width: 84px; margin: 0; text-align: right; color: var(--muted); font: 11px/20px var(--mono); }
+  .prose :global(.problem-date) { position: absolute; left: -128px; top: var(--timeline-inset); width: 84px; margin: 0; text-align: right; color: var(--ink); font: 12px/20px var(--mono); }
+  .prose :global(.date-column) { position: absolute; left: -128px; top: var(--timeline-inset); bottom: var(--timeline-inset); width: 84px; }
+  .prose :global(.date-column .problem-date) { position: sticky; left: 0; top: 40px; width: 100%; }
   .prose :global(.problem-date a) { color: inherit; text-decoration: none; }
   .prose :global(.problem-date a:hover), .prose :global(.problem-date a:focus-visible) { text-decoration: underline; text-underline-offset: 4px; }
   .prose :global(.problem-date::after) { content: ''; position: absolute; left: calc(100% + 15.5px); top: 10px; width: 9px; height: 9px; box-sizing: border-box; border: 1px solid #91a17b; border-radius: 50%; background: var(--paper); transform: translateY(-50%); z-index: 1; }
@@ -76,7 +78,8 @@ const base = import.meta.env.BASE_URL;
     h1 { margin-bottom: 18px; }
     .prose :global(.problem) { grid-template-columns: minmax(0, 1fr); row-gap: 0; min-height: 0; padding-block: 48px 55px; }
     .prose :global(.problem-timeline) { --timeline-inset: 48px; margin-left: 24px; }
-    .prose :global(.problem .problem-date) { position: relative; left: auto; top: auto; width: auto; text-align: left; grid-column: 1; grid-row: 1; margin-bottom: 20px; font-size: 10px; }
+    .prose :global(.date-column) { display: contents; }
+    .prose :global(.problem .problem-date) { position: relative; left: auto; top: auto; width: auto; text-align: left; grid-column: 1; grid-row: 1; margin-bottom: 20px; font-size: 12px; }
     .prose :global(.problem-date::after) { left: -28.5px; }
     .prose :global(.problem .problem-body), .prose :global(.problem:nth-child(even) .problem-body) { display: contents; }
     .prose :global(.problem h2) { grid-column: 1; grid-row: 2; font-size: clamp(36px, 9.5vw, 48px); }
@@ -87,5 +90,5 @@ const base = import.meta.env.BASE_URL;
     .prose :global(.post-card) { padding: 18px; }
   }
   @media (prefers-reduced-motion: reduce) { .prose :global(.scene-art) { transform: none !important; transition: none; } }
-  @media print { .prose :global(.problem-timeline) { margin-left: 0; } .prose :global(.problem-timeline::before), .prose :global(.problem-timeline::after), .prose :global(.problem-date::after) { display: none; } .prose :global(.problem-date) { position: static; width: auto; text-align: left; margin-bottom: 16px; } .prose :global(.problem) { display: block; min-height: 0; padding-block: 30px; break-inside: avoid; } .prose :global(.scene-art) { position: static; transform: none; } }
+  @media print { .prose :global(.date-column) { display: contents; } .prose :global(.problem-timeline) { margin-left: 0; } .prose :global(.problem-timeline::before), .prose :global(.problem-timeline::after), .prose :global(.problem-date::after) { display: none; } .prose :global(.date-column .problem-date), .prose :global(.problem-date) { position: static; width: auto; text-align: left; margin-bottom: 16px; } .prose :global(.problem) { display: block; min-height: 0; padding-block: 30px; break-inside: avoid; } .prose :global(.scene-art) { position: static; transform: none; } }
 </style>
