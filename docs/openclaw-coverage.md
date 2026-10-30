@@ -29,9 +29,6 @@ It did not show the plugin or teach what its dense controls mean.
 | Sandbox access, forge support, contributor verification, hardened git | Partial / specialist | Keep detailed contracts upstream; do not turn learning page into admin manual |
 | End-to-end clone, push, catch-up, service lifecycle demos | Absent | Still absent: fixture demo intentionally does not claim backend coverage |
 
-Ownership remains as in [content strategy](content-strategy.md): upstream docs
-own versioned contracts, release notes own history, the site teaches workflows.
-
 ## Drift that remains
 
 The source-disposition checker reports **10 changed and 13 new inputs** at the
