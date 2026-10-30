@@ -242,7 +242,7 @@ const request = async (method, params) => {
       await click(surface.getByRole('button',{name:/^Confirm the captured push/}));await surface.locator('.wtc-action-toolbar').getByText('Publishing…',{exact:true}).waitFor();await measure('publishing');
       await page.waitForFunction(()=>window.published);
       await surface.locator('a[href="https://example.invalid/web/pull-requests/8"]').first().waitFor({state:collapsed?'attached':'visible'});
-      await surface.locator('.wtc-action-toolbar').getByText('✓ Pushed',{exact:true}).waitFor({state:'visible'});
+      if(mode!=='stale') await surface.locator('.wtc-action-toolbar').getByText('✓ Pushed',{exact:true}).waitFor({state:'visible'});
       if(mode==='stale') await surface.getByTitle(/^3 commits to push/).waitFor();
       else {
         if(!collapsed&&await surface.getByTitle(/^3 commits to push/).count())throw Error('Fresh status left push available');
