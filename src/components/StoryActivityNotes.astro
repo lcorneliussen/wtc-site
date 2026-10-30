@@ -1,0 +1,21 @@
+---
+import activity from '../data/story-activity.json';
+const worktreeDate = activity.worktreeSnapshot ? new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Berlin',
+}).format(new Date(activity.worktreeSnapshot)) : null;
+---
+<dialog id="activity-method" aria-labelledby="activity-method-title">
+  <h2 id="activity-method-title">About the numbers</h2>
+  <p><strong>PRs merged / week</strong> counts authored pull requests merged on GitHub and in one Bitbucket workspace. Weeks start Monday in Europe/Berlin. The snapshot ends on 30 October 2026 at 08:25 CET.</p>
+  <p><strong>Surviving worktrees</strong> counts registered worktrees still present in the inspected working folders, accumulated by their folder creation dates. Worktrees removed before the snapshot are absent. Folder copies or migrations can change filesystem dates.</p>
+  {activity.worktreeTotal !== null && <p>The worktree snapshot contains {activity.worktreeTotal} surviving worktrees, observed on {worktreeDate}.</p>}
+  <button type="button" class="button button-small">Close</button>
+</dialog>
+<style>
+  dialog { max-width: 520px; width: calc(100% - 40px); padding: 30px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: var(--paper); }
+  dialog::backdrop { background: #15251d70; }
+  h2 { font: 650 28px/1.2 var(--display); letter-spacing: -.035em; margin: 0 0 24px; }
+  p { font-size: 14px; line-height: 1.8; margin-block: 18px; }
+  strong { font-weight: 600; }
+  button { border: 0; }
+</style>

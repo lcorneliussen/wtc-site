@@ -1,4 +1,5 @@
 import { setupStoryPosts } from './story-posts';
+import { setupStoryActivity } from './story-activity';
 
 const timeline = document.querySelector<HTMLElement>('.problem-timeline');
 
@@ -6,11 +7,15 @@ if (timeline) {
   const problems = [...timeline.querySelectorAll<HTMLElement>('.problem')];
   const headings = problems.map(problem => problem.querySelector<HTMLElement>('h2')!);
   const dates = problems.map(problem => problem.querySelector<HTMLElement>('.problem-date')!);
-  dates.forEach((date, index) => {
+  const cards = dates.map((date, index) => {
     const column = document.createElement('div');
     column.className = 'date-column';
     problems[index].prepend(column);
-    column.append(date);
+    const card = document.createElement('div');
+    card.className = 'date-card';
+    column.append(card);
+    card.append(date);
+    return card;
   });
   const links = dates.map((date, index) => {
     const link = document.createElement('a');
@@ -22,6 +27,7 @@ if (timeline) {
   });
   const artworks = problems.map(problem => problem.querySelector<HTMLElement>('.scene-art'));
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const setActivity = setupStoryActivity(problems, cards, reducedMotion);
   const readingLine = () => Math.max(80, window.innerHeight * .28);
   let scheduled = false;
 
@@ -30,7 +36,7 @@ if (timeline) {
     const bounds = timeline.getBoundingClientRect();
     const inset = parseFloat(getComputedStyle(timeline).getPropertyValue('--timeline-inset'));
     const firstDot = problems[0].getBoundingClientRect().top + inset + 10;
-    const lastDot = problems[problems.length - 1].getBoundingClientRect().bottom - inset - dates[dates.length - 1].offsetHeight + 10;
+    const lastDot = problems[problems.length - 1].getBoundingClientRect().bottom - inset - cards[cards.length - 1].offsetHeight + 10;
     const length = Math.max(1, lastDot - firstDot);
     timeline.style.setProperty('--timeline-start', `${firstDot - bounds.top}px`);
     timeline.style.setProperty('--timeline-length', `${length}px`);
@@ -40,6 +46,7 @@ if (timeline) {
     headings.forEach((heading, index) => {
       if (heading.getBoundingClientRect().top <= readingLine()) active = index;
     });
+    setActivity(active);
     problems.forEach((problem, index) => {
       problem.classList.toggle('is-active', index === active);
       problem.classList.toggle('is-past', index < active);
@@ -72,7 +79,9 @@ if (timeline) {
   window.addEventListener('hashchange', scrollToHashTarget);
   window.addEventListener('load', () => window.requestAnimationFrame(scrollToHashTarget), {once: true});
   document.fonts.ready.then(schedule);
-  new ResizeObserver(schedule).observe(timeline);
+  const observer = new ResizeObserver(schedule);
+  observer.observe(timeline);
+  cards.forEach(card => observer.observe(card));
   setupStoryPosts(schedule);
   schedule();
   scrollToHashTarget();

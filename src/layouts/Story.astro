@@ -1,5 +1,6 @@
 ---
 import Base from './Base.astro';
+import StoryActivityNotes from '../components/StoryActivityNotes.astro';
 
 interface Props {
   frontmatter: { title: string; description: string; author: string; updated: string };
@@ -21,6 +22,7 @@ const base = import.meta.env.BASE_URL;
       <div><a class="button" href={`${base}docs/collections/`}>Try taba <span aria-hidden="true">→</span></a><a class="text-link" href={`${base}docs/getting-started/`}>Get started <span aria-hidden="true">→</span></a></div>
     </section>
   </main>
+  <StoryActivityNotes />
 </Base>
 <script>
   import '../scripts/story';
@@ -39,7 +41,17 @@ const base = import.meta.env.BASE_URL;
   .prose :global(.problem) { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto; column-gap: 64px; align-content: start; min-height: 75svh; padding-block: 85px; border-bottom: 1px solid var(--line); scroll-margin-top: 130px; }
   .prose :global(.problem-date) { position: absolute; left: -128px; top: var(--timeline-inset); width: 84px; margin: 0; text-align: right; color: var(--ink); font: 12px/20px var(--mono); }
   .prose :global(.date-column) { position: absolute; left: -128px; top: var(--timeline-inset); bottom: var(--timeline-inset); width: 84px; }
-  .prose :global(.date-column .problem-date) { position: sticky; left: 0; top: 40px; width: 100%; }
+  .prose :global(.date-card) { position: sticky; top: 40px; }
+  .prose :global(.date-column .problem-date) { position: relative; left: 0; top: 0; width: 100%; }
+  .prose :global(.story-metrics) { margin-top: 26px; font: 11px/1.5 var(--mono); text-align: right; }
+  .prose :global(.story-metrics p) { margin: 0; }
+  .prose :global(.story-metrics dl) { display: grid; gap: 22px; margin: 18px 0; }
+  .prose :global(.story-metrics dl > div) { display: flex; flex-direction: column; }
+  .prose :global(.story-metrics dt) { color: var(--muted); }
+  .prose :global(.story-metrics dd) { order: -1; margin: 0 0 4px; font: 650 38px/1.1 var(--display); letter-spacing: -.035em; font-variant-numeric: tabular-nums; color: var(--green); }
+  .prose :global(.metrics-week time) { display: block; }
+  .prose :global(.metrics-partial) { color: var(--muted); }
+  .prose :global(.metrics-info) { padding: 0; margin-top: 12px; border: 0; background: none; color: var(--muted); font: inherit; text-decoration: underline; text-underline-offset: 3px; }
   .prose :global(.problem-date a) { color: inherit; text-decoration: none; }
   .prose :global(.problem-date a:hover), .prose :global(.problem-date a:focus-visible) { text-decoration: underline; text-underline-offset: 4px; }
   .prose :global(.problem-date::after) { content: ''; position: absolute; left: calc(100% + 15.5px); top: 10px; width: 9px; height: 9px; box-sizing: border-box; border: 1px solid #91a17b; border-radius: 50%; background: var(--paper); transform: translateY(-50%); z-index: 1; }
@@ -79,13 +91,18 @@ const base = import.meta.env.BASE_URL;
     .prose :global(.problem) { grid-template-columns: minmax(0, 1fr); row-gap: 0; min-height: 0; padding-block: 48px 55px; }
     .prose :global(.problem-timeline) { --timeline-inset: 48px; margin-left: 24px; }
     .prose :global(.date-column) { display: contents; }
+    .prose :global(.date-card) { display: contents; }
     .prose :global(.problem .problem-date) { position: relative; left: auto; top: auto; width: auto; text-align: left; grid-column: 1; grid-row: 1; margin-bottom: 20px; font-size: 12px; }
     .prose :global(.problem-date::after) { left: -28.5px; }
     .prose :global(.problem .problem-body), .prose :global(.problem:nth-child(even) .problem-body) { display: contents; }
     .prose :global(.problem h2) { grid-column: 1; grid-row: 2; font-size: clamp(36px, 9.5vw, 48px); }
     .prose :global(.problem-subline) { grid-column: 1; grid-row: 3; font-size: 16px; }
-    .prose :global(.detail-copy) { grid-column: 1; grid-row: 5; min-width: 0; }
-    .prose :global(.problem .scene-art), .prose :global(.problem:nth-child(even) .scene-art) { grid-column: 1; grid-row: 4; position: static; margin-top: 28px; }
+    .prose :global(.story-metrics) { grid-column: 1; grid-row: 4; margin: 5px 0 10px; padding-top: 18px; border-top: 1px solid var(--line); text-align: left; }
+    .prose :global(.story-metrics dl) { grid-template-columns: 1fr 1fr; gap: 24px; margin-block: 12px; }
+    .prose :global(.metrics-week time) { display: inline; }
+    .prose :global(.metrics-info) { margin-top: 8px; }
+    .prose :global(.detail-copy) { grid-column: 1; grid-row: 6; min-width: 0; }
+    .prose :global(.problem .scene-art), .prose :global(.problem:nth-child(even) .scene-art) { grid-column: 1; grid-row: 5; position: static; margin-top: 28px; }
     .prose :global(.scene-art img) { max-width: 300px; }
     .prose :global(.post-card) { padding: 18px; }
   }
