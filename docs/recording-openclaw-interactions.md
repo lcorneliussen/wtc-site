@@ -234,3 +234,45 @@ The current TUI has a keyboard Next actions view: `n` opens it, arrows or
 and Enter runs or reviews the selection. The recording stops before Enter.
 Direct table actions remain separate; their preparation belongs with the
 [upstream interaction contract](https://github.com/lcorneliussen/wtc-cli/blob/269-explicit-action-feedback/docs/openclaw.md#alignment-and-compact-views).
+
+## Compare perceived sections with the intended structure
+
+Font and alignment measurements alone do not test whether a service block reads
+as a child of the last repository. The recorder now saves `phase.visual.json`
+beside every phase PNG. It includes intended presentation regions (collection
+controls, repositories and their rows, collection services, action log and
+composer), their parent relationships, and the screenshot dimensions/SHA-256.
+These regions are measured from the DOM; they are not independent perception.
+
+For an independent check, give a reviewer **only the unannotated phase PNG**.
+Ask them to identify visual groups, bounds, parent relationships and ambiguities
+from spacing, indentation, typography, separators and surfaces. Do not supply the
+DOM, intended region labels or this model until their observations are saved.
+A useful neutral prompt is: “Group this screenshot from pixels alone. Return
+JSON with canvas dimensions, groups containing id/label/parent/bounds/confidence/
+evidence, and an ambiguities list. Do not assume a correct underlying model.”
+
+Save that JSON with `imageSha256` copied from the phase metadata after the blind
+review. Coordinates refer to the original full PNG, not a resized preview or the
+video crop. Generate a standalone comparison from the site root:
+
+```sh
+node scripts/openclaw-visual-audit.mjs \
+  artifacts/take/04-collection-catch-up/idle.visual.json \
+  artifacts/take/04-collection-catch-up/idle.png \
+  observations.json hierarchy-report.html
+```
+
+The report overlays **cyan dashed intended regions** and **magenta perceived
+regions**, with separate toggles. It proposes geometric correspondences and flags
+unrelated model regions perceived as merged or nested—for example, services under
+the last repository. Unmatched regions and the reviewer's ambiguities stay
+visible. Compare the region labels and reasoning too: interpreting bulk actions
+as sorting can be wrong even when the geometric relationships match. Zero
+relationship warnings is not a semantic or taste pass.
+
+The expected tree describes presentation grouping, not every domain ownership
+relation. Services is a collection-level visual section; a service row can still
+name its owning repository. Without independent observations, the report says
+**Not independently assessed**. Wrong-image annotations and cyclic parent trees
+are rejected. These guides stay outside raw screenshots and video.

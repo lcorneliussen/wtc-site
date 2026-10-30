@@ -147,14 +147,87 @@ export function collectVisualMeasurements(selector) {
     const style = getComputedStyle(node);
     hierarchy.push({ role, ...metrics, contrastRatio: contrast(node), background: style.backgroundColor, filled: rgba(style.backgroundColor)[3] > 0 });
   }
+  const sections = [];
+  const addSection = (id, label, parent, node) => {
+    if (node && visible(node)) sections.push({ id, label, parent, bounds: box(node) });
+  };
+  addSection('collection', 'Collection', null, root.querySelector('.wtc-collection-card,.wtc-collection'));
+  addSection('header', 'Collection controls', 'collection', root.querySelector('.wtc-collection-card>summary,.wtc-collection>header'));
+  addSection('repositories', 'Repositories', 'collection', root.querySelector('.wtc-repo-section,.wtc-repositories'));
+  addSection('bulk-actions', 'Actions across all repositories', 'repositories', root.querySelector('.wtc-bulk-actions'));
+  for (const [index, label] of all('.wtc-repo-label').entries()) {
+    const grid = label.closest('.wtc-table');
+    let cell = label;
+    while (grid && cell.parentElement !== grid) cell = cell.parentElement;
+    if (!grid) continue;
+    const cells = [...grid.children], cols = Number(grid.getAttribute('data-columns'));
+    const start = Math.floor(cells.indexOf(cell) / cols) * cols;
+    const bounds = cells.slice(start, start + cols).filter(visible).map(box);
+    const y = Math.min(...bounds.map(b => b.y)), bottom = Math.max(...bounds.map(b => b.bottom));
+    sections.push({ id: `repo:${index}:${label.textContent}`, label: label.textContent, parent: 'repositories', bounds: { x: box(grid).x, y, width: box(grid).width, height: bottom - y } });
+  }
+  addSection('services', 'Collection services', 'collection', root.querySelector('.wtc-base-services'));
+  addSection('activity', 'Action log', 'collection', root.querySelector('.wtc-activity-log'));
+  addSection('pull-requests', 'Pull requests', 'collection', root.querySelector('div.wtc-pr-history'));
+  addSection('composer', 'Conversation composer', null, root.querySelector('.composer'));
   const missing = all('.wtc-repositories').length && !all('.wtc-repo-label').length ? ['Visible repository table has no semantic name anchors'] : [];
-  return { groups, opticalPairs, rows, hierarchy, missing, edges, bounds: box(root) };
+  return { groups, opticalPairs, rows, hierarchy, sections, missing, edges, bounds: box(root) };
+}
+
+const escapeMarkup = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+
+// Observations come from a separate pixels-only reviewer, never from this DOM collector.
+// Geometry proposes correspondences; the report keeps ambiguity and unmatched regions visible.
+export function compareVisualSections(audit, observations) {
+  if (!observations) return { state: 'not-assessed', matches: [], mismatches: [], warnings: ['No independent pixel grouping attached. Model regions alone cannot assess perceived hierarchy.'] };
+  if (!audit.image || ![audit.image.width,audit.image.height].every(n=>Number.isInteger(n)&&n>0) || !/^[a-f0-9]{64}$/.test(audit.image.sha256 ?? '') || observations.imageSha256 !== audit.image.sha256 || observations.canvas?.width !== audit.image.width || observations.canvas?.height !== audit.image.height) throw Error('Section observations must identify the same screenshot and canvas');
+  const expected = audit.sections ?? [], perceived = observations.groups;
+  const validate = items => {
+    if (!Array.isArray(items)) throw Error('Section groups must be an array');
+    const ids = new Set();
+    for (const item of items) {
+      const b = item.bounds;
+      if (typeof item.id!=='string' || !item.id || ids.has(item.id) || (item.parent!=null && typeof item.parent!=='string') || !b || ![b.x,b.y,b.width,b.height].every(Number.isFinite) || b.width <= 0 || b.height <= 0) throw Error('Invalid or duplicate section region');
+      ids.add(item.id);
+    }
+    for (const item of items) {
+      const seen = new Set([item.id]); let parent = item.parent;
+      while (parent != null) {
+        if (!ids.has(parent) || seen.has(parent)) throw Error('Unknown or cyclic section parent');
+        seen.add(parent); parent = items.find(node => node.id === parent).parent;
+      }
+    }
+  };
+  validate(expected); validate(perceived);
+  const ancestor = (items, a, b) => {
+    let parent = items.find(item => item.id === b)?.parent;
+    while (parent != null) { if (parent === a) return true; parent = items.find(item => item.id === parent)?.parent; }
+    return false;
+  };
+  const matches = expected.map(item => {
+    const a = item.bounds, area = a.width * a.height;
+    const candidates = perceived.map(group => {
+      const b = group.bounds;
+      const overlap = Math.max(0, Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x)) * Math.max(0, Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y));
+      return { group, coverage: overlap / area, score: overlap / (area + b.width*b.height - overlap) };
+    }).filter(candidate => candidate.coverage >= .5 && candidate.score >= .25).sort((a,b) => b.score-a.score);
+    return { expected: item.id, perceived: candidates[0]?.group.id ?? null, coverage: candidates[0]?.coverage ?? 0, score: candidates[0]?.score ?? 0 };
+  });
+  const mismatches = [], warnings = matches.filter(item => !item.perceived).map(item => `Unmatched model region: ${item.expected}`);
+  for (let i=0;i<matches.length;i++) for (let j=i+1;j<matches.length;j++) {
+    const a=matches[i],b=matches[j];
+    if (!a.perceived || !b.perceived || ancestor(expected,a.expected,b.expected) || ancestor(expected,b.expected,a.expected)) continue;
+    if (a.perceived===b.perceived || ancestor(perceived,a.perceived,b.perceived) || ancestor(perceived,b.perceived,a.perceived)) mismatches.push({ first: a.expected, second: b.expected, observed: a.perceived===b.perceived ? 'merged group' : 'nested groups' });
+  }
+  return { state: 'compared', matches, mismatches, warnings, ambiguities: observations.ambiguities ?? [] };
 }
 
 // Render after recording has stopped. The original PNG remains untouched, and
 // no diagnostic layer ever enters the screencast or changes product geometry.
-export function visualGuideSvg(audit, imageDataUrl, viewport, crop) {
+export function visualGuideSvg(audit, imageDataUrl, viewport, crop, observations = null) {
   if (!/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(imageDataUrl)) throw Error('Guides require an embedded PNG');
+  if (![viewport.width,viewport.height,crop.x,crop.y,crop.width,crop.height].every(Number.isFinite) || viewport.width<=0 || viewport.height<=0 || crop.width<=0 || crop.height<=0) throw Error('Invalid guide viewport or crop');
+  compareVisualSections(audit, observations);
   const lines = [];
   const line = (x1, y1, x2, y2, color, dashed = false) => {
     if (![x1, y1, x2, y2].every(Number.isFinite)) throw Error('Invalid guide coordinates');
@@ -174,13 +247,33 @@ export function visualGuideSvg(audit, imageDataUrl, viewport, crop) {
     line(pair.x - 3, pair.capMiddle, pair.right + 3, pair.capMiddle, '#64edb0');
     line(pair.x - 3, pair.middle, pair.right + 3, pair.middle, '#ffbf61', true);
   }
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${crop.width}" height="${crop.height}" viewBox="${crop.x} ${crop.y} ${crop.width} ${crop.height}"><image width="${viewport.width}" height="${viewport.height}" href="${imageDataUrl}"/>${lines.join('')}</svg>`;
+  const regions = (items, layer, color) => `<g data-section-layer="${layer}">${items.map(item => {
+    const b = item.bounds;
+    if (![b.x,b.y,b.width,b.height].every(Number.isFinite)) throw Error('Invalid section coordinates');
+    return `<rect x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}" fill="${color}" fill-opacity=".035" stroke="${color}" stroke-width="1"${layer==='model'?' stroke-dasharray="5 4"':''}/><text x="${b.x+3}" y="${b.y+11}" fill="${color}" font-family="system-ui" font-size="10">${escapeMarkup(item.label ?? item.id)}</text>`;
+  }).join('')}</g>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${crop.width}" height="${crop.height}" viewBox="${crop.x} ${crop.y} ${crop.width} ${crop.height}"><image width="${viewport.width}" height="${viewport.height}" href="${imageDataUrl}"/>${lines.join('')}${regions(audit.sections ?? [],'model','#5bd5ef')}${regions(observations?.groups ?? [],'perceived','#ed8ede')}</svg>`;
 }
 
-export function visualAuditReport(audit, svg) {
+export function visualAuditReport(audit, svg, observations = null) {
   const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const rows = audit.hierarchy.map(item => `<tr><td>${escape(item.role)}</td><td>${escape(item.text)}</td><td>${item.fontSize}</td><td>${item.fontWeight}</td><td>${item.contrastRatio.toFixed(2)}</td><td>${item.filled ? 'filled' : 'quiet'}${item.clipped ? ' · ellipsis' : ''}</td></tr>`).join('');
-  return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Visual rails and hierarchy</title><style>body{font:14px system-ui;margin:24px;background:#101318;color:#ddd}label{margin-right:16px}figure{margin:20px 0;overflow:auto}svg{display:block}table{border-collapse:collapse}td,th{text-align:left;padding:6px 12px;border-bottom:1px solid #30343c}th{color:#aaa}p{max-width:900px}</style><h1>Visual rails and hierarchy</h1><p>Separate diagnostic artifact. Pink: shared rails. Blue: text baselines. Green: declared cap-height middles. Amber: measured icon ink middles. Toggle the guides and compare the unannotated layout. These groups have explicit meanings; unrelated elements need not share a line.</p><label><input id="rails" type="checkbox" checked>Rails</label><label><input id="baselines" type="checkbox" checked>Baselines</label><label><input id="middles" type="checkbox" checked>Optical middles</label><figure>${svg}</figure><p>${audit.errors.length} alignment errors · ${audit.warnings.length} hierarchy/density warnings</p><ul>${audit.errors.concat(audit.warnings).map(value => `<li>${escape(value)}</li>`).join('')}</ul><h2>Hierarchy evidence</h2><p>Font size, weight, contrast and filled surfaces are evidence for review, not a taste score. Check whether the right controls dominate and whether within-group spacing is smaller than spacing between groups.</p><table><thead><tr><th>Role</th><th>Text</th><th>Size</th><th>Weight</th><th>Contrast</th><th>Surface</th></tr></thead><tbody>${rows}</tbody></table><script>for(const [id,colors] of [['rails',['#ff4f91','#ff6262']],['baselines',['#66b5ff']],['middles',['#64edb0','#ffbf61']]])document.getElementById(id).onchange=event=>{for(const line of document.querySelectorAll('svg line'))if(colors.includes(line.getAttribute('stroke')))line.style.display=event.target.checked?'':'none'};</script>`;
+  const comparison = compareVisualSections(audit, observations);
+  const matches = comparison.matches.map(item => `<tr><td>${escape(audit.sections.find(region=>region.id===item.expected)?.label ?? item.expected)}</td><td>${escape(observations.groups.find(region=>region.id===item.perceived)?.label ?? 'Unmatched')}</td><td>${item.score.toFixed(2)}</td></tr>`).join('');
+  const sections = `<h2>Intended structure versus perceived grouping</h2><p>Cyan dashed boxes: model regions from DOM geometry. Magenta boxes: separately attached pixels-only observations. DOM regions do not establish what a person perceives. Correspondences use geometry, not label matching, and need human review. Zero relationship warnings does not establish semantic agreement: compare the labels and reasoning too.</p><p>${comparison.state==='not-assessed'?'Not independently assessed.':`${comparison.mismatches.length} potential relationship mismatches.`}</p><ul>${[...comparison.warnings,...(comparison.ambiguities ?? []),...comparison.mismatches.map(item=>`${item.first} / ${item.second}: perceived as ${item.observed}, although neither is a model descendant of the other`)].map(item=>`<li>${escape(item)}</li>`).join('')}</ul>${matches?`<table><thead><tr><th>Model region</th><th>Perceived region</th><th>Overlap (IoU)</th></tr></thead><tbody>${matches}</tbody></table>`:''}`;
+  return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Visual rails and hierarchy</title><style>body{font:14px system-ui;margin:24px;background:#101318;color:#ddd}label{margin-right:16px}figure{margin:20px 0;overflow:auto}svg{display:block}table{border-collapse:collapse}td,th{text-align:left;padding:6px 12px;border-bottom:1px solid #30343c}th{color:#aaa}p{max-width:900px}</style><h1>Visual rails and hierarchy</h1><p>Separate diagnostic artifact. Pink: shared rails. Blue: text baselines. Green: declared cap-height middles. Amber: measured icon ink middles. Toggle the guides and compare the unannotated layout. These groups have explicit meanings; unrelated elements need not share a line.</p><label><input id="rails" type="checkbox" checked>Rails</label><label><input id="baselines" type="checkbox" checked>Baselines</label><label><input id="middles" type="checkbox" checked>Optical middles</label><label><input id="model" type="checkbox" checked>Model sections</label><label><input id="perceived" type="checkbox" checked>Perceived sections</label><figure>${svg}</figure>${sections}<p>${audit.errors.length} alignment errors · ${audit.warnings.length} hierarchy/density warnings</p><ul>${audit.errors.concat(audit.warnings).map(value => `<li>${escape(value)}</li>`).join('')}</ul><h2>Hierarchy evidence</h2><p>Font size, weight, contrast and filled surfaces are evidence for review, not a taste score. Check whether the right controls dominate and whether within-group spacing is smaller than spacing between groups.</p><table><thead><tr><th>Role</th><th>Text</th><th>Size</th><th>Weight</th><th>Contrast</th><th>Surface</th></tr></thead><tbody>${rows}</tbody></table><script>for(const [id,colors] of [['rails',['#ff4f91','#ff6262']],['baselines',['#66b5ff']],['middles',['#64edb0','#ffbf61']]])document.getElementById(id).onchange=event=>{for(const line of document.querySelectorAll('svg line'))if(colors.includes(line.getAttribute('stroke')))line.style.display=event.target.checked?'':'none'};for(const id of ['model','perceived'])document.getElementById(id).onchange=event=>{for(const group of document.querySelectorAll('g[data-section-layer="'+id+'"]'))group.style.display=event.target.checked?'':'none'};</script>`;
+}
+
+if (typeof process !== 'undefined' && process.argv[1] && import.meta.url === (await import('node:url')).pathToFileURL(process.argv[1]).href) {
+  const { readFile, writeFile } = await import('node:fs/promises');
+  const { createHash } = await import('node:crypto');
+  const [auditPath, pngPath, observedPath, outputPath] = process.argv.slice(2);
+  if (!auditPath || !pngPath || !observedPath || !outputPath) throw Error('Usage: node scripts/openclaw-visual-audit.mjs phase.visual.json phase.png observations.json report.html');
+  const audit = JSON.parse(await readFile(auditPath, 'utf8')), png = await readFile(pngPath), observations = JSON.parse(await readFile(observedPath, 'utf8'));
+  if (createHash('sha256').update(png).digest('hex') !== audit.image?.sha256) throw Error('Audit belongs to a different screenshot');
+  if (png.length<24 || png.subarray(0,8).toString('hex')!=='89504e470d0a1a0a' || png.toString('ascii',12,16)!=='IHDR' || png.readUInt32BE(16)!==audit.image.width || png.readUInt32BE(20)!==audit.image.height) throw Error('PNG dimensions do not match the audit');
+  const svg = visualGuideSvg(audit, 'data:image/png;base64,'+png.toString('base64'), audit.image, { x:0,y:0,width:audit.image.width,height:audit.image.height }, observations);
+  await writeFile(outputPath, visualAuditReport(audit, svg, observations), { flag:'wx' });
 }
 
 // A fixed crop for the whole clip preserves growth and never hides movement.

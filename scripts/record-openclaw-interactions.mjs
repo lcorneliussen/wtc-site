@@ -327,10 +327,13 @@ const request = async (method, params) => {
     execFileSync('ffmpeg',['-v','error','-y','-i',fileURLToPath(new URL(videoName,output)),'-frames:v','1',fileURLToPath(new URL('poster.png',dir))]);
     for(const sample of positions){
       const png=await readFile(new URL(sample.phase+'.png',dir));
+      sample.visualAudit.image={width,height:900,sha256:createHash('sha256').update(png).digest('hex')};
       const svg=visualGuideSvg(sample.visualAudit,'data:image/png;base64,'+png.toString('base64'),{width,height:900},crop);
+      await writeFile(new URL(sample.phase+'.visual.json',dir),JSON.stringify(sample.visualAudit,null,2));
       await writeFile(new URL(sample.phase+'.guides.svg',dir),svg);
       await writeFile(new URL(sample.phase+'.audit.html',dir),visualAuditReport(sample.visualAudit,svg));
     }
+    await writeFile(new URL('layout-positions.json',dir),JSON.stringify(positions,null,2));
     manifest.recordings.push({id,title,mode,collapsed,video:videoName,poster:id+'/poster.png',crop,captureStoppedAt:capture.stoppedAt,recordingEndedAt:stoppedAt,assertions:'passed',firstFrame,layoutPositions:positions,requests:trace});
     await writeFile(new URL('manifest.json',output),JSON.stringify(manifest,null,2));
     console.log(id+': recorded and decoded '+videoName);
