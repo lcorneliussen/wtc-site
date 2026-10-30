@@ -4,7 +4,7 @@ import { setupStoryActivity } from './story-activity';
 const timeline = document.querySelector<HTMLElement>('.problem-timeline');
 
 if (timeline) {
-  const problems = [...timeline.querySelectorAll<HTMLElement>('.problem')];
+  const problems = [...timeline.querySelectorAll<HTMLElement>('.problem:not([hidden])')];
   const headings = problems.map(problem => problem.querySelector<HTMLElement>('h2')!);
   const dates = problems.map(problem => problem.querySelector<HTMLElement>('.problem-date')!);
   const cards = dates.map((date, index) => {
@@ -26,10 +26,41 @@ if (timeline) {
     return link;
   });
   const artworks = problems.map(problem => problem.querySelector<HTMLElement>('.scene-art'));
+  const compactLayout = window.matchMedia('(max-width: 700px)');
+  const postColumns = problems.flatMap(problem => {
+    const art = problem.querySelector<HTMLElement>('.scene-art');
+    const posts = [...problem.querySelectorAll<HTMLElement>('.x-post, [data-scene-records]')];
+    if (!art || !posts.length) return [];
+    const column = document.createElement('div');
+    column.className = 'scene-column';
+    art.before(column);
+    column.append(art);
+    const mentions = document.createElement('aside');
+    mentions.className = 'scene-posts';
+    mentions.setAttribute('aria-label', 'Related posts and references');
+    mentions.append(...posts);
+    column.append(mentions);
+    const alignmentTarget = problem.querySelector<HTMLElement>('.workspace-tree');
+    const detailArt = problem.querySelector<HTMLElement>('.scene-detail-art');
+    const detailTarget = detailArt?.dataset.alignWith ? document.getElementById(detailArt.dataset.alignWith) : null;
+    const detailBeforePosts = detailArt?.dataset.scenePlacement === 'before-posts';
+    if (detailArt) {
+      const originalPosition = document.createComment('Inline illustration position');
+      detailArt.before(originalPosition);
+      const placeDetail = () => {
+        if (compactLayout.matches) originalPosition.before(detailArt);
+        else column.insertBefore(detailArt, detailBeforePosts ? mentions : null);
+      };
+      placeDetail();
+      compactLayout.addEventListener('change', placeDetail);
+    }
+    return [{ problem, mentions, art, column, alignmentTarget, detailArt, detailTarget, detailBeforePosts }];
+  });
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const setActivity = setupStoryActivity(problems, cards, reducedMotion);
   const readingLine = () => Math.max(80, window.innerHeight * .28);
   let scheduled = false;
+  let locationReady = document.readyState === 'complete';
 
   const update = () => {
     scheduled = false;
@@ -47,6 +78,24 @@ if (timeline) {
       if (heading.getBoundingClientRect().top <= readingLine()) active = index;
     });
     setActivity(active);
+    const previewLink = location.hash === '#herdr-workspace' || location.hash === '#herdr-workspace-full-size';
+    if (locationReady && !previewLink && !document.querySelector('dialog[open]')) {
+      const hash = `#${problems[active].id}`;
+      if (location.hash !== hash) history.replaceState(history.state, '', `${location.pathname}${location.search}${hash}`);
+    }
+    postColumns.forEach(({ problem, mentions, art, column, alignmentTarget, detailArt, detailTarget, detailBeforePosts }) => {
+      if (alignmentTarget && window.innerWidth > 700) {
+        const gap = alignmentTarget.getBoundingClientRect().top - column.getBoundingClientRect().top - art.offsetHeight;
+        mentions.style.setProperty('--posts-gap', `${Math.max(36, gap)}px`);
+      }
+      if (detailArt && detailTarget && window.innerWidth > 700) {
+        const previousBottom = detailBeforePosts ? art.offsetHeight : mentions.offsetTop + mentions.offsetHeight;
+        const gap = detailTarget.getBoundingClientRect().top - column.getBoundingClientRect().top - previousBottom;
+        detailArt.style.setProperty('--detail-gap', `${Math.max(28, gap)}px`);
+      }
+      const entered = problem.getBoundingClientRect().top <= -Math.min(120, window.innerHeight * .15);
+      mentions.classList.toggle('is-revealed', entered);
+    });
     problems.forEach((problem, index) => {
       problem.classList.toggle('is-active', index === active);
       problem.classList.toggle('is-past', index < active);
@@ -77,11 +126,19 @@ if (timeline) {
   window.addEventListener('resize', schedule, {passive: true});
   reducedMotion.addEventListener('change', schedule);
   window.addEventListener('hashchange', scrollToHashTarget);
-  window.addEventListener('load', () => window.requestAnimationFrame(scrollToHashTarget), {once: true});
+  window.addEventListener('load', () => window.requestAnimationFrame(() => {
+    scrollToHashTarget();
+    locationReady = true;
+    schedule();
+  }), {once: true});
   document.fonts.ready.then(schedule);
   const observer = new ResizeObserver(schedule);
   observer.observe(timeline);
   cards.forEach(card => observer.observe(card));
+  postColumns.forEach(({ alignmentTarget, detailTarget }) => {
+    const body = (alignmentTarget ?? detailTarget)?.closest('.problem-body');
+    if (body) observer.observe(body);
+  });
   setupStoryPosts(schedule);
   schedule();
   scrollToHashTarget();
