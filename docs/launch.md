@@ -26,7 +26,7 @@ The custom domain is now `taba.sh`. The previous `wtc.sh` domain redirects to it
    ```
 
    Recommended: `www` CNAME to `lcorneliussen.github.io`; GitHub redirects to the configured apex. Avoid wildcard DNS and remove stale conflicting web records only after checking their purpose.
-5. Only `main` deploys; manual workflow runs must select `main`.
+5. Merge reviewed changes into `main` to deploy. Manual workflow runs must select `main`.
 6. Wait for the DNS check and TLS certificate, then enable **Enforce HTTPS**. DNS can take up to 24 hours; inspect conflicting records or restrictive CAA settings if certificate issuance stalls.
 7. Verify live: homepage and direct `/docs/getting-started/`, assets without `/wtc-site/`, HTTP-to-HTTPS and optional www redirects, custom 404 with HTTP 404, desktop/mobile navigation, quick-start tabs, collection switching, clipboard, and `https://taba.sh/` canonical URLs. Confirm old `wtc.sh` page links still redirect to the matching `taba.sh` path.
 

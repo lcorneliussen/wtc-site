@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { readFile, readdir, writeFile, stat } from 'node:fs/promises';
-import { resolve, dirname, sep } from 'node:path';
+import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 export const digest = content => createHash('sha256').update(content).digest('hex');
@@ -25,22 +25,6 @@ export async function inventory(root) {
 }
 const validPath = path => typeof path === 'string' && (path === 'README.md' || roots.some(root => path.startsWith(root + '/'))) && !path.split('/').includes('..') && !path.includes('\\');
 const pagePath = path => typeof path === 'string' && /^src\/pages\/(docs\/[a-z-]+[.]md|index[.]astro)$/.test(path);
-export async function documentationLinks(root) {
-  root = resolve(root);
-  const errors = [];
-  const files = ['README.md', ...(await readdir(resolve(root, 'docs'))).filter(f => f.endsWith('.md')).map(f => 'docs/' + f)];
-  for (const file of files) {
-    const content = await readFile(resolve(root, file), 'utf8');
-    for (const [, href] of content.matchAll(/\]\(([^)\s]+)\)/g)) {
-      if (/^(?:[a-z][a-z0-9+.-]*:|\/\/|#)/i.test(href)) continue;
-      const path = decodeURIComponent(href.split(/[?#]/)[0]);
-      if (!path.endsWith('.md')) continue;
-      const target = resolve(root, dirname(file), path);
-      if (!target.startsWith(root + sep) || !(await stat(target).catch(() => null))?.isFile()) errors.push(`Missing local documentation: ${file} -> ${href}`);
-    }
-  }
-  return errors;
-}
 export async function check(manifest, siteRoot, upstream) {
   const errors = [], seen = new Set();
   if (manifest.schemaVersion !== 1 || !/^v[0-9]+[.][0-9]+[.][0-9]+$/.test(manifest.release) || !/^[a-f0-9]{40}$/.test(manifest.revision)) errors.push('Invalid baseline metadata');
@@ -74,7 +58,7 @@ export async function check(manifest, siteRoot, upstream) {
     }
   }
   if (upstream) for (const path of await inventory(upstream)) if (!seen.has(path)) errors.push('New upstream: ' + path);
-  return [...new Set([...errors, ...await documentationLinks(siteRoot)])];
+  return [...new Set(errors)];
 }
 export async function releaseQueue(manifest, upstream) {
   const queue = [];

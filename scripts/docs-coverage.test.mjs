@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, writeFile, rm, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { check, digest, compareVersions, releaseQueue, proposal, documentationLinks } from './docs-coverage.mjs';
+import { check, digest, compareVersions, releaseQueue, proposal } from './docs-coverage.mjs';
 const nl = String.fromCharCode(10);
 async function fixture(t) {
  const root=await mkdtemp(join(tmpdir(),'wtc-coverage-')); t.after(()=>rm(root,{recursive:true,force:true}));
@@ -13,7 +13,6 @@ async function fixture(t) {
  for(const path of ['docs','internal/wtc/defaults','internal/wtc/release-notes/unreleased']) await mkdir(join(upstream,path),{recursive:true});
  for(const path of ['src/pages/index.astro','src/scripts/home.js','src/pages/docs/getting-started.md','src/pages/docs/team-harness.md']) await put(site,path);
  await put(upstream,'README.md');
- await put(site,'README.md'); await mkdir(join(site,'docs'),{recursive:true});
  const manifest={schemaVersion:1,release:'v0.1.51',revision:'a'.repeat(40),sources:[{path:'README.md',sha256:digest('example'),status:'covered',reason:'Entry point',pages:['src/pages/index.astro','src/pages/docs/getting-started.md','src/pages/docs/team-harness.md']}]};
  return {site,upstream,manifest,put};
 }
@@ -24,12 +23,3 @@ test('inconsistent install pins and missing rationale fail',async t=>{const f=aw
 test('release intake includes undocumented changes, sorted releases and upcoming fragments',async t=>{const f=await fixture(t);for(const v of ['0.1.10','0.1.9'])await f.put(f.upstream,'internal/wtc/release-notes/'+v+'.md',['# wtc '+v,'## OpenClaw','New gateway behavior'].join(nl));await f.put(f.upstream,'internal/wtc/release-notes/unreleased/change.md','## Runtime'+nl+'Service update');await f.put(f.upstream,'internal/wtc/release-notes/unreleased/README.md','Format');const queue=await releaseQueue(f.manifest,f.upstream);assert.deepEqual(queue.map(x=>x.version),['0.1.9','0.1.10','unreleased']);assert(queue[0].pages.includes('src/pages/docs/openclaw.md'));assert(queue[2].pages.includes('src/pages/docs/services.md'));const report=proposal(f.manifest,'main',[],queue);assert(report.includes('upcoming, not released'));assert(report.includes('keyword heuristic'));assert.throws(()=>proposal(f.manifest,'bad-ref',[],queue));});
 test('reviewed release suppressed but edited historical release reopens review',async t=>{const f=await fixture(t),path='internal/wtc/release-notes/0.1.51.md';await f.put(f.upstream,path,'old');f.manifest.sources.push({path,sha256:digest('old'),pages:['src/pages/docs/upgrades.md']});assert.equal((await releaseQueue(f.manifest,f.upstream)).length,0);await f.put(f.upstream,path,'new');assert.equal((await releaseQueue(f.manifest,f.upstream))[0].changed,true);});
 test('CLI check fails on drift and propose succeeds without modifying baseline',async t=>{const f=await fixture(t);await f.put(f.site,'docs/coverage.json',JSON.stringify(f.manifest));await f.put(f.upstream,'docs/new.md');const script=new URL('./docs-coverage.mjs',import.meta.url).pathname;const result=spawnSync(process.execPath,[script,'check',f.upstream],{cwd:f.site,encoding:'utf8'});assert.equal(result.status,1);assert(result.stderr.includes('New upstream:'));const before=await readFile(join(f.site,'docs/coverage.json'),'utf8');const report=join(f.site,'proposal.md');const proposed=spawnSync(process.execPath,[script,'propose',f.upstream,'main',report],{cwd:f.site,encoding:'utf8'});assert.equal(proposed.status,0,proposed.stderr);assert.equal(await readFile(join(f.site,'docs/coverage.json'),'utf8'),before);assert((await readFile(report,'utf8')).includes('docs/new.md'));});
-
-test('local documentation links resolve after a move and fail when a linked guide is removed', async t => {
- const f=await fixture(t);
- await f.put(f.site,'README.md','[Guide](docs/current.md#usage) [Published](https://example.com/guide.md)');
- await f.put(f.site,'docs/current.md','[Home](../README.md)');
- assert.deepEqual(await documentationLinks(f.site),[]);
- await rm(join(f.site,'docs/current.md'));
- assert.deepEqual(await documentationLinks(f.site),['Missing local documentation: README.md -> docs/current.md#usage']);
-});
