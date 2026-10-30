@@ -50,8 +50,6 @@ Local-terminal examples follow the upstream CLI getting-started guide and explic
 
 ## Documentation coverage and release intake
 
-See [content ownership and the audit](docs/content-strategy.md) and the [coverage inventory](docs/coverage.json).
-
 ```sh
 npm run test:coverage
 npm run check:coverage
