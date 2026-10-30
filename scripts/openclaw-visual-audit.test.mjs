@@ -76,6 +76,12 @@ test('report escapes imported typography and uses an unlabeled matched group id'
   assert.match(visualAuditReport(audit,''),/Not independently assessed\./);
 });
 
+test('report rejects malformed imported diagnostic lists before rendering', () => {
+  const audit=inspectVisualMeasurements(measurements({sections:[]}));
+  assert.throws(()=>visualAuditReport({...audit,warnings:{length:'<img src=x onerror=alert(1)>'}},''),/diagnostics must be arrays/);
+  assert.throws(()=>visualAuditReport({...audit,errors:'bad'},''),/diagnostics must be arrays/);
+});
+
 test('comparison CLI binds PNG bytes and dimensions and refuses existing output', async () => {
   const {mkdtemp,writeFile,readFile,rm}=await import('node:fs/promises');
   const {tmpdir}=await import('node:os');

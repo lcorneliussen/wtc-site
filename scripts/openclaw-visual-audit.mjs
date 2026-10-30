@@ -259,6 +259,7 @@ export function visualGuideSvg(audit, imageDataUrl, viewport, crop, observations
 }
 
 export function visualAuditReport(audit, svg, observations = null) {
+  if (!Array.isArray(audit.errors) || !Array.isArray(audit.warnings)) throw Error('Audit diagnostics must be arrays');
   const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const rows = audit.hierarchy.map(item => `<tr><td>${escape(item.role)}</td><td>${escape(item.text)}</td><td>${escape(item.fontSize)}</td><td>${escape(item.fontWeight)}</td><td>${item.contrastRatio.toFixed(2)}</td><td>${item.filled ? 'filled' : 'quiet'}${item.clipped ? ' · ellipsis' : ''}</td></tr>`).join('');
   const comparison = compareVisualSections(audit, observations);
