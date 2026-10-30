@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { chromium } from 'playwright';
 
-const palette = ['#161920', '#dc6b73', '#98c379', '#e5c07b', '#61afef', '#c678dd', '#56b6c2', '#d4d4d4'];
+const palette = ['#161920', '#dc6b73', '#98c379', '#e5c07b', '#61afef', '#c678dd', '#56b6c2', '#d4d4d4', '#5c6370', '#e88388', '#b5df91', '#f2d58a', '#83c2f2', '#dda1ed', '#83d6df', '#ffffff'];
 
 // Only SGR styles are interpreted. OSC links and terminal controls cannot become HTML.
 export function terminalRuns(content) {
@@ -31,7 +31,9 @@ export function terminalRuns(content) {
         else if (code === 49) delete state.backgroundColor;
         else if (code >= 30 && code <= 37) state.color = palette[code - 30];
         else if (code >= 40 && code <= 47) state.backgroundColor = palette[code - 40];
-        else if (code >= 90 && code <= 97) state.color = palette[code - 90];
+        else if (code >= 90 && code <= 97) state.color = palette[code - 90 + 8];
+        else if (code >= 100 && code <= 107) state.backgroundColor = palette[code - 100 + 8];
+        else if (code === 7 || code === 27) throw Error('Reverse terminal style is not supported');
         else if ((code === 38 || code === 48) && codes[i + 1] === 2) {
           const rgb = codes.slice(i + 2, i + 5);
           if (rgb.length !== 3 || rgb.some(n => !Number.isInteger(n) || n < 0 || n > 255)) throw Error('Invalid terminal RGB style');
@@ -40,7 +42,7 @@ export function terminalRuns(content) {
           const index = codes[i + 2];
           if (!Number.isInteger(index) || index < 0 || index > 255) throw Error('Invalid indexed terminal color');
           const cube = n => n ? 55 + 40 * n : 0;
-          const n = index - 16, color = index < 16 ? palette[index % 8] : index >= 232 ? `rgb(${Array(3).fill(8 + (index - 232) * 10).join(',')})` : `rgb(${[Math.floor(n / 36), Math.floor(n / 6) % 6, n % 6].map(cube).join(',')})`;
+          const n = index - 16, color = index < 16 ? palette[index] : index >= 232 ? `rgb(${Array(3).fill(8 + (index - 232) * 10).join(',')})` : `rgb(${[Math.floor(n / 36), Math.floor(n / 6) % 6, n % 6].map(cube).join(',')})`;
           state[code === 38 ? 'color' : 'backgroundColor'] = color; i += 2;
         } else if (code === 38 || code === 48) {
           throw Error('Unsupported extended terminal color');
@@ -81,7 +83,7 @@ export function terminalRecordingRequest(recording, columns, rows) {
   const frames = events.map((event, i) => ({ at: i ? event.at - recording.startedAt : 0, phase: i ? `snapshot-${i}` : 'idle', ...localTerminalFixture(event.snapshot), keys: [] }));
   // A separate native-key preview stops before Enter/dispatch. All commands are refused.
   const initial = localTerminalFixture(before.snapshot);
-  for (const [i, keys] of [[], ['n'], ['s'], ['j'], ['right'], ['esc']].entries()) frames.push({ at: recording.duration + 1 + i, phase: `selection-${i}`, ...initial, keys });
+  for (const [i, keys] of [[], ['n'], ['space'], ['s'], ['j'], ['k'], ['right'], ['esc']].entries()) frames.push({ at: recording.duration + 1 + i, phase: `selection-${i}`, ...initial, keys });
   return { columns, rows, frames };
 }
 
@@ -144,15 +146,15 @@ async function main() {
   let terminalWidth, terminalHeight;
   try {
     const context = await browser.newContext({ deviceScaleFactor: 1, viewport: { width: 1600, height: 1000 } });
-    await context.route('**/*', route => route.request().url() === 'https://terminal.invalid/' ? route.fulfill({ contentType: 'text/html', body: `<style>body{margin:0;background:#161920;color:#d4d4d4}pre{margin:12px;white-space:pre;font:${fontSize}px/${fontSize * 1.5}px 'SFMono-Regular',Consolas,'Liberation Mono',monospace}</style><pre></pre>` }) : route.abort());
+    await context.route('**/*', route => route.request().url() === 'https://terminal.invalid/' ? route.fulfill({ contentType: 'text/html', body: `<style>body{margin:0;background:#161920;color:#d4d4d4}pre{margin:12px;white-space:pre;font:${fontSize}px/${fontSize * 1.5}px 'SFMono-Regular',Menlo,Consolas,'Liberation Mono',monospace}</style><pre></pre>` }) : route.abort());
     const page = await context.newPage(); await page.goto('https://terminal.invalid/');
     const size = await page.evaluate(({ columns, rows, fontSize }) => { const c = document.createElement('canvas').getContext('2d'); c.font = getComputedStyle(document.querySelector('pre')).font; return { width: Math.ceil(c.measureText('M').width * columns + 24), height: rows * fontSize * 1.5 + 24 }; }, { columns, rows, fontSize });
     terminalWidth = size.width + size.width % 2; terminalHeight = size.height + size.height % 2;
     await page.setViewportSize({ width: terminalWidth, height: terminalHeight });
     const render = async frame => {
       await page.evaluate(runs => { const pre = document.querySelector('pre'); pre.replaceChildren(...runs.map(run => { const span = document.createElement('span'); span.textContent = run.text; Object.assign(span.style, run.style); return span; })); }, terminalRuns(frame.content));
-      const dimensions = await page.locator('pre').evaluate(node => ({ fits: node.scrollWidth <= node.clientWidth + 1, width: node.clientWidth, needed: node.scrollWidth }));
-      if (!dimensions.fits) throw Error('Native terminal rows would wrap or be clipped: ' + JSON.stringify(dimensions));
+      const dimensions = await page.locator('pre').evaluate(node => ({ fits: node.scrollWidth <= node.clientWidth + 1, width: node.clientWidth, needed: node.scrollWidth, heightFits: node.getBoundingClientRect().bottom <= innerHeight - 11 }));
+      if (!dimensions.fits || !dimensions.heightFits) throw Error('Native terminal rows would wrap or be clipped: ' + JSON.stringify(dimensions));
       await page.screenshot({ path: join(output, frame.phase + '.png') });
     };
     for (const frame of native.frames) await render(frame);
@@ -176,7 +178,7 @@ async function main() {
   for (const path of [terminalVideo, buddy, join(output, 'buddy-compatible.mp4')]) ffmpeg(['-i', path, '-fps_mode', 'passthrough', '-enc_time_base', '1:1000', '-f', 'null', '-']);
   const browserPlayback = await verifyBrowserPixels(await readFile(buddy), await readFile(join(output, 'idle.png')), { clawWidth: clawInfo.width, terminalWidth, terminalHeight });
   const replay = native.frames.map(frame => ({ ...frame, runs: terminalRuns(frame.content) }));
-  await writeFile(join(output, 'index.html'), `<!doctype html><meta charset="utf-8"><title>Claw and native TUI renderer replay</title><style>body{font:15px system-ui;background:#101318;color:#ddd;margin:24px}a{color:#ff9090}video{display:block;max-width:none;width:auto}pre{background:#161920;padding:12px;width:max-content;min-width:${terminalWidth - 24}px;min-height:${terminalHeight - 24}px;font:${fontSize}px/${fontSize * 1.5}px 'SFMono-Regular',Consolas,'Liberation Mono',monospace}.scroller{overflow:auto}button{padding:8px;margin-right:8px}</style><h1>Same snapshot timeline, two renderers</h1><p>Claw recording paired with the actual Go TUI renderer. Synthetic snapshots; synchronized post-composition, not two live gateway sessions. Native pixels, no video rescaling. Use the lossless video or terminal replay for crisp text; the MP4 is a compatibility copy.</p><div class="scroller"><video controls src="buddy-lossless.webm"></video></div><p><a href="buddy-compatible.mp4">Compatibility MP4</a> · <a href="status.cast">Native ANSI/cast</a> · <a href="selection.cast">Selection-only cast</a> · <a href="manifest.json">Provenance</a></p><p>The terminal's n / Space / s / j / right / Esc selection preview stops before Enter; no work or agent handoff is dispatched.</p><div id="buttons"></div><div class="scroller"><pre id="terminal"></pre></div><script>const frames=${safeJSON(replay)};const pane=document.querySelector('#terminal');function show(frame){pane.replaceChildren(...frame.runs.map(run=>{const span=document.createElement('span');span.textContent=run.text;Object.assign(span.style,run.style);return span}));}for(const frame of frames){const b=document.createElement('button');b.textContent=frame.phase;b.onclick=()=>show(frame);document.querySelector('#buttons').append(b)}show(frames[0]);</script>`);
+  await writeFile(join(output, 'index.html'), `<!doctype html><meta charset="utf-8"><title>Claw and native TUI renderer replay</title><style>body{font:15px system-ui;background:#101318;color:#ddd;margin:24px}a{color:#ff9090}video{display:block;max-width:none;width:auto}pre{background:#161920;padding:12px;width:max-content;min-width:${terminalWidth - 24}px;min-height:${terminalHeight - 24}px;font:${fontSize}px/${fontSize * 1.5}px 'SFMono-Regular',Menlo,Consolas,'Liberation Mono',monospace}.scroller{overflow:auto}button{padding:8px;margin-right:8px}</style><h1>Same snapshot timeline, two renderers</h1><p>Claw recording paired with the actual Go TUI renderer. Synthetic snapshots; synchronized post-composition, not two live gateway sessions. Native pixels, no video rescaling. Use the lossless video or terminal replay for crisp text; the MP4 is a compatibility copy.</p><div class="scroller"><video controls src="buddy-lossless.webm"></video></div><p><a href="buddy-compatible.mp4">Compatibility MP4</a> · <a href="status.cast">Native ANSI/cast</a> · <a href="selection.cast">Selection-only cast</a> · <a href="manifest.json">Provenance</a></p><p>The terminal's n / Space / s / j / k / right / Esc selection preview stops before Enter; no work or agent handoff is dispatched.</p><div id="buttons"></div><div class="scroller"><pre id="terminal"></pre></div><script>const frames=${safeJSON(replay)};const pane=document.querySelector('#terminal');function show(frame){pane.replaceChildren(...frame.runs.map(run=>{const span=document.createElement('span');span.textContent=run.text;Object.assign(span.style,run.style);return span}));}for(const frame of frames){const b=document.createElement('button');b.textContent=frame.phase;b.onclick=()=>show(frame);document.querySelector('#buttons').append(b)}show(frames[0]);</script>`);
   await writeFile(join(output, 'manifest.json'), JSON.stringify({ kind: 'Actual Go TUI renderer and native-key selection preview; synthetic equivalent local checkout', sourceRevision: execFileSync('git', ['-C', upstream, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), columns, rows, fontSize, terminalWidth, terminalHeight, clawWidth: clawInfo.width, noRescaling: true, terminalRGBPreserved: true, pairedTerminalRGBPreserved: true, browserPlayback, terminalCodec: 'VP9 lossless RGB / full chroma', nativeDispatch: false, rawCast: 'status.cast', selectionCast: 'selection.cast', duration: recording.duration }, null, 2));
   console.log('Buddy replay: ' + join(output, 'index.html'));
 }

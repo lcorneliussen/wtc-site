@@ -82,7 +82,7 @@ failure details, selection, confirmation and collapsed states in design review.
 | Scenario | Interaction and expected result |
 | --- | --- |
 | `push` | Bitbucket preparation → personal confirmation → simulated publication → refresh. A draft PR appears and the unpublished count clears. |
-| `stale` | Same push, then a deliberately injected stale count alongside the new PR. The arrow returns; a manual refresh clears it. This models a response, not a verified backend bug. |
+| `stale` | Same push, then a deliberately injected stale count alongside the new PR. The arrow returns; a manual refresh clears it. The old response is held until manual refresh. This models a response, not a verified backend bug. |
 | `individual` | Click three repository behind-count controls quickly. All requests complete; inspect their individual progress and results. |
 | `collapsed-push` | Start from the one-line card bar, prepare publication and explicitly confirm above the bar. The repository/service details stay collapsed. |
 | `collapsed-catch-up` | Start a collection catch-up from the one-line bar and retain it through progress and completion. |
@@ -227,23 +227,10 @@ The selection-only preview exercises existing native keys: `n`, Space, `s`,
 `j/k`, Right and Esc. It stops before Enter, refuses any command returned by the
 model and never calls the collector, a forge, Git or an agent.
 
-## Existing terminal actions and direct-action preparation
+## Existing terminal actions
 
-The current TUI already has a keyboard Next actions view: `n` opens it, arrows
-or `j/k` move, Space selects, `s` selects suggestions, Right chooses an alternative,
-and Enter runs or reviews the selection. Eligible catch-up does not need a second
-confirmation. Publication retains its authority requirements.
-
-Direct actions on status facts should reuse that path, rather than invent argv:
-
-- Resolve the selected collection, repository, worktree and action key.
-- Re-read state through `statusNextCurrent`, then apply the existing ownership
-  and busy checks before invoking the existing runner.
-- Treat ahead-count basis explicitly; offer Push only for the appropriate action.
-- Route an agent step to the verified intended owner/pane. Never infer the target
-  from whichever terminal happens to be focused or inject a task into a typed draft.
-- Give every selected step an explicit result and follow-up, including blocked or
-  handed-off work; a handoff is not completion.
-
-This recording work prepares and demonstrates the existing selection contract.
-It does not add direct mouse actions to production TUI source.
+The current TUI has a keyboard Next actions view: `n` opens it, arrows or
+`j/k` move, Space selects, `s` selects suggestions, Right chooses an alternative,
+and Enter runs or reviews the selection. The recording stops before Enter.
+Direct table actions remain separate; their preparation belongs with the
+[upstream interaction contract](https://github.com/lcorneliussen/wtc-cli/blob/269-explicit-action-feedback/docs/openclaw.md#alignment-and-compact-views).

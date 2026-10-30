@@ -151,35 +151,6 @@ export function collectVisualMeasurements(selector) {
   return { groups, opticalPairs, rows, hierarchy, missing, edges, bounds: box(root) };
 }
 
-// Separate screenshot layer: blue baseline, green optical middle, pink shared rails.
-export function mountVisualGuides(audit) {
-  document.querySelector('[data-wtc-visual-guides]')?.remove();
-  const ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('data-wtc-visual-guides', '');
-  svg.setAttribute('width', String(innerWidth)); svg.setAttribute('height', String(innerHeight));
-  svg.style.cssText = 'position:fixed;inset:0;z-index:2147483647;pointer-events:none;overflow:visible';
-  const line = (x1, y1, x2, y2, color, dashed = false) => {
-    const n = document.createElementNS(ns, 'line');
-    for (const [key, value] of Object.entries({ x1, y1, x2, y2, stroke: color, 'stroke-width': 1, ...(dashed ? { 'stroke-dasharray': '3 3' } : {}) })) n.setAttribute(key, String(value));
-    svg.append(n);
-  };
-  for (const group of audit.groups) {
-    if (group.axis === 'x') {
-      const values = group.members.map(item => item.value), x = values.reduce((a, b) => a + b, 0) / values.length;
-      line(x, Math.min(...group.members.map(item => item.y)) - 5, x, Math.max(...group.members.map(item => item.bottom)) + 5, '#ff4f91');
-    }
-    for (const item of group.members) {
-      if (group.axis === 'x' && group.spread > .75) line(item.value, item.y - 5, item.value, item.bottom + 5, '#ff6262', true);
-      else if (group.axis === 'y') line(item.x, item.value, item.right, item.value, '#66b5ff');
-    }
-  }
-  for (const pair of audit.opticalPairs) {
-    line(pair.x - 3, pair.capMiddle, pair.right + 3, pair.capMiddle, '#64edb0');
-    line(pair.x - 3, pair.middle, pair.right + 3, pair.middle, '#ffbf61', true);
-  }
-  document.body.append(svg);
-}
-
 // Render after recording has stopped. The original PNG remains untouched, and
 // no diagnostic layer ever enters the screencast or changes product geometry.
 export function visualGuideSvg(audit, imageDataUrl, viewport, crop) {

@@ -67,13 +67,13 @@ try {
     html = inject(html, 'const request = async (method, params) => {', `
 const mode = ${JSON.stringify(mode)};
 const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
-window.calls=[]; window.completed=[]; window.published=false;window.tuiSnapshots=[]; let staleLeft=0, initialStatus=true;
+window.calls=[]; window.completed=[]; window.published=false;window.tuiSnapshots=[]; window.injectStaleStatus=false; let initialStatus=true;
 const trace = text => window.calls.push({at:Date.now(),text});
 const request = async (method, params) => {
  if(method==='plugins.sessionAction'&&params.actionId==='collection') {
   trace('→ collection status requested');if(!initialStatus)await delay(700);initialStatus=false;
   const snapshot=structuredClone(data);
-  if(window.published && staleLeft>0){staleLeft--;snapshot.repos[0].unpublished=3;trace('← INJECTED STALE snapshot: PR #8 exists, unpublished=3');}
+  if(window.published && window.injectStaleStatus){snapshot.repos[0].unpublished=3;trace('← INJECTED STALE snapshot: PR #8 exists, unpublished=3');}
   else trace('← status: '+snapshot.repos.map(r=>r.repo+' behind='+r.behind+' unpublished='+(r.unpublished??0)).join(' · '));
   window.tuiSnapshots.push({at:Date.now()/1000,snapshot:structuredClone(snapshot)});
   return {ok:true,result:snapshot};
@@ -83,7 +83,7 @@ const request = async (method, params) => {
   if(params.actionId==='publish'){trace('→ prepare publication / request confirmation');await delay(1000);trace('← personal confirmation required');return {ok:true,result:{status:'needs_confirmation',requestId:'demo-publish',confirmation:{account:'demo@example.invalid',name:'Demo User',requestDigest:'demo-digest',branch:'feature/search',head:'abcdef0123456789',dest:'main'}}};}
   if(params.actionId==='publish-confirm'){
    trace('→ confirmed: push commits and create draft PR');await delay(2200);
-   window.published=true;staleLeft=mode==='stale'?1:0;
+   window.published=true;window.injectStaleStatus=mode==='stale';
    Object.assign(data.repos[0],{unpublished:0,pullRequest:{number:8,url:'https://example.invalid/web/pull-requests/8',state:'open',draft:true,title:'Add search',checks:'pending',running:1}});
    trace('← published: created draft PR #8');return {ok:true,result:{status:'published',created:true,url:'https://example.invalid/web/pull-requests/8'}};
   }
@@ -244,10 +244,14 @@ const request = async (method, params) => {
       await surface.locator('a[href="https://example.invalid/web/pull-requests/8"]').first().waitFor({state:collapsed?'attached':'visible'});
       await surface.locator('.wtc-action-toolbar').getByText('✓ Pushed',{exact:true}).waitFor({state:'visible'});
       if(mode==='stale') await surface.getByTitle(/^3 commits to push/).waitFor();
-      else if(!collapsed&&await surface.getByTitle(/^3 commits to push/).count())throw Error('Fresh status left push available');
+      else {
+        if(!collapsed&&await surface.getByTitle(/^3 commits to push/).count())throw Error('Fresh status left push available');
+        if(collapsed&&await surface.locator('.wtc-action-toolbar').getByTitle(/^Prepare personal publication for web$/).count())throw Error('Collapsed status left publication available');
+      }
       await measure('published');
       if(mode==='stale'){
         await page.screenshot({path:fileURLToPath(new URL('stale-frame.png',dir))});await page.waitForTimeout(3000);
+        await page.evaluate(()=>window.injectStaleStatus=false);
         await click(surface.getByTitle(view === 'sidebar' ? 'Refresh' : /Updated .* Refresh/));
         await surface.getByTitle(/^3 commits to push/).waitFor({state:'detached'});
         await surface.locator('.wtc-action-toolbar').getByText('✓ Refreshed',{exact:true}).waitFor({state:'visible'});
