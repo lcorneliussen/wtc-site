@@ -148,7 +148,7 @@ Hitting usage limits of your agents can be a good thing: it forces me to stay ag
 So what is that [Herdr](https://herdr.dev/) thing?
 It is a terminal multiplexer. Instead of the shell in your actual terminal, it runs it on a persistent background server. The terminal you see just connects to it — locally or over SSH from another machine.
 
-<a class="workspace-preview-trigger" href="../media/why-taba/herdr-workspace.png" data-workspace-preview aria-haspopup="dialog" aria-controls="herdr-workspace-preview"><img src="../illustrations/why-taba/herdr-sessions.svg" alt="Herdr layout: two spaces with an agent pane above a shell pane, connected to a persistent background server. Click to see the real workspace." width="520" height="648" loading="lazy" decoding="async"><span class="workspace-preview-hint">Click to see the real workspace <span aria-hidden="true">↗</span></span></a>
+<a class="workspace-preview-trigger" href="../media/why-taba/herdr-workspace-redacted.png" data-workspace-preview aria-haspopup="dialog" aria-controls="herdr-workspace-preview"><img src="../illustrations/why-taba/herdr-sessions.svg" alt="Herdr layout: two spaces with an agent pane above a shell pane, connected to a persistent background server. Click to see the real workspace." width="520" height="648" loading="lazy" decoding="async"><span class="workspace-preview-hint">Click to see the real workspace <span aria-hidden="true">↗</span></span></a>
 
 
 

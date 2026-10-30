@@ -8,6 +8,15 @@ const artifact = process.argv[2] === '--dist';
 const url = artifact ? 'https://why-taba.invalid/why-taba/' : process.argv[2] || 'http://127.0.0.1:4321/why-taba/';
 const dist = fileURLToPath(new URL('../dist/', import.meta.url));
 const activity = JSON.parse(readFileSync(new URL('../src/data/story-activity.json', import.meta.url)));
+const weeklyInputs = JSON.parse(readFileSync(new URL('../src/data/story-activity-weeks.json', import.meta.url))).weeks;
+for (const phase of activity.phases) {
+  const weeks = weeklyInputs.filter(week => week.weekStart >= phase.start &&
+    new Date(`${week.weekStart}T00:00:00Z`).getTime() + 6 * 86400000 <= new Date(`${phase.end}T00:00:00Z`).getTime());
+  assert.equal(weeks.length, phase.completeWeeks);
+  const counts = weeks.map(week => week.mergedPRs).sort((a, b) => a - b);
+  const middle = Math.floor(counts.length / 2);
+  assert.equal(counts.length % 2 ? counts[middle] : (counts[middle - 1] + counts[middle]) / 2, phase.medianMergedPRs);
+}
 const phases = new Map(activity.phases.map(phase => [phase.section, phase]));
 const browser = await chromium.launch();
 const results = [];
@@ -64,11 +73,19 @@ try {
     await page.goto(`${url}#variants`);
     await page.waitForFunction(() => document.querySelector('#variants .metric-readout')?.textContent === '61×');
     assert.deepEqual(await page.locator('#variants .metric-detail').allTextContents(), ['91.5/week', '649']);
+    await page.goto(`${url}#herdr-workspace`);
+    await page.waitForFunction(() => document.querySelector('#herdr-workspace-preview')?.open);
+    await page.reload();
+    await page.waitForFunction(() => document.querySelector('#herdr-workspace-preview')?.open);
+    await page.waitForTimeout(150);
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !document.querySelector('#herdr-workspace-preview')?.open);
+    assert.notEqual(await page.evaluate(() => document.documentElement.style.overflow), 'hidden', 'Escape after preview reload must unlock scrolling');
     assert.deepEqual(errors, [], 'Story must not raise browser runtime errors');
     results.push({width, motion, chapters: ids.length, previewRestored: true, reloadRestored: true, deepLink: true});
     await page.close();
   }
-  console.log(JSON.stringify({story: 'why-taba', artifact, results}));
+  console.log(JSON.stringify({story: 'why-taba', artifact, anonymousWeeks: weeklyInputs.length, verifiedMedians: activity.phases.length, results}));
 } finally {
   await browser.close();
 }

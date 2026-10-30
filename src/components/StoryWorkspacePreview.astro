@@ -16,7 +16,7 @@ const base = import.meta.env.BASE_URL;
   <div class="workspace-content">
     <div class="workspace-visual">
       <div class="workspace-screen">
-        <img src={`${base}media/why-taba/herdr-workspace.png`} width="1342" height="2083" alt="Herdr running worktree collections. The upper-left sidebar lists task spaces; the lower-left sidebar lists agents and their status across panes and tabs. The selected task has an agent conversation in the upper pane and a compact repository, service and PR overview in the lower pane. Absolute filesystem paths are masked; task and agent labels remain visible." decoding="async" />
+        <img src={`${base}media/why-taba/herdr-workspace-redacted.png`} width="1007" height="1562" alt="Herdr running worktree collections. The upper-left sidebar lists task spaces; the lower-left sidebar lists agents and their status across panes and tabs. The selected task has an agent conversation in the upper pane and a compact repository, service and PR overview in the lower pane. Conversation text and absolute filesystem paths are masked; task and agent labels remain visible." decoding="async" />
         <div class="workspace-region region-spaces" aria-hidden="true"><span>1</span></div>
         <div class="workspace-region region-agent" aria-hidden="true"><span>2</span></div>
         <div class="workspace-region region-overview" aria-hidden="true"><span>3</span></div>
@@ -31,7 +31,7 @@ const base = import.meta.env.BASE_URL;
         <li><button type="button" data-workspace-region="overview"><span class="annotation-number">3</span><span><strong>The wider picture, nearby</strong><span class="annotation-copy">A second pane keeps repositories, running services and PRs in view. No need to interrupt the conversation to check.</span></span></button></li>
         <li><button type="button" data-workspace-region="agents"><span class="annotation-number">4</span><span><strong>All agents, at a glance</strong><span class="annotation-copy">The lower sidebar lists all agents and their status across panes and tabs, not just the one you’re looking at.</span></span></button></li>
       </ol>
-      <p class="workspace-footnote">A captured screen, not a live session. Absolute filesystem paths are hidden; task and agent labels remain visible.</p>
+      <p class="workspace-footnote">A redacted capture, not a live session. Conversation text and absolute paths are hidden; task and agent labels remain visible.</p>
     </aside>
   </div>
 </dialog>
@@ -207,7 +207,7 @@ const base = import.meta.env.BASE_URL;
   .workspace-actions span { margin-left: 12px; font-size: 18px; }
   .workspace-content { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: clamp(24px, 5vw, 80px); min-height: 0; max-width: 1400px; width: 100%; margin-inline: auto; }
   .workspace-visual { display: flex; justify-content: center; min-height: 0; min-width: 0; overflow: auto; border: 1px solid #394539; border-radius: 8px; background: #101310; }
-  .workspace-screen { position: relative; height: 100%; max-width: 100%; aspect-ratio: 1342 / 2083; flex-shrink: 0; }
+  .workspace-screen { position: relative; height: 100%; max-width: 100%; aspect-ratio: 1007 / 1562; flex-shrink: 0; }
   .workspace-screen > img { display: block; height: 100%; width: 100%; object-fit: contain; }
   .workspace-region { position: absolute; border: 1px solid transparent; border-radius: 4px; pointer-events: none; transition: border-color 180ms, background 180ms; }
   .region-spaces { inset: 1% auto auto 1.5%; width: 18.8%; height: 47%; }
@@ -224,7 +224,7 @@ const base = import.meta.env.BASE_URL;
   .annotation-copy { display: block; margin-top: 7px; color: #b0bbb0; font-size: 13px; line-height: 1.8; }
   .workspace-footnote { margin-top: 32px; padding-top: 16px; border-top: 1px solid #394539; color: #9eab9e; font: 10px/1.7 var(--mono); }
   .workspace-dialog.is-zoomed .workspace-visual { display: block; }
-  .workspace-dialog.is-zoomed .workspace-screen { width: 1342px; max-width: none; height: auto; }
+  .workspace-dialog.is-zoomed .workspace-screen { width: 1007px; max-width: none; height: auto; }
   .workspace-dialog :global(.workspace-morph) { position: fixed; z-index: 2; max-width: none; margin: 0; pointer-events: none; object-fit: fill; }
   @media (max-width: 700px) {
     .workspace-dialog { inset: 6px; width: calc(100% - 12px); height: calc(100dvh - 12px); padding: 16px 12px; border-radius: 10px; }

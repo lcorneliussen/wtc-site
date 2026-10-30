@@ -89,7 +89,7 @@ if (timeline) {
     setActivity(active);
     const previewLink = isPreviewHash(location.hash);
     if (locationReady && !previewLink && !document.querySelector('dialog[open]')) {
-      const hash = headings[0].getBoundingClientRect().top <= readingLine() ? `#${problems[active].id}` : '';
+      const hash = window.scrollY > 0 && headings[0].getBoundingClientRect().top <= readingLine() ? `#${problems[active].id}` : '';
       if (location.hash !== hash) history.replaceState(history.state, '', `${location.pathname}${location.search}${hash}`);
     }
     postColumns.forEach(({ problem, mentions, art, column, alignmentTarget, detailArt, detailTarget, detailBeforePosts }) => {
