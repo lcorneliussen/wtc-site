@@ -41,7 +41,3 @@ The [GitHub release archive](https://github.com/lcorneliussen/wtc-cli/releases) 
 | [0.1.51](https://github.com/lcorneliussen/wtc-cli/blob/v0.1.51/internal/wtc/release-notes/0.1.51.md) | Project suggestions, optional sent-message decision processing, quieter owner-session startup |
 
 These are discovery summaries, not substitutes for the full upgrade range. For earlier history, use the [canonical notes archive](https://github.com/lcorneliussen/wtc-cli/tree/v0.1.51/internal/wtc/release-notes) or the target binary.
-
-## Website maintenance
-
-The site's checked-in coverage manifest records upstream sources, hashes, and intentional upstream-only material. Scheduled release checks prepare a review proposal; they never silently bump these instructions. A maintainer reviews the release, reconciles affected pages, and verifies the site before accepting a new baseline.
