@@ -29,9 +29,6 @@ It did not show the plugin or teach what its dense controls mean.
 | Sandbox access, forge support, contributor verification, hardened git | Partial / specialist | Keep detailed contracts upstream; do not turn learning page into admin manual |
 | End-to-end clone, push, catch-up, service lifecycle demos | Absent | Still absent: fixture demo intentionally does not claim backend coverage |
 
-Ownership remains as in [content strategy](content-strategy.md): upstream docs
-own versioned contracts, release notes own history, the site teaches workflows.
-
 ## Drift that remains
 
 The source-disposition checker reports **10 changed and 13 new inputs** at the
@@ -95,11 +92,20 @@ agent follow-up; service start → preview. Keep each independently reproducible
 
 ## Existing CLI demos
 
+For raw push/refresh and individual/batch catch-up clips, see the separate
+[interaction recording guide](recording-openclaw-interactions.md). Those clips
+extend renderer demonstrations with scripted responses and assertions; they do
+not turn the historical captures above into end-to-end gateway evidence.
+
 Upstream `docs/demos/record.py` already records real terminal commands in fresh
 synthetic repositories to asciicast and transcripts; optional `agg` makes GIFs.
 `record_runtime.py` adds runtime/cleanup scenarios and needs dekit. They are
 useful for local-terminal pages, but are **not** recordings of the OpenClaw
-plugin. Reuse those procedures instead of inventing a second terminal recorder.
+plugin. Reuse those procedures for live command demos. The interaction guide
+also provides a paired renderer replay: the recording-only Go adapter renders
+the same synthetic snapshot timeline using the native status TUI, with native-key
+selection previews that stop before dispatch. Lossless RGB video, PNGs and casts
+keep terminal text sharp; this is not two live gateway captures.
 
 ## Verification for this change
 

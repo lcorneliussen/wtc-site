@@ -13,7 +13,9 @@ A **worktree collection** is a folder containing the repositories you need for o
 
 You need **Git** and a macOS or Linux development environment. Download a binary for your platform from [GitHub Releases](https://github.com/lcorneliussen/wtc-cli/releases), put it on your `PATH`, and verify it with `wtc --version`.
 
-If you use [mise](https://mise.jdx.dev/), install the release used by this guide:
+For the published stable release and its installation command, see [Install wtc](../../#install).
+
+To reproduce the **v0.1.51 handbook baseline** with [mise](https://mise.jdx.dev/):
 
 ```sh
 mise use -g github:lcorneliussen/wtc-cli@0.1.51
