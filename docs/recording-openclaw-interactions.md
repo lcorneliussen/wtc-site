@@ -30,7 +30,7 @@ you intend to document. A passing recording of newer source does not advance
 the site's reviewed or published baseline.
 
 The default output is the ignored `artifacts/openclaw-interactions/` directory.
-Open `index.html` there to watch the four silent, raw WebM clips. The video
+Open `index.html` there to watch the six silent, raw WebM clips (four for the sidebar). The video
 contains only the product view, without a title card, captions, cursor marker or
 request-trace overlay. Each clip has a separate request trace, named phase captures and a final PNG.
 `manifest.json` records the source revision/hash, Playwright/browser versions,
@@ -41,7 +41,10 @@ in the header, repository and service rows, including monospace values and butto
 labels, using the first visible glyph range and its font ascent without changing
 the DOM, and rejects a spread over 0.25 CSS pixels. Glyph-only controls center
 independently. The recorder checks the expected UI outcomes and loads
-each finalized video to verify metadata and initial decoding.
+each finalized video to verify metadata and the first frame, and fully decodes it.
+The raw viewport PNGs and measurement coordinates are retained. `crop` in the
+manifest maps those coordinates to the cropped video. The poster uses the actual
+first cropped video frame.
 
 Use a new, empty directory for every take; the recorder refuses to overwrite
 existing output. To record just one scenario:
@@ -50,7 +53,7 @@ existing output. To record just one scenario:
 npm run demos:openclaw:interactions -- /absolute/path/to/wtc-cli artifacts/push-take-2 push
 ```
 
-The scenario argument is optional; `all` explicitly selects all four. Run with
+The scenario argument is optional; `all` explicitly selects all applicable scenarios. Run with
 `--help` for usage. Choose a presentation and width:
 
 ```sh
@@ -81,6 +84,8 @@ failure details, selection, confirmation and collapsed states in design review.
 | `push` | Bitbucket preparation → personal confirmation → simulated publication → refresh. A draft PR appears and the unpublished count clears. |
 | `stale` | Same push, then a deliberately injected stale count alongside the new PR. The arrow returns; a manual refresh clears it. This models a response, not a verified backend bug. |
 | `individual` | Click three repository behind-count controls quickly. All requests complete; inspect their individual progress and results. |
+| `collapsed-push` | Start from the one-line card bar, prepare publication and explicitly confirm above the bar. The repository/service details stay collapsed. |
+| `collapsed-catch-up` | Start a collection catch-up from the one-line bar and retain it through progress and completion. |
 | `batch` | Click the collection's catch-up shortcut once. Observe sequential processing and three completion results. The sidebar and split views show the log without changing views. |
 
 The fixture starts with its initial collection data and expanded state ready.
@@ -96,7 +101,9 @@ in each base region, allowing a 48-level channel difference for lossy encoding;
 a missing card, repository list or composer fails the take. The manifest records
 the measured matches, and the gallery poster uses the idle frame.
 Later responses retain their scripted delays to make progress visible; these are
-not performance measurements. The raw capture is not trimmed. Pointer moves go
+not performance measurements. The interaction timeline is not trimmed. A single spatial crop, derived from
+visible bounds throughout the take, removes unused space above the content.
+The crop stays fixed while controls expand; it never follows or hides movement. Pointer moves go
 directly to their targets: sweeping an invisible recorded pointer over unrelated
 controls creates brief hover flashes that look like product flicker. The fixture
 uses neutral host-theme surfaces, small controls and primary confirmation colors. Assertions intentionally fail if the relevant controls or behavior
@@ -167,3 +174,76 @@ For a true end-to-end recording, prepare a separate disposable gateway and
 synthetic repositories with a reset procedure. Record the tested versions and
 verify the backend outcome independently. Do not substitute an active team's
 chat, account, credentials or repositories for that fixture.
+
+## Alignment and hierarchy guides
+
+The recorder uses Playwright DOM geometry plus Canvas font metrics. It measures
+semantic groups rather than imposing one grid on every element. Every phase
+links to a separate `.guides.svg`; no guide enters a raw video. Pink lines show
+shared name and count-arrow rails, blue lines text baselines, green lines cap-height
+optical middles and dashed amber lines the measured icon ink middles. SVG ink
+bounds are used for header/forge icons. Text and icons therefore have separate
+checks. Header trailing padding is checked too.
+
+The JSON includes font size, weight, contrast against the painted background,
+filled surfaces, label truncation and pixels per repository. Empty fact bands
+without a reservation fail. Density and prominence warnings are review evidence,
+not an automated verdict on taste. Review headings, grouping and the dominant
+controls with the unannotated image alongside the guides. Long branch names have
+an explicit expansion affordance, so their intentional ellipsis is distinguished
+from an unexpectedly clipped action label.
+
+Run the focused diagnostic tests with `npm run test:visual`. The small reusable
+implementation is `scripts/openclaw-visual-audit.mjs`. Its negative checks reject
+a stable but wrong name rail, an icon centred on the wrong reference and an empty
+fact lane. Reference APIs: [Playwright screenshots](https://playwright.dev/docs/screenshots)
+and [Canvas TextMetrics](https://developer.mozilla.org/en-US/docs/Web/API/TextMetrics).
+
+## Paired Claw and TUI evidence
+
+After recording a take, pair it with the actual Go terminal renderer:
+
+```sh
+npm run demos:openclaw:buddy -- /path/to/wtc-cli artifacts/mobile/04-collection-catch-up
+```
+
+This requires Go and the source's recording-only test adapter. The recorder saves
+the exact synthetic collection snapshots and their timestamps. The adapter uses
+`statusTUIModel.View` and the local-host action planner to render the equivalent
+local checkout, then synchronizes that replay beside the Claw video. It is
+post-composition from shared facts, not two live gateway sessions. In particular,
+ahead of the development tip is not assumed to mean unpublished: after publication
+the equivalent local fixture tracks the remote branch.
+
+The terminal uses 96 columns, 24 rows and a 16px monospace font by default. Set
+`--columns`, `--rows` or `--font-size` explicitly for another native size. Videos
+are never rescaled; the gallery scrolls horizontally instead. `terminal-lossless.webm`
+and `buddy-lossless.webm` use lossless RGB/full-chroma VP9. The terminal's decoded
+first frame must match the PNG's RGB bytes exactly. The MP4 is a compatibility
+copy. PNGs and native `.cast` files retain the sharp source; use the HTML terminal
+replay or a cast player to choose a larger font without scaling video pixels.
+
+The selection-only preview exercises existing native keys: `n`, Space, `s`,
+`j/k`, Right and Esc. It stops before Enter, refuses any command returned by the
+model and never calls the collector, a forge, Git or an agent.
+
+## Existing terminal actions and direct-action preparation
+
+The current TUI already has a keyboard Next actions view: `n` opens it, arrows
+or `j/k` move, Space selects, `s` selects suggestions, Right chooses an alternative,
+and Enter runs or reviews the selection. Eligible catch-up does not need a second
+confirmation. Publication retains its authority requirements.
+
+Direct actions on status facts should reuse that path, rather than invent argv:
+
+- Resolve the selected collection, repository, worktree and action key.
+- Re-read state through `statusNextCurrent`, then apply the existing ownership
+  and busy checks before invoking the existing runner.
+- Treat ahead-count basis explicitly; offer Push only for the appropriate action.
+- Route an agent step to the verified intended owner/pane. Never infer the target
+  from whichever terminal happens to be focused or inject a task into a typed draft.
+- Give every selected step an explicit result and follow-up, including blocked or
+  handed-off work; a handoff is not completion.
+
+This recording work prepares and demonstrates the existing selection contract.
+It does not add direct mouse actions to production TUI source.

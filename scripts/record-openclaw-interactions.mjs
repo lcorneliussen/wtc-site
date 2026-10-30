@@ -6,8 +6,9 @@ import { execFileSync } from 'node:child_process';
 import { resolve, join, sep } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
+import { collectVisualMeasurements, inspectVisualMeasurements, visualGuideSvg, visualAuditReport, recordingCrop } from './openclaw-visual-audit.mjs';
 
-const usage = 'Usage: npm run demos:openclaw:interactions -- /path/to/wtc-cli [output-directory] [push|stale|individual|batch|all] [--view card|chat|sidebar|split] [--width 390] [--sidebar-width 320]';
+const usage = 'Usage: npm run demos:openclaw:interactions -- /path/to/wtc-cli [output-directory] [push|stale|individual|batch|collapsed-push|collapsed-catch-up|all] [--view card|chat|sidebar|split] [--width 390] [--sidebar-width 320]';
 const { values, positionals } = parseArgs({ allowPositionals: true, options: { help: { type: 'boolean' }, view: { type: 'string', default: 'card' }, width: { type: 'string', default: '1120' }, 'sidebar-width': { type: 'string', default: '420' } } });
 if (values.help) { console.log(usage); process.exit(0); }
 if (!positionals[0] || positionals.length > 3) throw Error(usage);
@@ -31,8 +32,11 @@ const scenarios = [
   ['02-push-stale-status', 'Controlled reproduction: stale status after a successful push', 'stale'],
   ['03-individual-catch-up', 'Three quick repository clicks: current individual catch-up flow', 'individual'],
   ['04-collection-catch-up', 'One collection shortcut: current batch catch-up flow', 'batch'],
+  ['05-collapsed-push', 'Collapsed bar: prepare and confirm a publication', 'collapsed-push'],
+  ['06-collapsed-catch-up', 'Collapsed bar: catch up the collection', 'collapsed-catch-up'],
 ];
 if (selected && !scenarios.some(s => s[2] === selected)) throw Error(usage);
+if (view === 'sidebar' && selected?.startsWith('collapsed-')) throw Error('Collapsed scenarios need card, chat or split view');
 await mkdir(output, { recursive: true });
 if ((await readdir(output)).length) throw Error('Output directory must be empty; use a new directory for each take');
 const inject = (html, anchor, replacement) => {
@@ -41,10 +45,17 @@ const inject = (html, anchor, replacement) => {
 };
 const browser = await chromium.launch({ headless: true });
 const manifest = { created: new Date().toISOString(), kind: 'Actual upstream renderer with synthetic gateway responses; not a live gateway', repository: 'https://github.com/lcorneliussen/wtc-cli', revision, modulePath, playwright: JSON.parse(await readFile(new URL('node_modules/playwright/package.json', siteRoot), 'utf8')).version, browser: browser.version(), rendererSha256: createHash('sha256').update(renderer).digest('hex'), simulation: true, capture: 'Chromium screencast PNG frames from initialized idle; original timestamps, untrimmed', view, sidebarWidth: view === 'split' ? sidebarWidth : null, viewport: { width, height: 900 }, recordings: [] };
+manifest.recorder = {
+  revision: execFileSync('git',['-C',fileURLToPath(siteRoot),'rev-parse','HEAD'],{encoding:'utf8'}).trim(),
+  dirty: !!execFileSync('git',['-C',fileURLToPath(siteRoot),'status','--porcelain','--','scripts/record-openclaw-interactions.mjs','scripts/openclaw-visual-audit.mjs'],{encoding:'utf8'}).trim(),
+  sha256: createHash('sha256').update(await readFile(fileURLToPath(import.meta.url))).digest('hex'),
+  visualAuditSha256: createHash('sha256').update(await readFile(new URL('scripts/openclaw-visual-audit.mjs',siteRoot))).digest('hex'),
+};
 try {
-  for (const [id, title, mode] of scenarios.filter(s => !selected || s[2] === selected)) {
+  for (const [id, title, mode] of scenarios.filter(s => (!selected || s[2] === selected) && !(view === 'sidebar' && s[2].startsWith('collapsed-')))) {
     const dir = new URL(`${id}/`, output); await mkdir(dir, { recursive: true });
-    const isPush = mode === 'push' || mode === 'stale';
+    const collapsed = mode.startsWith('collapsed-');
+    const isPush = mode === 'push' || mode === 'stale' || mode === 'collapsed-push';
     const rows = isPush
       ? [{ repo: 'web', owner: 'example-org', forge: 'bitbucket', sessionKey: 'demo:web', branch: 'feature/search', base: 'origin/main', ahead: 3, behind: 0, unpublished: 3, dirty: 0, pullRequests: [{number:2,state:'merged',title:'Earlier task',url:'https://example.invalid/web/pull-requests/2'}] }]
       : ['api', 'web', 'docs'].map((name, i) => {
@@ -56,7 +67,7 @@ try {
     html = inject(html, 'const request = async (method, params) => {', `
 const mode = ${JSON.stringify(mode)};
 const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
-window.calls=[]; window.completed=[]; window.published=false; let staleLeft=0, initialStatus=true;
+window.calls=[]; window.completed=[]; window.published=false;window.tuiSnapshots=[]; let staleLeft=0, initialStatus=true;
 const trace = text => window.calls.push({at:Date.now(),text});
 const request = async (method, params) => {
  if(method==='plugins.sessionAction'&&params.actionId==='collection') {
@@ -64,6 +75,7 @@ const request = async (method, params) => {
   const snapshot=structuredClone(data);
   if(window.published && staleLeft>0){staleLeft--;snapshot.repos[0].unpublished=3;trace('← INJECTED STALE snapshot: PR #8 exists, unpublished=3');}
   else trace('← status: '+snapshot.repos.map(r=>r.repo+' behind='+r.behind+' unpublished='+(r.unpublished??0)).join(' · '));
+  window.tuiSnapshots.push({at:Date.now()/1000,snapshot:structuredClone(snapshot)});
   return {ok:true,result:snapshot};
  }
  if(method==='plugins.sessionAction'&&params.pluginId==='bitbucket') {
@@ -93,7 +105,7 @@ const request = async (method, params) => {
     if (view === 'split') html = inject(html, "document.querySelector('#card').hidden=true;", "document.body.classList.add('split');");
     if (view === 'sidebar' || view === 'split') html = inject(html, "mounts.card(document.querySelector('#card'),ctx);", "mounts.card(document.querySelector('#card'),ctx); host.ui.openPanel();");
     const context = await browser.newContext({ locale: 'en-US', timezoneId: 'UTC', deviceScaleFactor: 1, viewport: { width, height: 900 } });
-    await context.addInitScript(key => localStorage.setItem(key, '1'), openKey);
+    await context.addInitScript(({ key, collapsed }) => localStorage.setItem(key, collapsed ? '0' : '1'), { key: openKey, collapsed });
     const errors=[];
     await context.route('**/*', route => {
       const url=route.request().url();
@@ -103,26 +115,26 @@ const request = async (method, params) => {
     });
     const page = await context.newPage(); page.on('pageerror', e => errors.push(e.message));
     await page.goto('https://demo.invalid/'); await page.locator('#card .wtc-collection-card').waitFor({state:view==='sidebar'?'attached':'visible'});
-    if(view!=='sidebar'&&!await page.locator('#card .wtc-collection-card').evaluate(n=>n.open))await page.locator('#card summary').click({position:{x:(await page.locator('#card summary').boundingBox()).width-8,y:8}});
+    if(view!=='sidebar'&&!collapsed&&!await page.locator('#card .wtc-collection-card').evaluate(n=>n.open))await page.locator('#card summary').click({position:{x:(await page.locator('#card summary').boundingBox()).width-8,y:8}});
 
     const surface=page.locator(view === 'sidebar' ? '#panel' : '#card');
     for (const selector of ['#stage > h1', '#caption', '#rpc', '#cursor']) if (await page.locator(selector).isVisible()) throw Error('Recording overlay must stay outside the raw product view: '+selector);
     const click=async locator=>{const b=await locator.boundingBox();if(!b)throw Error('Missing click target');await page.mouse.move(b.x+b.width/2,b.y+b.height/2);await page.waitForTimeout(300);await locator.click();};
-    await surface.locator('.wtc-repositories').waitFor();
+    await surface.locator('.wtc-repositories').waitFor({ state: collapsed ? 'attached' : 'visible' });
     const positions=[];
     const measure=async phase=>{
       const sample=await surface.evaluate(root=>{
-        const rect=selector=>{const node=root.querySelector(selector);if(!node)return null;const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
+        const rect=selector=>{const node=root.querySelector(selector);if(!node||!node.checkVisibility())return null;const r=node.getBoundingClientRect();if(!r.width||!r.height)return null;return {x:r.x,y:r.y,width:r.width,height:r.height};};
         const grid=root.querySelector('.wtc-repositories>.wtc-table');
-        const cells=grid?[...grid.children].slice(Number(grid.getAttribute('data-columns'))).map(node=>{const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};}):[];
-        const history=root.querySelector(".wtc-repo-pr-history-slot");const historySlot=history?{x:history.getBoundingClientRect().x,y:history.getBoundingClientRect().y,width:history.getBoundingClientRect().width,height:history.getBoundingClientRect().height}:null;
-        const controls=[...root.querySelectorAll('.wtc-action-toolbar .wtc-toolbar-primary, .wtc-action-toolbar>button, .wtc-bulk-actions button')].map(node=>{const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};});
+        const cells=grid?[...grid.children].slice(Number(grid.getAttribute('data-columns'))).map(node=>{const r=node.checkVisibility()?node.getBoundingClientRect():{x:0,y:0,width:0,height:0};return {x:r.x,y:r.y,width:r.width,height:r.height};}):[];
+        const historySlot=rect('.wtc-repo-pr-history-slot');
+        const controls=[...root.querySelectorAll('.wtc-action-toolbar .wtc-toolbar-primary, .wtc-action-toolbar>button, .wtc-bulk-actions button')].map(node=>{const r=node.checkVisibility()?node.getBoundingClientRect():{x:0,y:0,width:0,height:0};return {x:r.x,y:r.y,width:r.width,height:r.height};});
         const sideRect=selector=>{const node=document.querySelector('#panel '+selector);if(!node)return null;const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
         // Read the first visible glyph and its font ascent without changing
         // the DOM, including when a branch wraps onto several lines.
         const fontMetrics=document.createElement('canvas').getContext('2d');
         const textBaseline = node => {
-          if (!node?.getBoundingClientRect().width) return null;
+          if (!node?.getBoundingClientRect().width || !node.checkVisibility()) return null;
           const walker=document.createTreeWalker(node,NodeFilter.SHOW_TEXT);
           let text;
           while(text=walker.nextNode()) if(text.textContent.trim()&&!/^[束…⋯✓⌄⌃↻⤢·■▶+✕±]+$/.test(text.textContent.trim())&&text.parentElement.getBoundingClientRect().width) break;
@@ -132,6 +144,11 @@ const request = async (method, params) => {
           const style=getComputedStyle(text.parentElement);
           fontMetrics.font=style.fontStyle+' '+style.fontWeight+' '+style.fontSize+' '+style.fontFamily;
           const ascent=fontMetrics.measureText(text.textContent[start]).fontBoundingBoxAscent,box=range.getBoundingClientRect();
+          for(let parent=text.parentElement;parent;parent=parent.parentElement){
+            const clip=parent.getBoundingClientRect(),style=getComputedStyle(parent);
+            if(style.overflowY!=='visible'&&(box.bottom<=clip.top||box.top>=clip.bottom))return null;
+            if(style.overflowX!=='visible'&&(box.right<=clip.left||box.left>=clip.right))return null;
+          }
           if(!Number.isFinite(ascent)||!box.height)throw Error('Browser cannot measure the visible text baseline');
           return {text:text.textContent,baseline:box.y+ascent};
         };
@@ -158,7 +175,15 @@ const request = async (method, params) => {
         return {baselines,controls,sideHeader:sideRect('.wtc-collection>header'),sideRepositories:sideRect('.wtc-repositories>.wtc-table'),sideServices:sideRect('.wtc-base-services'),historySlot,header:rect('.wtc-collection-card>summary, .wtc-collection>header'),repositories:rect('.wtc-repositories>.wtc-table'),services:rect('.wtc-base-services'),composer:rect('.composer'),temporary:rect('.wtc-transient-actions'),cells};
       });
       for(const group of sample.baselines)if(group.spread>.25)throw Error(`Text baselines differ: ${view}/${mode}/${phase}/${group.name}: ${JSON.stringify(group.values)}`);
-      positions.push({phase,...sample});
+      const visualAudit=inspectVisualMeasurements(await page.evaluate(collectVisualMeasurements,view==='sidebar'?'#panel':'#card'));
+      if(view==='split'){
+        const side=inspectVisualMeasurements(await page.evaluate(collectVisualMeasurements,'#panel'));
+        visualAudit.groups.push(...side.groups.map(group=>({...group,name:'sidebar '+group.name})));
+        for(const key of ['opticalPairs','rows','hierarchy','errors','warnings'])visualAudit[key].push(...side[key]);
+      }
+      if(visualAudit.errors.length)throw Error(`Visual alignment: ${view}/${mode}/${phase}: ${visualAudit.errors.join('; ')}`);
+      if(collapsed&&await surface.locator('.wtc-collection-card').evaluate(node=>node.open))throw Error('An action expanded the collapsed collection bar');
+      positions.push({phase,...sample,visualAudit});
       await writeFile(new URL('layout-positions.json',dir),JSON.stringify(positions,null,2));
       await page.screenshot({path:fileURLToPath(new URL(phase+'.png',dir))});
       if(sample.temporary){
@@ -181,6 +206,21 @@ const request = async (method, params) => {
       return root && ![...root.querySelectorAll('.wtc-repositories button, .wtc-step-status')].some(n=>/^\d+ new on main/.test(n.title)||/Working…|Catching up…|Running…|Rechecking…|Queued/.test(n.textContent));
     },view==='sidebar'?'#panel':'#card');
     await page.waitForTimeout(1400);await measure('idle');
+    // Track visible content on every animation frame. The whole take gets one
+    // crop after capture; a moving crop would hide layout shifts.
+    await page.evaluate(({ view })=>{
+      window.captureTops=[];
+      const visit=()=>{
+        const nodes=[...document.querySelectorAll(view==='sidebar'?'#panel':'#card')];
+        if(view==='split')nodes.push(document.querySelector('#panel'));
+        if(view==='chat'||view==='split')for(const bubble of document.querySelectorAll('.recording-bubble')){
+          const r=bubble.getBoundingClientRect(),clip=bubble.parentElement.getBoundingClientRect();
+          if(r.bottom>clip.top&&r.top<clip.bottom)window.captureTops.push(Math.max(r.top,clip.top));
+        }
+        for(const node of nodes)if(node){const r=node.getBoundingClientRect();if(r.width&&r.height)window.captureTops.push(r.top);}
+        window.captureFrame=requestAnimationFrame(visit);
+      };visit();
+    },{ view });
     // Begin at the initialized view. Capture every Chromium screencast frame
     // with its original timestamp; no navigation frames or trimming pass.
     const frameDir=new URL('capture-frames/',dir);await mkdir(frameDir);
@@ -196,15 +236,15 @@ const request = async (method, params) => {
     while(!frames.length){if(Date.now()>firstDeadline)throw Error('No initial screencast frame');await page.waitForTimeout(20);}
     await page.waitForTimeout(1400);
     if(isPush){
-      await click(surface.getByTitle(/^3 commits to push/));
+      await click(collapsed?surface.locator('.wtc-action-toolbar').getByTitle(/^Prepare personal publication for web$/):surface.getByTitle(/^3 commits to push/));
       await surface.locator('.wtc-action-toolbar').getByText('Preparing…',{exact:true}).waitFor();await measure('preparing');
       await surface.getByRole('button',{name:/^Confirm the captured push/}).waitFor();await surface.locator('.wtc-confirm-publication:enabled').waitFor();await measure('confirmation');await page.waitForTimeout(1500);
       await click(surface.getByRole('button',{name:/^Confirm the captured push/}));await surface.locator('.wtc-action-toolbar').getByText('Publishing…',{exact:true}).waitFor();await measure('publishing');
       await page.waitForFunction(()=>window.published);
-      await surface.locator('a[href="https://example.invalid/web/pull-requests/8"]').first().waitFor({state:'visible'});
+      await surface.locator('a[href="https://example.invalid/web/pull-requests/8"]').first().waitFor({state:collapsed?'attached':'visible'});
       await surface.locator('.wtc-action-toolbar').getByText('✓ Pushed',{exact:true}).waitFor({state:'visible'});
       if(mode==='stale') await surface.getByTitle(/^3 commits to push/).waitFor();
-      else if(await surface.getByTitle(/^3 commits to push/).count())throw Error('Fresh status left push available');
+      else if(!collapsed&&await surface.getByTitle(/^3 commits to push/).count())throw Error('Fresh status left push available');
       await measure('published');
       if(mode==='stale'){
         await page.screenshot({path:fileURLToPath(new URL('stale-frame.png',dir))});await page.waitForTimeout(3000);
@@ -231,15 +271,21 @@ const request = async (method, params) => {
     if(errors.length)throw Error(errors.join('\n'));
     await page.screenshot({path:fileURLToPath(new URL('final.png',dir))});
     const trace=await page.evaluate(()=>window.calls);await writeFile(new URL('trace.json',dir),JSON.stringify(trace,null,2));
-    const stoppedAt=await page.evaluate(()=>Date.now()/1000);
-    await cdp.send('Page.stopScreencast');await frameWrites;await context.close();
+    await cdp.send('Page.stopScreencast');
+    const capture=await page.evaluate(()=>{cancelAnimationFrame(window.captureFrame);return {tops:window.captureTops,tui:window.tuiSnapshots,stoppedAt:Date.now()/1000};});
+    // A compositor presentation timestamp may be just ahead of Date.now().
+    // Retain that frame and give it a final hold, rather than cutting the tail.
+    const stoppedAt=Math.max(capture.stoppedAt,(frames.at(-1)?.timestamp??0)+.001);
+    await frameWrites;await context.close();
     if(!frames.length||frames.some((f,i)=>!Number.isFinite(f.timestamp)||(i&&f.timestamp<frames[i-1].timestamp)))throw Error('Invalid capture timestamps');
     await writeFile(new URL('capture-frames.json',dir),JSON.stringify(frames,null,2));
+    const crop=recordingCrop(capture.tops,width,900);
+    await writeFile(new URL('tui-snapshots.json',dir),JSON.stringify({startedAt:frames[0].timestamp,duration:stoppedAt-frames[0].timestamp,events:capture.tui},null,2));
     const timeline=frames.map((f,i)=>"file 'capture-frames/"+f.name+"'\noption framerate 1000\nduration "+Math.max(.001,(frames[i+1]?.timestamp??stoppedAt)-f.timestamp).toFixed(6)).join('\n')+"\nfile 'capture-frames/"+frames.at(-1).name+"'\noption framerate 1000\n";
     await writeFile(new URL('capture-timeline.txt',dir),timeline);
     const videoName=id+'.webm';
-    execFileSync('ffmpeg',['-v','error','-y','-f','concat','-safe','0','-i',fileURLToPath(new URL('capture-timeline.txt',dir)),'-fps_mode','vfr','-c:v','libvpx-vp9','-threads','2','-crf','24','-b:v','0',fileURLToPath(new URL(videoName,output))]);
-    execFileSync('ffmpeg',['-v','error','-i',fileURLToPath(new URL(videoName,output)),'-fps_mode','passthrough','-f','null','-']);
+    execFileSync('ffmpeg',['-v','error','-y','-f','concat','-safe','0','-i',fileURLToPath(new URL('capture-timeline.txt',dir)),'-vf',`crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`,'-fps_mode','vfr','-c:v','libvpx-vp9','-threads','2','-crf','24','-b:v','0',fileURLToPath(new URL(videoName,output))]);
+    execFileSync('ffmpeg',['-v','error','-i',fileURLToPath(new URL(videoName,output)),'-fps_mode','passthrough','-enc_time_base','1:1000','-f','null','-']);
     const encoded=JSON.parse(execFileSync('ffprobe',['-v','error','-select_streams','v:0','-show_frames','-show_entries','frame=best_effort_timestamp_time','-of','json',fileURLToPath(new URL(videoName,output))],{encoding:'utf8'})).frames;
     if(encoded.length!==frames.length+1||frames.some((frame,i)=>Math.abs(Number(encoded[i].best_effort_timestamp_time)-(frame.timestamp-frames[0].timestamp))>.002))throw Error('Encoding dropped capture frames or changed their timestamps');
     const verifier=await browser.newContext();
@@ -256,15 +302,15 @@ const request = async (method, params) => {
       });
       await check.goto('https://recording-check.invalid/');
       await check.waitForFunction(()=>{const v=document.querySelector('video'),i=document.querySelector('img');return v?.readyState>=2&&v.duration>0&&i?.complete&&i.naturalWidth>0;});
-      firstFrame=await check.evaluate(regions=>{
+      firstFrame=await check.evaluate(({regions,crop})=>{
         const video=document.querySelector('video'),image=document.querySelector('img');
-        if(video.currentTime!==0||video.videoWidth!==image.naturalWidth||video.videoHeight!==image.naturalHeight)throw Error('First-frame dimensions or timestamp differ');
-        const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
-        const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);const reference=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+        if(video.currentTime!==0||video.videoWidth!==crop.width||video.videoHeight!==crop.height)throw Error('First-frame dimensions or timestamp differ');
+        const canvas=document.createElement('canvas');canvas.width=crop.width;canvas.height=crop.height;
+        const ctx=canvas.getContext('2d');ctx.drawImage(image,crop.x,crop.y,crop.width,crop.height,0,0,crop.width,crop.height);const reference=ctx.getImageData(0,0,canvas.width,canvas.height).data;
         ctx.drawImage(video,0,0);const initial=ctx.getImageData(0,0,canvas.width,canvas.height).data;
         return Object.entries(regions).filter(([,r])=>r).map(([name,r])=>{
           let ink=0,matched=0;
-          for(let y=Math.max(0,Math.floor(r.y));y<Math.min(canvas.height,Math.ceil(r.y+r.height));y++)for(let x=Math.max(0,Math.floor(r.x));x<Math.min(canvas.width,Math.ceil(r.x+r.width));x++){
+          for(let y=Math.max(0,Math.floor(r.y-crop.y));y<Math.min(canvas.height,Math.ceil(r.y+r.height-crop.y));y++)for(let x=Math.max(0,Math.floor(r.x-crop.x));x<Math.min(canvas.width,Math.ceil(r.x+r.width-crop.x));x++){
             const i=(y*canvas.width+x)*4;
             if(Math.max(reference[i],reference[i+1],reference[i+2])<=110)continue;
             ink++;if(Math.max(Math.abs(reference[i]-initial[i]),Math.abs(reference[i+1]-initial[i+1]),Math.abs(reference[i+2]-initial[i+2]))<=48)matched++;
@@ -272,14 +318,21 @@ const request = async (method, params) => {
           if(ink<30||matched/ink<.7)throw Error('Initial video frame lacks the initialized '+name+': '+matched+'/'+ink+' reference text pixels');
           return {name,referenceTextPixels:ink,matchedTextFraction:matched/ink};
         });
-      },Object.fromEntries(['header','repositories','services','composer','sideHeader','sideRepositories','sideServices'].map(key=>[key,positions[0][key]])));
+      },{crop,regions:Object.fromEntries(['header','repositories','services','composer','sideHeader','sideRepositories','sideServices'].map(key=>[key,positions[0][key]]))});
     } finally { await verifier.close(); }
-    manifest.recordings.push({id,title,mode,video:videoName,poster:id+'/idle.png',assertions:'passed',firstFrame,layoutPositions:positions,requests:trace});
+    execFileSync('ffmpeg',['-v','error','-y','-i',fileURLToPath(new URL(videoName,output)),'-frames:v','1',fileURLToPath(new URL('poster.png',dir))]);
+    for(const sample of positions){
+      const png=await readFile(new URL(sample.phase+'.png',dir));
+      const svg=visualGuideSvg(sample.visualAudit,'data:image/png;base64,'+png.toString('base64'),{width,height:900},crop);
+      await writeFile(new URL(sample.phase+'.guides.svg',dir),svg);
+      await writeFile(new URL(sample.phase+'.audit.html',dir),visualAuditReport(sample.visualAudit,svg));
+    }
+    manifest.recordings.push({id,title,mode,collapsed,video:videoName,poster:id+'/poster.png',crop,captureStoppedAt:capture.stoppedAt,recordingEndedAt:stoppedAt,assertions:'passed',firstFrame,layoutPositions:positions,requests:trace});
     await writeFile(new URL('manifest.json',output),JSON.stringify(manifest,null,2));
     console.log(id+': recorded and decoded '+videoName);
   }
   const escape = text => String(text).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  const cards=manifest.recordings.map(r=>`<article><h2>${escape(r.title)}</h2><video controls preload="none" playsinline poster="${r.poster}" src="${r.video}"></video><p><a href="${r.video}">Video</a> · <a href="${r.id}/trace.json">Request trace</a></p><p>${r.layoutPositions.map(p=>`<a href="${r.id}/${p.phase}.png">${escape(p.phase)}</a>`).join(' · ')}</p></article>`).join('');
+  const cards=manifest.recordings.map(r=>`<article><h2>${escape(r.title)}</h2><video controls preload="none" playsinline poster="${r.poster}" src="${r.video}" style="max-width:${r.crop.width}px"></video><p><a href="${r.video}">Video</a> · <a href="${r.id}/trace.json">Request trace</a></p><p>${r.layoutPositions.map(p=>`<a href="${r.id}/${p.phase}.png">${escape(p.phase)}</a> / <a href="${r.id}/${p.phase}.audit.html">guides and hierarchy</a>`).join(' · ')}</p></article>`).join('');
   await writeFile(new URL('index.html',output),`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OpenClaw interaction recordings</title><style>:root{color-scheme:dark}body{max-width:1120px;margin:32px auto;padding:0 24px;font:16px/1.6 system-ui;background:#11161d;color:#e4eaf2}h2{font-size:20px}article{margin:32px 0;border:1px solid #354151;border-radius:12px;padding:16px}video{width:100%;height:auto}a{color:#8edbd5}</style><h1>OpenClaw interaction recordings</h1><p>View: ${escape(view)}, ${width}px. Actual renderer ${escape(revision)}; synthetic repositories and simulated gateway responses. No live gateway or publication. The stale scenario deliberately injects old status; it does not establish a live gateway defect. Raw product views have no captions or trace overlay; request traces are separate files.</p>${cards}<p><a href="manifest.json">Renderer provenance and results</a></p></html>`);
   console.log('Gallery: '+fileURLToPath(new URL('index.html',output)));
 } finally { await browser.close(); }

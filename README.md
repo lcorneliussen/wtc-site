@@ -93,4 +93,7 @@ npm run demos:openclaw:interactions -- /absolute/path/to/wtc-cli
 ```
 
 Open `artifacts/openclaw-interactions/index.html` to watch the clips. These use
-the actual renderer with simulated gateway responses, not a live account.
+the actual renderer with simulated gateway responses, not a live account. The guide
+also covers collapsed-bar actions, separate alignment/hierarchy guides and a
+paired native TUI replay with lossless text and terminal casts. Run the focused
+diagnostic tests with `npm run test:visual`.
