@@ -179,6 +179,7 @@ const request = async (method, params) => {
       if(view==='split'){
         const side=inspectVisualMeasurements(await page.evaluate(collectVisualMeasurements,'#panel'));
         visualAudit.groups.push(...side.groups.map(group=>({...group,name:'sidebar '+group.name})));
+        visualAudit.sections.push(...side.sections.map(section=>({...section,id:'sidebar:'+section.id,parent:section.parent==null?null:'sidebar:'+section.parent,label:'Sidebar '+section.label})));
         for(const key of ['opticalPairs','rows','hierarchy','errors','warnings'])visualAudit[key].push(...side[key]);
       }
       if(visualAudit.errors.length)throw Error(`Visual alignment: ${view}/${mode}/${phase}: ${visualAudit.errors.join('; ')}`);

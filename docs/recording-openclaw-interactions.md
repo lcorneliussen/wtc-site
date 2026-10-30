@@ -243,6 +243,8 @@ beside every phase PNG. It includes intended presentation regions (collection
 controls, repositories and their rows, collection services, action log and
 composer), their parent relationships, and the screenshot dimensions/SHA-256.
 These regions are measured from the DOM; they are not independent perception.
+Split-view metadata includes both surfaces; sidebar region IDs and parents use a
+`sidebar:` prefix to keep the two presentation trees distinct.
 
 For an independent check, give a reviewer **only the unannotated phase PNG**.
 Ask them to identify visual groups, bounds, parent relationships and ambiguities

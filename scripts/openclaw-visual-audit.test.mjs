@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { inspectVisualMeasurements, recordingCrop, visualGuideSvg } from './openclaw-visual-audit.mjs';
+import { inspectVisualMeasurements, recordingCrop, visualGuideSvg, visualAuditReport } from './openclaw-visual-audit.mjs';
 
 const measurements = more => ({ groups: [], opticalPairs: [], rows: [], hierarchy: [], ...more });
 test('semantic rails reject near alignment rather than accepting a stable wrong layout', () => {
@@ -59,4 +59,47 @@ test('perceived-section annotations reject a different screenshot and cyclic par
   assert.throws(()=>compareVisualSections(audit,observed),/same screenshot/);
   observed.imageSha256=audit.image.sha256;observed.groups=[{id:'loop',parent:'loop',bounds:{x:0,y:0,width:20,height:20}}];
   assert.throws(()=>compareVisualSections(audit,observed),/cyclic/);
+});
+
+test('report escapes imported typography and uses an unlabeled matched group id', () => {
+  const audit = inspectVisualMeasurements(measurements({
+    sections: [{id:'services',parent:null,bounds:{x:0,y:0,width:20,height:20}}],
+    hierarchy: [{role:'heading',text:'Services',fontSize:'<img src=x onerror=alert(1)>',fontWeight:'<script>bad()</script>',contrastRatio:4.5}],
+  }));
+  audit.image={width:20,height:20,sha256:'a'.repeat(64)};
+  const observed={imageSha256:audit.image.sha256,canvas:{width:20,height:20},groups:[{id:'service-block',parent:null,bounds:{x:0,y:0,width:20,height:20}}]};
+  const report=visualAuditReport(audit,'',observed);
+  assert.ok(!report.includes('<img src=x'));
+  assert.ok(!report.includes('<script>bad()'));
+  assert.match(report,/&lt;img src=x onerror=alert\(1\)&gt;/);
+  assert.match(report,/<td>service-block<\/td><td>1\.00<\/td>/);
+  assert.match(visualAuditReport(audit,''),/Not independently assessed\./);
+});
+
+test('comparison CLI binds PNG bytes and dimensions and refuses existing output', async () => {
+  const {mkdtemp,writeFile,readFile,rm}=await import('node:fs/promises');
+  const {tmpdir}=await import('node:os');
+  const {join}=await import('node:path');
+  const {createHash}=await import('node:crypto');
+  const {spawnSync}=await import('node:child_process');
+  const {fileURLToPath}=await import('node:url');
+  const dir=await mkdtemp(join(tmpdir(),'visual-comparison-'));
+  try {
+    const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aT3sAAAAASUVORK5CYII=','base64');
+    const audit=inspectVisualMeasurements(measurements({sections:[]}));
+    audit.image={width:1,height:1,sha256:createHash('sha256').update(png).digest('hex')};
+    const observed={imageSha256:audit.image.sha256,canvas:{width:1,height:1},groups:[]};
+    await Promise.all([writeFile(join(dir,'phase.png'),png),writeFile(join(dir,'audit.json'),JSON.stringify(audit)),writeFile(join(dir,'observed.json'),JSON.stringify(observed))]);
+    const run=()=>spawnSync(process.execPath,[fileURLToPath(new URL('./openclaw-visual-audit.mjs',import.meta.url)),join(dir,'audit.json'),join(dir,'phase.png'),join(dir,'observed.json'),join(dir,'report.html')],{encoding:'utf8'});
+    assert.equal(run().status,0);
+    const report=await readFile(join(dir,'report.html'),'utf8');
+    for(const id of ['model','perceived','depth','section-labels'])assert.ok(report.includes(`id="${id}"`));
+    assert.match(run().stderr,/EEXIST/);
+    assert.equal(await readFile(join(dir,'report.html'),'utf8'),report);
+    await writeFile(join(dir,'phase.png'),Buffer.concat([png,Buffer.from('different')]));
+    assert.match(run().stderr,/different screenshot/);
+    await writeFile(join(dir,'phase.png'),png);
+    audit.image.width=2;await writeFile(join(dir,'audit.json'),JSON.stringify(audit));
+    assert.match(run().stderr,/PNG dimensions/);
+  } finally { await rm(dir,{recursive:true,force:true}); }
 });
