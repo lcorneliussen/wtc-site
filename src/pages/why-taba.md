@@ -257,7 +257,7 @@ Without the community around [Omarchy](https://omarchy.org/), the love for Compu
 <div class="problem-body">
 
 <h2 id="testing-title">Boilerplate solidifies</h2>
-<p class="problem-subline">As I and other team members start relying on the `agent harness`, it needs to step up and become software.</p>
+<p class="problem-subline">As I and other team members start relying on the <code>agent harness</code>, it needs to step up and become software.</p>
 
 <div class="detail-copy">
 

@@ -77,6 +77,17 @@
       "checkouts": 493
     },
     {
+      "section": "more-computers",
+      "label": "Late Aug\u2013Sep 2026",
+      "start": "2026-08-17",
+      "end": "2026-09-27",
+      "completeWeeks": 6,
+      "firstWeek": "2026-08-17",
+      "lastWeek": "2026-09-21",
+      "medianMergedPRs": 97.0,
+      "checkouts": 493
+    },
+    {
       "section": "testing",
       "label": "Sep 2026",
       "start": "2026-09-01",
@@ -107,28 +118,6 @@
       "firstWeek": "2026-09-28",
       "lastWeek": "2026-10-19",
       "medianMergedPRs": 91.5,
-      "checkouts": 649
-    },
-    {
-      "section": "services",
-      "label": "Oct 2026",
-      "start": "2026-10-01",
-      "end": "2026-10-30",
-      "completeWeeks": 3,
-      "firstWeek": "2026-10-05",
-      "lastWeek": "2026-10-19",
-      "medianMergedPRs": 83,
-      "checkouts": 649
-    },
-    {
-      "section": "support",
-      "label": "Oct 2026",
-      "start": "2026-10-01",
-      "end": "2026-10-30",
-      "completeWeeks": 3,
-      "firstWeek": "2026-10-05",
-      "lastWeek": "2026-10-19",
-      "medianMergedPRs": 83,
       "checkouts": 649
     },
     {

@@ -35,7 +35,7 @@ export function setupStoryActivity(problems: HTMLElement[], cards: HTMLElement[]
       term.textContent = label;
       const explanation = label === 'Checkouts'
         ? `Checkouts are ordinary repository working folders plus linked worktrees, counted through ${phase.end}. Cleaned-up folders are not included.`
-        : `PRs are your authored pull requests merged on GitHub and Bitbucket. This is the median per complete week across ${phase.completeWeeks} weeks.`;
+        : `PRs are my authored pull requests merged on GitHub and Bitbucket. This is the median per complete week across ${phase.completeWeeks} weeks.`;
       group.title = explanation + ` ${rawValue}${label === 'Checkouts' ? ' checkouts' : '/week'}.` + (isBaseline ? '' : ` ${multiple}× the ${activity.baseline.label} baseline (${baseline}).`);
       const definition = document.createElement('dd');
       definition.className = 'metric-absolute';

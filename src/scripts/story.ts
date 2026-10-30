@@ -57,6 +57,15 @@ if (timeline) {
     return [{ problem, mentions, art, column, alignmentTarget, detailArt, detailTarget, detailBeforePosts }];
   });
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const isPreviewHash = (hash: string) => hash === '#herdr-workspace' || hash === '#herdr-workspace-full-size';
+  const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+  const restoreBrowserPosition = navigation?.type === 'reload' || navigation?.type === 'back_forward';
+  const savedReadingY = history.state?.whyTabaReadingY;
+  const saveReadingPosition = () => {
+    history.replaceState({...history.state, whyTabaReadingY: window.scrollY}, '');
+  };
+  window.addEventListener('beforeunload', saveReadingPosition);
+  window.addEventListener('pagehide', saveReadingPosition);
   const setActivity = setupStoryActivity(problems, cards, reducedMotion);
   const readingLine = () => Math.max(80, window.innerHeight * .28);
   let scheduled = false;
@@ -78,9 +87,9 @@ if (timeline) {
       if (heading.getBoundingClientRect().top <= readingLine()) active = index;
     });
     setActivity(active);
-    const previewLink = location.hash === '#herdr-workspace' || location.hash === '#herdr-workspace-full-size';
+    const previewLink = isPreviewHash(location.hash);
     if (locationReady && !previewLink && !document.querySelector('dialog[open]')) {
-      const hash = `#${problems[active].id}`;
+      const hash = headings[0].getBoundingClientRect().top <= readingLine() ? `#${problems[active].id}` : '';
       if (location.hash !== hash) history.replaceState(history.state, '', `${location.pathname}${location.search}${hash}`);
     }
     postColumns.forEach(({ problem, mentions, art, column, alignmentTarget, detailArt, detailTarget, detailBeforePosts }) => {
@@ -125,12 +134,21 @@ if (timeline) {
   window.addEventListener('scroll', schedule, {passive: true});
   window.addEventListener('resize', schedule, {passive: true});
   reducedMotion.addEventListener('change', schedule);
-  window.addEventListener('hashchange', scrollToHashTarget);
-  window.addEventListener('load', () => window.requestAnimationFrame(() => {
-    scrollToHashTarget();
-    locationReady = true;
-    schedule();
-  }), {once: true});
+  window.addEventListener('hashchange', event => {
+    if (isPreviewHash(new URL(event.oldURL).hash)) schedule();
+    else scrollToHashTarget();
+  });
+  const finishInitialLocation = () => {
+    void document.fonts.ready.then(() => window.requestAnimationFrame(() => {
+      if (restoreBrowserPosition && Number.isFinite(savedReadingY) && !isPreviewHash(location.hash)) {
+        window.scrollTo({top: savedReadingY, behavior: 'instant'});
+      } else if (!restoreBrowserPosition) scrollToHashTarget();
+      locationReady = true;
+      schedule();
+    }));
+  };
+  window.addEventListener('load', finishInitialLocation, {once: true});
+  if (document.readyState === 'complete') finishInitialLocation();
   document.fonts.ready.then(schedule);
   const observer = new ResizeObserver(schedule);
   observer.observe(timeline);
@@ -141,5 +159,5 @@ if (timeline) {
   });
   setupStoryPosts(schedule);
   schedule();
-  scrollToHashTarget();
+  if (!restoreBrowserPosition) scrollToHashTarget();
 }

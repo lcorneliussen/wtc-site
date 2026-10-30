@@ -16,7 +16,7 @@ const base = import.meta.env.BASE_URL;
   <div class="workspace-content">
     <div class="workspace-visual">
       <div class="workspace-screen">
-        <img src={`${base}media/why-taba/herdr-workspace.png`} width="1342" height="2083" alt="Herdr running worktree collections. The upper-left sidebar lists task spaces; the lower-left sidebar lists agents and their status across panes and tabs. The selected task has an agent conversation in the upper pane and a compact repository, service and PR overview in the lower pane. Local filesystem paths are masked." decoding="async" />
+        <img src={`${base}media/why-taba/herdr-workspace.png`} width="1342" height="2083" alt="Herdr running worktree collections. The upper-left sidebar lists task spaces; the lower-left sidebar lists agents and their status across panes and tabs. The selected task has an agent conversation in the upper pane and a compact repository, service and PR overview in the lower pane. Absolute filesystem paths are masked; task and agent labels remain visible." decoding="async" />
         <div class="workspace-region region-spaces" aria-hidden="true"><span>1</span></div>
         <div class="workspace-region region-agent" aria-hidden="true"><span>2</span></div>
         <div class="workspace-region region-overview" aria-hidden="true"><span>3</span></div>
@@ -31,7 +31,7 @@ const base = import.meta.env.BASE_URL;
         <li><button type="button" data-workspace-region="overview"><span class="annotation-number">3</span><span><strong>The wider picture, nearby</strong><span class="annotation-copy">A second pane keeps repositories, running services and PRs in view. No need to interrupt the conversation to check.</span></span></button></li>
         <li><button type="button" data-workspace-region="agents"><span class="annotation-number">4</span><span><strong>All agents, at a glance</strong><span class="annotation-copy">The lower sidebar lists all agents and their status across panes and tabs, not just the one you’re looking at.</span></span></button></li>
       </ol>
-      <p class="workspace-footnote">A captured screen, not a live session. Local filesystem paths are hidden.</p>
+      <p class="workspace-footnote">A captured screen, not a live session. Absolute filesystem paths are hidden; task and agent labels remain visible.</p>
     </aside>
   </div>
 </dialog>
@@ -45,6 +45,8 @@ const base = import.meta.env.BASE_URL;
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let opener: HTMLAnchorElement | null = null;
   let previousOverflow = '';
+  let previousScroll = {left: 0, top: 0};
+  let returnHash = '#spaces';
   let busy = false;
   const previewHash = '#herdr-workspace';
   const fullSizeHash = '#herdr-workspace-full-size';
@@ -79,6 +81,7 @@ const base = import.meta.env.BASE_URL;
     if (!source) return;
     busy = true;
     const from = source.getBoundingClientRect();
+    previousScroll = {left: window.scrollX, top: window.scrollY};
     previousOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = 'hidden';
     const shouldAnimate = animate && !motion.matches;
@@ -107,7 +110,9 @@ const base = import.meta.env.BASE_URL;
   async function closeWorkspace() {
     if (!dialog?.open || !screen || !screenshot || !content || busy) return;
     busy = true;
-    if (!motion.matches && opener && !dialog.classList.contains('is-zoomed')) {
+    const restorePosition = location.hash === returnHash;
+    if (restorePosition) window.scrollTo({...previousScroll, behavior: 'instant'});
+    if (restorePosition && !motion.matches && opener && !dialog.classList.contains('is-zoomed')) {
       const source = opener.querySelector<HTMLImageElement>('img');
       if (source) {
         const { ghost, animation } = morphImage(screenshot.src, screenshot.getBoundingClientRect(), source.getBoundingClientRect(), false);
@@ -119,6 +124,10 @@ const base = import.meta.env.BASE_URL;
     }
     dialog.close();
     document.documentElement.style.overflow = previousOverflow;
+    if (restorePosition) {
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      window.scrollTo({...previousScroll, behavior: 'instant'});
+    }
     setZoom(false);
     delete dialog.dataset.highlight;
     opener?.focus({ preventScroll: true });
@@ -133,6 +142,7 @@ const base = import.meta.env.BASE_URL;
       if (!dialog.open) {
         const link = document.querySelector<HTMLAnchorElement>('[data-workspace-preview]');
         if (link) {
+          returnHash = '#spaces';
           link.scrollIntoView({ block: 'center', behavior: 'instant' });
           void openWorkspace(link, false);
         }
@@ -155,6 +165,7 @@ const base = import.meta.env.BASE_URL;
     link.addEventListener('click', event => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || busy) return;
       event.preventDefault();
+      returnHash = location.hash;
       history.pushState({ ...history.state, storyWorkspacePreview: true }, '', previewHash);
       setZoom(false);
       void openWorkspace(link, true);
